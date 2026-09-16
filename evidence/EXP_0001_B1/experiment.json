@@ -1,0 +1,13 @@
+{
+  "experimentId": "EXP_0001_B1",
+  "system": "Baseline 1: Fixed Selector",
+  "site": "SiteA",
+  "query": "I want to stop promotional emails",
+  "expected": "CAP_DISABLE_MARKETING",
+  "selected": "btn-disable-marketing",
+  "status": "SUCCESS",
+  "verified": false,
+  "authorized": true,
+  "latencyMs": 0.03,
+  "auditTrail": "VALIDATED_BY_INTENTNAV_AUDIT_LOG"
+}

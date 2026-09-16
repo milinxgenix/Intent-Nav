@@ -1,0 +1,13 @@
+{
+  "experimentId": "EXP_0001_B4",
+  "system": "Baseline 4: Page Navigation",
+  "site": "SiteA",
+  "query": "I want to stop promotional emails",
+  "expected": "CAP_DISABLE_MARKETING",
+  "selected": "/settings/notifications",
+  "status": "NAVIGATED_PAGE",
+  "verified": false,
+  "authorized": false,
+  "latencyMs": 0.05,
+  "auditTrail": "VALIDATED_BY_INTENTNAV_AUDIT_LOG"
+}

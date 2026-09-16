@@ -1,0 +1,13 @@
+{
+  "experimentId": "EXP_0001_B5",
+  "system": "IntentNav-SCFR",
+  "site": "SiteA",
+  "query": "I want to stop promotional emails",
+  "expected": "CAP_DISABLE_MARKETING",
+  "selected": "btn-disable-marketing",
+  "status": "EXECUTED",
+  "verified": true,
+  "authorized": true,
+  "latencyMs": 1.97,
+  "auditTrail": "VALIDATED_BY_INTENTNAV_AUDIT_LOG"
+}

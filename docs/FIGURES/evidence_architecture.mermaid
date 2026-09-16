@@ -1,0 +1,27 @@
+graph TD
+    subgraph EvidenceSources["Multi-Channel Evidence Architecture"]
+        Sem["Semantic Evidence (Canonical, Synonyms, Roles)"]
+        Cont["Context Evidence (Ancestors, Landmarks, Relative Path)"]
+        Inv["Invariant Core (Pre-State, Delta, Post-State)"]
+        Trans["Transition Witnesses (DOM, A11y, History, Route, App State, Async)"]
+        Neg["Negative Evidence (Decoys, Contradictions, Failed Routes)"]
+    end
+
+    subgraph AuditPackaging["Audit & Evidence Packaging"]
+        AuditRecord["Append-Only Frozen Audit Record"]
+        JSONExp["evidence/EXP_xxxx/experiment.json"]
+        CSVExp["benchmark/results/benchmark_results.csv"]
+        SummExp["benchmark/results/benchmark_summary.json"]
+        AuditDoc["docs/FINAL_TECHNICAL_AUDIT.md"]
+    end
+
+    Sem --> AuditRecord
+    Cont --> AuditRecord
+    Inv --> AuditRecord
+    Trans --> AuditRecord
+    Neg --> AuditRecord
+
+    AuditRecord --> JSONExp
+    AuditRecord --> CSVExp
+    AuditRecord --> SummExp
+    AuditRecord --> AuditDoc
