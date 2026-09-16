@@ -1,0 +1,16 @@
+graph TD
+    Obs["Raw Interface Observation"] --> Drift["Typed Drift Vector: (P, C, S, Cap, T)"]
+    Drift --> Decision{"Drift Requires Recovery?"}
+    Decision -- "Presentation Only (P > 0.4, Cap = 0)" --> Maintain["Maintain Active Route (No Recovery Needed)"]
+    Decision -- "Capability / Transition Drift" --> Gen["Discover Active Candidates"]
+    
+    Gen --> Gate["MANDATORY INVARIANT CLOSURE"]
+    Gate -- "Failed Invariant / Contradicted" --> Rej["REJECT CANDIDATE BEFORE RANKING"]
+    Rej --> NegStore["Record in Persistent Negative Evidence Store"]
+    Gate -- "PASS (Target & Action Matched)" --> Eligible["Eligible Candidates Pool"]
+    
+    Eligible --> Scoring["Post-Gate Rebind Scoring"]
+    Scoring --> Prov["Create Provisional Route (Quarantine)"]
+    Prov --> CausalVerify["Causal Transition Verification Protocol"]
+    CausalVerify -- "Pass" --> Promo["Promote to ACTIVE_VALIDATED"]
+    CausalVerify -- "Fail" --> Demote["Quarantine / Demote Route"]
