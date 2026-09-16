@@ -1,0 +1,15 @@
+graph TD
+    Recovered["Recovered / Newly Synthesized Route"] --> ProvState["PROVISIONAL (Quarantine State)"]
+    ProvState --> TransVerify{"Causal Transition Verification"}
+
+    TransVerify -- "Pass (>=2 Independent Classes, Delta Matched)" --> Promo["ACTIVE_VALIDATED (Promoted to Active Route)"]
+    TransVerify -- "Fail (Missing / Unrelated / Wrong Delta)" --> QuarState["QUARANTINED (Failed Route)"]
+
+    QuarState --> NegStore["Record in Negative Evidence Store"]
+    
+    Promo --> RuntimeExec["Runtime Step Execution"]
+    RuntimeExec -- "Step Fails at Runtime" --> DemotedState["DEMOTED"]
+    
+    DemotedState --> RollbackCheck{"Prior Validated Version Exists?"}
+    RollbackCheck -- "Yes" --> Rollback["Rollback to Prior Validated Route (e.g. V1)"]
+    RollbackCheck -- "No" --> FreshRecovery["Trigger Fresh Recovery"]
