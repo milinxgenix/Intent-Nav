@@ -1,0 +1,1201 @@
+experimentId,timestamp,systemName,siteVersion,queryId,queryText,expectedCapability,selectedCandidateId,status,causallyVerified,authorized,latencyMs
+EXP_0001_B1,1789530409274,"Baseline 1: Fixed Selector",SiteA,INT-001,"I want to stop promotional emails",CAP_DISABLE_MARKETING,btn-disable-marketing,SUCCESS,false,true,0.03
+EXP_0001_B2,1789530409274,"Baseline 2: Keyword Matching",SiteA,INT-001,"I want to stop promotional emails",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.1
+EXP_0001_B3,1789530409274,"Baseline 3: Semantic Only",SiteA,INT-001,"I want to stop promotional emails",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.02
+EXP_0001_B4,1789530409274,"Baseline 4: Page Navigation",SiteA,INT-001,"I want to stop promotional emails",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0.05
+EXP_0001_B5,1789530409276,"IntentNav-SCFR",SiteA,INT-001,"I want to stop promotional emails",CAP_DISABLE_MARKETING,btn-disable-marketing,EXECUTED,true,true,1.97
+EXP_0002_B1,1789530409276,"Baseline 1: Fixed Selector",SiteB,INT-001,"I want to stop promotional emails",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0002_B2,1789530409276,"Baseline 2: Keyword Matching",SiteB,INT-001,"I want to stop promotional emails",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.01
+EXP_0002_B3,1789530409276,"Baseline 3: Semantic Only",SiteB,INT-001,"I want to stop promotional emails",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0002_B4,1789530409276,"Baseline 4: Page Navigation",SiteB,INT-001,"I want to stop promotional emails",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0.04
+EXP_0002_B5,1789530409276,"IntentNav-SCFR",SiteB,INT-001,"I want to stop promotional emails",CAP_DISABLE_MARKETING,btn-promotions-switch,EXECUTED,true,true,0.51
+EXP_0003_B1,1789530409276,"Baseline 1: Fixed Selector",SiteC,INT-001,"I want to stop promotional emails",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0003_B2,1789530409276,"Baseline 2: Keyword Matching",SiteC,INT-001,"I want to stop promotional emails",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0003_B3,1789530409276,"Baseline 3: Semantic Only",SiteC,INT-001,"I want to stop promotional emails",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0003_B4,1789530409276,"Baseline 4: Page Navigation",SiteC,INT-001,"I want to stop promotional emails",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0003_B5,1789530409277,"IntentNav-SCFR",SiteC,INT-001,"I want to stop promotional emails",CAP_DISABLE_MARKETING,:r3:,EXECUTED,true,true,0.26
+EXP_0004_B1,1789530409277,"Baseline 1: Fixed Selector",SiteD,INT-001,"I want to stop promotional emails",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0004_B2,1789530409277,"Baseline 2: Keyword Matching",SiteD,INT-001,"I want to stop promotional emails",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0004_B3,1789530409277,"Baseline 3: Semantic Only",SiteD,INT-001,"I want to stop promotional emails",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0004_B4,1789530409277,"Baseline 4: Page Navigation",SiteD,INT-001,"I want to stop promotional emails",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0004_B5,1789530409278,"IntentNav-SCFR",SiteD,INT-001,"I want to stop promotional emails",CAP_DISABLE_MARKETING,genuine-disable-marketing,EXECUTED,true,true,0.74
+EXP_0005_B1,1789530409278,"Baseline 1: Fixed Selector",SiteA,INT-002,"How do I turn off marketing messages?",CAP_DISABLE_MARKETING,btn-disable-marketing,SUCCESS,false,true,0
+EXP_0005_B2,1789530409278,"Baseline 2: Keyword Matching",SiteA,INT-002,"How do I turn off marketing messages?",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.01
+EXP_0005_B3,1789530409278,"Baseline 3: Semantic Only",SiteA,INT-002,"How do I turn off marketing messages?",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0005_B4,1789530409278,"Baseline 4: Page Navigation",SiteA,INT-002,"How do I turn off marketing messages?",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0005_B5,1789530409278,"IntentNav-SCFR",SiteA,INT-002,"How do I turn off marketing messages?",CAP_DISABLE_MARKETING,btn-disable-marketing,EXECUTED,true,true,0.26
+EXP_0006_B1,1789530409278,"Baseline 1: Fixed Selector",SiteB,INT-002,"How do I turn off marketing messages?",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0006_B2,1789530409278,"Baseline 2: Keyword Matching",SiteB,INT-002,"How do I turn off marketing messages?",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0006_B3,1789530409278,"Baseline 3: Semantic Only",SiteB,INT-002,"How do I turn off marketing messages?",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0006_B4,1789530409278,"Baseline 4: Page Navigation",SiteB,INT-002,"How do I turn off marketing messages?",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0006_B5,1789530409278,"IntentNav-SCFR",SiteB,INT-002,"How do I turn off marketing messages?",CAP_DISABLE_MARKETING,btn-promotions-switch,EXECUTED,true,true,0.25
+EXP_0007_B1,1789530409278,"Baseline 1: Fixed Selector",SiteC,INT-002,"How do I turn off marketing messages?",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0007_B2,1789530409278,"Baseline 2: Keyword Matching",SiteC,INT-002,"How do I turn off marketing messages?",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0007_B3,1789530409278,"Baseline 3: Semantic Only",SiteC,INT-002,"How do I turn off marketing messages?",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0007_B4,1789530409278,"Baseline 4: Page Navigation",SiteC,INT-002,"How do I turn off marketing messages?",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0007_B5,1789530409278,"IntentNav-SCFR",SiteC,INT-002,"How do I turn off marketing messages?",CAP_DISABLE_MARKETING,:r3:,EXECUTED,true,true,0.16
+EXP_0008_B1,1789530409278,"Baseline 1: Fixed Selector",SiteD,INT-002,"How do I turn off marketing messages?",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0008_B2,1789530409278,"Baseline 2: Keyword Matching",SiteD,INT-002,"How do I turn off marketing messages?",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0008_B3,1789530409278,"Baseline 3: Semantic Only",SiteD,INT-002,"How do I turn off marketing messages?",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0008_B4,1789530409278,"Baseline 4: Page Navigation",SiteD,INT-002,"How do I turn off marketing messages?",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0008_B5,1789530409279,"IntentNav-SCFR",SiteD,INT-002,"How do I turn off marketing messages?",CAP_DISABLE_MARKETING,genuine-disable-marketing,EXECUTED,true,true,0.23
+EXP_0009_B1,1789530409279,"Baseline 1: Fixed Selector",SiteA,INT-003,"Stop advertising notifications",CAP_DISABLE_MARKETING,btn-disable-marketing,SUCCESS,false,true,0
+EXP_0009_B2,1789530409279,"Baseline 2: Keyword Matching",SiteA,INT-003,"Stop advertising notifications",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.01
+EXP_0009_B3,1789530409279,"Baseline 3: Semantic Only",SiteA,INT-003,"Stop advertising notifications",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0009_B4,1789530409279,"Baseline 4: Page Navigation",SiteA,INT-003,"Stop advertising notifications",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0009_B5,1789530409279,"IntentNav-SCFR",SiteA,INT-003,"Stop advertising notifications",CAP_DISABLE_MARKETING,btn-disable-marketing,EXECUTED,true,true,0.56
+EXP_0010_B1,1789530409279,"Baseline 1: Fixed Selector",SiteB,INT-003,"Stop advertising notifications",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.01
+EXP_0010_B2,1789530409279,"Baseline 2: Keyword Matching",SiteB,INT-003,"Stop advertising notifications",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.01
+EXP_0010_B3,1789530409279,"Baseline 3: Semantic Only",SiteB,INT-003,"Stop advertising notifications",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0010_B4,1789530409279,"Baseline 4: Page Navigation",SiteB,INT-003,"Stop advertising notifications",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0.01
+EXP_0010_B5,1789530409280,"IntentNav-SCFR",SiteB,INT-003,"Stop advertising notifications",CAP_DISABLE_MARKETING,btn-promotions-switch,EXECUTED,true,true,0.85
+EXP_0011_B1,1789530409280,"Baseline 1: Fixed Selector",SiteC,INT-003,"Stop advertising notifications",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.01
+EXP_0011_B2,1789530409280,"Baseline 2: Keyword Matching",SiteC,INT-003,"Stop advertising notifications",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.01
+EXP_0011_B3,1789530409280,"Baseline 3: Semantic Only",SiteC,INT-003,"Stop advertising notifications",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0011_B4,1789530409280,"Baseline 4: Page Navigation",SiteC,INT-003,"Stop advertising notifications",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0.01
+EXP_0011_B5,1789530409281,"IntentNav-SCFR",SiteC,INT-003,"Stop advertising notifications",CAP_DISABLE_MARKETING,:r3:,EXECUTED,true,true,0.65
+EXP_0012_B1,1789530409281,"Baseline 1: Fixed Selector",SiteD,INT-003,"Stop advertising notifications",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.01
+EXP_0012_B2,1789530409281,"Baseline 2: Keyword Matching",SiteD,INT-003,"Stop advertising notifications",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.02
+EXP_0012_B3,1789530409281,"Baseline 3: Semantic Only",SiteD,INT-003,"Stop advertising notifications",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0012_B4,1789530409281,"Baseline 4: Page Navigation",SiteD,INT-003,"Stop advertising notifications",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0.01
+EXP_0012_B5,1789530409282,"IntentNav-SCFR",SiteD,INT-003,"Stop advertising notifications",CAP_DISABLE_MARKETING,genuine-disable-marketing,EXECUTED,true,true,0.77
+EXP_0013_B1,1789530409282,"Baseline 1: Fixed Selector",SiteA,INT-004,"I don't want promotional mail anymore",CAP_DISABLE_MARKETING,btn-disable-marketing,SUCCESS,false,true,0.01
+EXP_0013_B2,1789530409282,"Baseline 2: Keyword Matching",SiteA,INT-004,"I don't want promotional mail anymore",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.02
+EXP_0013_B3,1789530409282,"Baseline 3: Semantic Only",SiteA,INT-004,"I don't want promotional mail anymore",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0013_B4,1789530409282,"Baseline 4: Page Navigation",SiteA,INT-004,"I don't want promotional mail anymore",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.16
+EXP_0013_B5,1789530409283,"IntentNav-SCFR",SiteA,INT-004,"I don't want promotional mail anymore",CAP_DISABLE_MARKETING,btn-disable-marketing,EXECUTED,true,true,1.25
+EXP_0014_B1,1789530409283,"Baseline 1: Fixed Selector",SiteB,INT-004,"I don't want promotional mail anymore",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0014_B2,1789530409283,"Baseline 2: Keyword Matching",SiteB,INT-004,"I don't want promotional mail anymore",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0014_B3,1789530409283,"Baseline 3: Semantic Only",SiteB,INT-004,"I don't want promotional mail anymore",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0014_B4,1789530409283,"Baseline 4: Page Navigation",SiteB,INT-004,"I don't want promotional mail anymore",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.07
+EXP_0014_B5,1789530409284,"IntentNav-SCFR",SiteB,INT-004,"I don't want promotional mail anymore",CAP_DISABLE_MARKETING,btn-promotions-switch,EXECUTED,true,true,0.35
+EXP_0015_B1,1789530409284,"Baseline 1: Fixed Selector",SiteC,INT-004,"I don't want promotional mail anymore",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0015_B2,1789530409284,"Baseline 2: Keyword Matching",SiteC,INT-004,"I don't want promotional mail anymore",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0015_B3,1789530409284,"Baseline 3: Semantic Only",SiteC,INT-004,"I don't want promotional mail anymore",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0015_B4,1789530409284,"Baseline 4: Page Navigation",SiteC,INT-004,"I don't want promotional mail anymore",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0015_B5,1789530409284,"IntentNav-SCFR",SiteC,INT-004,"I don't want promotional mail anymore",CAP_DISABLE_MARKETING,:r3:,EXECUTED,true,true,0.16
+EXP_0016_B1,1789530409284,"Baseline 1: Fixed Selector",SiteD,INT-004,"I don't want promotional mail anymore",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0016_B2,1789530409284,"Baseline 2: Keyword Matching",SiteD,INT-004,"I don't want promotional mail anymore",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0016_B3,1789530409284,"Baseline 3: Semantic Only",SiteD,INT-004,"I don't want promotional mail anymore",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0016_B4,1789530409284,"Baseline 4: Page Navigation",SiteD,INT-004,"I don't want promotional mail anymore",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0016_B5,1789530409284,"IntentNav-SCFR",SiteD,INT-004,"I don't want promotional mail anymore",CAP_DISABLE_MARKETING,genuine-disable-marketing,EXECUTED,true,true,0.11
+EXP_0017_B1,1789530409284,"Baseline 1: Fixed Selector",SiteA,INT-005,"Opt out of marketing bulletins",CAP_DISABLE_MARKETING,btn-disable-marketing,SUCCESS,false,true,0
+EXP_0017_B2,1789530409284,"Baseline 2: Keyword Matching",SiteA,INT-005,"Opt out of marketing bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0017_B3,1789530409284,"Baseline 3: Semantic Only",SiteA,INT-005,"Opt out of marketing bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0017_B4,1789530409284,"Baseline 4: Page Navigation",SiteA,INT-005,"Opt out of marketing bulletins",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0017_B5,1789530409284,"IntentNav-SCFR",SiteA,INT-005,"Opt out of marketing bulletins",CAP_DISABLE_MARKETING,btn-disable-marketing,EXECUTED,true,true,0.12
+EXP_0018_B1,1789530409284,"Baseline 1: Fixed Selector",SiteB,INT-005,"Opt out of marketing bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0018_B2,1789530409284,"Baseline 2: Keyword Matching",SiteB,INT-005,"Opt out of marketing bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0018_B3,1789530409284,"Baseline 3: Semantic Only",SiteB,INT-005,"Opt out of marketing bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0018_B4,1789530409284,"Baseline 4: Page Navigation",SiteB,INT-005,"Opt out of marketing bulletins",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0018_B5,1789530409285,"IntentNav-SCFR",SiteB,INT-005,"Opt out of marketing bulletins",CAP_DISABLE_MARKETING,btn-promotions-switch,EXECUTED,true,true,0.8
+EXP_0019_B1,1789530409285,"Baseline 1: Fixed Selector",SiteC,INT-005,"Opt out of marketing bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0019_B2,1789530409285,"Baseline 2: Keyword Matching",SiteC,INT-005,"Opt out of marketing bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0019_B3,1789530409285,"Baseline 3: Semantic Only",SiteC,INT-005,"Opt out of marketing bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0019_B4,1789530409285,"Baseline 4: Page Navigation",SiteC,INT-005,"Opt out of marketing bulletins",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0019_B5,1789530409285,"IntentNav-SCFR",SiteC,INT-005,"Opt out of marketing bulletins",CAP_DISABLE_MARKETING,:r3:,EXECUTED,true,true,0.23
+EXP_0020_B1,1789530409285,"Baseline 1: Fixed Selector",SiteD,INT-005,"Opt out of marketing bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0020_B2,1789530409285,"Baseline 2: Keyword Matching",SiteD,INT-005,"Opt out of marketing bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0020_B3,1789530409285,"Baseline 3: Semantic Only",SiteD,INT-005,"Opt out of marketing bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0020_B4,1789530409285,"Baseline 4: Page Navigation",SiteD,INT-005,"Opt out of marketing bulletins",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0020_B5,1789530409285,"IntentNav-SCFR",SiteD,INT-005,"Opt out of marketing bulletins",CAP_DISABLE_MARKETING,genuine-disable-marketing,EXECUTED,true,true,0.11
+EXP_0021_B1,1789530409285,"Baseline 1: Fixed Selector",SiteA,INT-006,"Mute promotional offers",CAP_DISABLE_MARKETING,btn-disable-marketing,SUCCESS,false,true,0
+EXP_0021_B2,1789530409285,"Baseline 2: Keyword Matching",SiteA,INT-006,"Mute promotional offers",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0021_B3,1789530409285,"Baseline 3: Semantic Only",SiteA,INT-006,"Mute promotional offers",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0021_B4,1789530409285,"Baseline 4: Page Navigation",SiteA,INT-006,"Mute promotional offers",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0021_B5,1789530409286,"IntentNav-SCFR",SiteA,INT-006,"Mute promotional offers",CAP_DISABLE_MARKETING,btn-disable-marketing,EXECUTED,true,true,0.11
+EXP_0022_B1,1789530409286,"Baseline 1: Fixed Selector",SiteB,INT-006,"Mute promotional offers",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0022_B2,1789530409286,"Baseline 2: Keyword Matching",SiteB,INT-006,"Mute promotional offers",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0022_B3,1789530409286,"Baseline 3: Semantic Only",SiteB,INT-006,"Mute promotional offers",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0022_B4,1789530409286,"Baseline 4: Page Navigation",SiteB,INT-006,"Mute promotional offers",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0022_B5,1789530409286,"IntentNav-SCFR",SiteB,INT-006,"Mute promotional offers",CAP_DISABLE_MARKETING,btn-promotions-switch,EXECUTED,true,true,0.29
+EXP_0023_B1,1789530409286,"Baseline 1: Fixed Selector",SiteC,INT-006,"Mute promotional offers",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0023_B2,1789530409286,"Baseline 2: Keyword Matching",SiteC,INT-006,"Mute promotional offers",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0023_B3,1789530409286,"Baseline 3: Semantic Only",SiteC,INT-006,"Mute promotional offers",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0023_B4,1789530409286,"Baseline 4: Page Navigation",SiteC,INT-006,"Mute promotional offers",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.01
+EXP_0023_B5,1789530409286,"IntentNav-SCFR",SiteC,INT-006,"Mute promotional offers",CAP_DISABLE_MARKETING,:r3:,EXECUTED,true,true,0.14
+EXP_0024_B1,1789530409286,"Baseline 1: Fixed Selector",SiteD,INT-006,"Mute promotional offers",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0024_B2,1789530409286,"Baseline 2: Keyword Matching",SiteD,INT-006,"Mute promotional offers",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0024_B3,1789530409286,"Baseline 3: Semantic Only",SiteD,INT-006,"Mute promotional offers",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0024_B4,1789530409286,"Baseline 4: Page Navigation",SiteD,INT-006,"Mute promotional offers",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0024_B5,1789530409286,"IntentNav-SCFR",SiteD,INT-006,"Mute promotional offers",CAP_DISABLE_MARKETING,genuine-disable-marketing,EXECUTED,true,true,0.09
+EXP_0025_B1,1789530409286,"Baseline 1: Fixed Selector",SiteA,INT-007,"Disable marketing notifications now",CAP_DISABLE_MARKETING,btn-disable-marketing,SUCCESS,false,true,0
+EXP_0025_B2,1789530409286,"Baseline 2: Keyword Matching",SiteA,INT-007,"Disable marketing notifications now",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0025_B3,1789530409286,"Baseline 3: Semantic Only",SiteA,INT-007,"Disable marketing notifications now",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0025_B4,1789530409286,"Baseline 4: Page Navigation",SiteA,INT-007,"Disable marketing notifications now",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0025_B5,1789530409286,"IntentNav-SCFR",SiteA,INT-007,"Disable marketing notifications now",CAP_DISABLE_MARKETING,btn-disable-marketing,EXECUTED,true,true,0.1
+EXP_0026_B1,1789530409286,"Baseline 1: Fixed Selector",SiteB,INT-007,"Disable marketing notifications now",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0026_B2,1789530409286,"Baseline 2: Keyword Matching",SiteB,INT-007,"Disable marketing notifications now",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0026_B3,1789530409286,"Baseline 3: Semantic Only",SiteB,INT-007,"Disable marketing notifications now",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0026_B4,1789530409286,"Baseline 4: Page Navigation",SiteB,INT-007,"Disable marketing notifications now",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0026_B5,1789530409286,"IntentNav-SCFR",SiteB,INT-007,"Disable marketing notifications now",CAP_DISABLE_MARKETING,btn-promotions-switch,EXECUTED,true,true,0.09
+EXP_0027_B1,1789530409286,"Baseline 1: Fixed Selector",SiteC,INT-007,"Disable marketing notifications now",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0027_B2,1789530409286,"Baseline 2: Keyword Matching",SiteC,INT-007,"Disable marketing notifications now",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0027_B3,1789530409286,"Baseline 3: Semantic Only",SiteC,INT-007,"Disable marketing notifications now",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0027_B4,1789530409286,"Baseline 4: Page Navigation",SiteC,INT-007,"Disable marketing notifications now",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0027_B5,1789530409286,"IntentNav-SCFR",SiteC,INT-007,"Disable marketing notifications now",CAP_DISABLE_MARKETING,:r3:,EXECUTED,true,true,0.08
+EXP_0028_B1,1789530409286,"Baseline 1: Fixed Selector",SiteD,INT-007,"Disable marketing notifications now",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0028_B2,1789530409286,"Baseline 2: Keyword Matching",SiteD,INT-007,"Disable marketing notifications now",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0028_B3,1789530409286,"Baseline 3: Semantic Only",SiteD,INT-007,"Disable marketing notifications now",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0028_B4,1789530409286,"Baseline 4: Page Navigation",SiteD,INT-007,"Disable marketing notifications now",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0028_B5,1789530409287,"IntentNav-SCFR",SiteD,INT-007,"Disable marketing notifications now",CAP_DISABLE_MARKETING,genuine-disable-marketing,EXECUTED,true,true,0.07
+EXP_0029_B1,1789530409287,"Baseline 1: Fixed Selector",SiteA,INT-008,"Switch off commercial bulletins",CAP_DISABLE_MARKETING,btn-disable-marketing,SUCCESS,false,true,0
+EXP_0029_B2,1789530409287,"Baseline 2: Keyword Matching",SiteA,INT-008,"Switch off commercial bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0029_B3,1789530409287,"Baseline 3: Semantic Only",SiteA,INT-008,"Switch off commercial bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0029_B4,1789530409287,"Baseline 4: Page Navigation",SiteA,INT-008,"Switch off commercial bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0029_B5,1789530409287,"IntentNav-SCFR",SiteA,INT-008,"Switch off commercial bulletins",CAP_DISABLE_MARKETING,btn-disable-marketing,EXECUTED,true,true,0.37
+EXP_0030_B1,1789530409287,"Baseline 1: Fixed Selector",SiteB,INT-008,"Switch off commercial bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0030_B2,1789530409287,"Baseline 2: Keyword Matching",SiteB,INT-008,"Switch off commercial bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0030_B3,1789530409287,"Baseline 3: Semantic Only",SiteB,INT-008,"Switch off commercial bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0030_B4,1789530409287,"Baseline 4: Page Navigation",SiteB,INT-008,"Switch off commercial bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0030_B5,1789530409287,"IntentNav-SCFR",SiteB,INT-008,"Switch off commercial bulletins",CAP_DISABLE_MARKETING,btn-promotions-switch,EXECUTED,true,true,0.34
+EXP_0031_B1,1789530409287,"Baseline 1: Fixed Selector",SiteC,INT-008,"Switch off commercial bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0031_B2,1789530409287,"Baseline 2: Keyword Matching",SiteC,INT-008,"Switch off commercial bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0031_B3,1789530409287,"Baseline 3: Semantic Only",SiteC,INT-008,"Switch off commercial bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0031_B4,1789530409287,"Baseline 4: Page Navigation",SiteC,INT-008,"Switch off commercial bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0031_B5,1789530409287,"IntentNav-SCFR",SiteC,INT-008,"Switch off commercial bulletins",CAP_DISABLE_MARKETING,:r3:,EXECUTED,true,true,0.09
+EXP_0032_B1,1789530409287,"Baseline 1: Fixed Selector",SiteD,INT-008,"Switch off commercial bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0032_B2,1789530409287,"Baseline 2: Keyword Matching",SiteD,INT-008,"Switch off commercial bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0032_B3,1789530409287,"Baseline 3: Semantic Only",SiteD,INT-008,"Switch off commercial bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0032_B4,1789530409287,"Baseline 4: Page Navigation",SiteD,INT-008,"Switch off commercial bulletins",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0032_B5,1789530409287,"IntentNav-SCFR",SiteD,INT-008,"Switch off commercial bulletins",CAP_DISABLE_MARKETING,genuine-disable-marketing,EXECUTED,true,true,0.08
+EXP_0033_B1,1789530409287,"Baseline 1: Fixed Selector",SiteA,INT-009,"Unsubscribe from promotional campaigns",CAP_DISABLE_MARKETING,btn-disable-marketing,SUCCESS,false,true,0
+EXP_0033_B2,1789530409287,"Baseline 2: Keyword Matching",SiteA,INT-009,"Unsubscribe from promotional campaigns",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0033_B3,1789530409287,"Baseline 3: Semantic Only",SiteA,INT-009,"Unsubscribe from promotional campaigns",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0033_B4,1789530409287,"Baseline 4: Page Navigation",SiteA,INT-009,"Unsubscribe from promotional campaigns",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0033_B5,1789530409288,"IntentNav-SCFR",SiteA,INT-009,"Unsubscribe from promotional campaigns",CAP_DISABLE_MARKETING,btn-disable-marketing,EXECUTED,true,true,0.1
+EXP_0034_B1,1789530409288,"Baseline 1: Fixed Selector",SiteB,INT-009,"Unsubscribe from promotional campaigns",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0034_B2,1789530409288,"Baseline 2: Keyword Matching",SiteB,INT-009,"Unsubscribe from promotional campaigns",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0034_B3,1789530409288,"Baseline 3: Semantic Only",SiteB,INT-009,"Unsubscribe from promotional campaigns",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0034_B4,1789530409288,"Baseline 4: Page Navigation",SiteB,INT-009,"Unsubscribe from promotional campaigns",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0034_B5,1789530409288,"IntentNav-SCFR",SiteB,INT-009,"Unsubscribe from promotional campaigns",CAP_DISABLE_MARKETING,btn-promotions-switch,EXECUTED,true,true,0.09
+EXP_0035_B1,1789530409288,"Baseline 1: Fixed Selector",SiteC,INT-009,"Unsubscribe from promotional campaigns",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0035_B2,1789530409288,"Baseline 2: Keyword Matching",SiteC,INT-009,"Unsubscribe from promotional campaigns",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0035_B3,1789530409288,"Baseline 3: Semantic Only",SiteC,INT-009,"Unsubscribe from promotional campaigns",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0035_B4,1789530409288,"Baseline 4: Page Navigation",SiteC,INT-009,"Unsubscribe from promotional campaigns",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0035_B5,1789530409288,"IntentNav-SCFR",SiteC,INT-009,"Unsubscribe from promotional campaigns",CAP_DISABLE_MARKETING,:r3:,EXECUTED,true,true,0.25
+EXP_0036_B1,1789530409288,"Baseline 1: Fixed Selector",SiteD,INT-009,"Unsubscribe from promotional campaigns",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0036_B2,1789530409288,"Baseline 2: Keyword Matching",SiteD,INT-009,"Unsubscribe from promotional campaigns",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.01
+EXP_0036_B3,1789530409288,"Baseline 3: Semantic Only",SiteD,INT-009,"Unsubscribe from promotional campaigns",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0036_B4,1789530409288,"Baseline 4: Page Navigation",SiteD,INT-009,"Unsubscribe from promotional campaigns",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0036_B5,1789530409288,"IntentNav-SCFR",SiteD,INT-009,"Unsubscribe from promotional campaigns",CAP_DISABLE_MARKETING,genuine-disable-marketing,EXECUTED,true,true,0.44
+EXP_0037_B1,1789530409288,"Baseline 1: Fixed Selector",SiteA,INT-010,"Block marketing communication alerts",CAP_DISABLE_MARKETING,btn-disable-marketing,SUCCESS,false,true,0.01
+EXP_0037_B2,1789530409288,"Baseline 2: Keyword Matching",SiteA,INT-010,"Block marketing communication alerts",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.01
+EXP_0037_B3,1789530409288,"Baseline 3: Semantic Only",SiteA,INT-010,"Block marketing communication alerts",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0037_B4,1789530409288,"Baseline 4: Page Navigation",SiteA,INT-010,"Block marketing communication alerts",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0037_B5,1789530409289,"IntentNav-SCFR",SiteA,INT-010,"Block marketing communication alerts",CAP_DISABLE_MARKETING,btn-disable-marketing,EXECUTED,true,true,0.2
+EXP_0038_B1,1789530409289,"Baseline 1: Fixed Selector",SiteB,INT-010,"Block marketing communication alerts",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0038_B2,1789530409289,"Baseline 2: Keyword Matching",SiteB,INT-010,"Block marketing communication alerts",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0038_B3,1789530409289,"Baseline 3: Semantic Only",SiteB,INT-010,"Block marketing communication alerts",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0038_B4,1789530409289,"Baseline 4: Page Navigation",SiteB,INT-010,"Block marketing communication alerts",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0038_B5,1789530409289,"IntentNav-SCFR",SiteB,INT-010,"Block marketing communication alerts",CAP_DISABLE_MARKETING,btn-promotions-switch,EXECUTED,true,true,0.11
+EXP_0039_B1,1789530409289,"Baseline 1: Fixed Selector",SiteC,INT-010,"Block marketing communication alerts",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0039_B2,1789530409289,"Baseline 2: Keyword Matching",SiteC,INT-010,"Block marketing communication alerts",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0039_B3,1789530409289,"Baseline 3: Semantic Only",SiteC,INT-010,"Block marketing communication alerts",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0039_B4,1789530409289,"Baseline 4: Page Navigation",SiteC,INT-010,"Block marketing communication alerts",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0039_B5,1789530409289,"IntentNav-SCFR",SiteC,INT-010,"Block marketing communication alerts",CAP_DISABLE_MARKETING,:r3:,EXECUTED,true,true,0.1
+EXP_0040_B1,1789530409289,"Baseline 1: Fixed Selector",SiteD,INT-010,"Block marketing communication alerts",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0040_B2,1789530409289,"Baseline 2: Keyword Matching",SiteD,INT-010,"Block marketing communication alerts",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0040_B3,1789530409289,"Baseline 3: Semantic Only",SiteD,INT-010,"Block marketing communication alerts",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0040_B4,1789530409289,"Baseline 4: Page Navigation",SiteD,INT-010,"Block marketing communication alerts",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0040_B5,1789530409289,"IntentNav-SCFR",SiteD,INT-010,"Block marketing communication alerts",CAP_DISABLE_MARKETING,genuine-disable-marketing,EXECUTED,true,true,0.08
+EXP_0041_B1,1789530409289,"Baseline 1: Fixed Selector",SiteA,INT-011,"I need my data",CAP_EXPORT_DATA,btn-export-data,SUCCESS,false,true,0
+EXP_0041_B2,1789530409289,"Baseline 2: Keyword Matching",SiteA,INT-011,"I need my data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0041_B3,1789530409289,"Baseline 3: Semantic Only",SiteA,INT-011,"I need my data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0041_B4,1789530409289,"Baseline 4: Page Navigation",SiteA,INT-011,"I need my data",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0041_B5,1789530409289,"IntentNav-SCFR",SiteA,INT-011,"I need my data",CAP_EXPORT_DATA,btn-export-data,EXECUTED,true,true,0.14
+EXP_0042_B1,1789530409289,"Baseline 1: Fixed Selector",SiteB,INT-011,"I need my data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0042_B2,1789530409289,"Baseline 2: Keyword Matching",SiteB,INT-011,"I need my data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0042_B3,1789530409289,"Baseline 3: Semantic Only",SiteB,INT-011,"I need my data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0042_B4,1789530409289,"Baseline 4: Page Navigation",SiteB,INT-011,"I need my data",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0042_B5,1789530409289,"IntentNav-SCFR",SiteB,INT-011,"I need my data",CAP_EXPORT_DATA,btn-download-records,EXECUTED,true,true,0.09
+EXP_0043_B1,1789530409289,"Baseline 1: Fixed Selector",SiteC,INT-011,"I need my data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0043_B2,1789530409289,"Baseline 2: Keyword Matching",SiteC,INT-011,"I need my data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0043_B3,1789530409289,"Baseline 3: Semantic Only",SiteC,INT-011,"I need my data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0043_B4,1789530409289,"Baseline 4: Page Navigation",SiteC,INT-011,"I need my data",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0043_B5,1789530409289,"IntentNav-SCFR",SiteC,INT-011,"I need my data",CAP_EXPORT_DATA,ember992,EXECUTED,true,true,0.08
+EXP_0044_B1,1789530409289,"Baseline 1: Fixed Selector",SiteD,INT-011,"I need my data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0044_B2,1789530409289,"Baseline 2: Keyword Matching",SiteD,INT-011,"I need my data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0044_B3,1789530409289,"Baseline 3: Semantic Only",SiteD,INT-011,"I need my data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0044_B4,1789530409289,"Baseline 4: Page Navigation",SiteD,INT-011,"I need my data",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0044_B5,1789530409289,"IntentNav-SCFR",SiteD,INT-011,"I need my data",CAP_EXPORT_DATA,NONE,ABSTAINED,false,false,0.08
+EXP_0045_B1,1789530409289,"Baseline 1: Fixed Selector",SiteA,INT-012,"Download everything you have about me",CAP_EXPORT_DATA,btn-export-data,SUCCESS,false,true,0
+EXP_0045_B2,1789530409289,"Baseline 2: Keyword Matching",SiteA,INT-012,"Download everything you have about me",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0045_B3,1789530409289,"Baseline 3: Semantic Only",SiteA,INT-012,"Download everything you have about me",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0045_B4,1789530409289,"Baseline 4: Page Navigation",SiteA,INT-012,"Download everything you have about me",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0045_B5,1789530409290,"IntentNav-SCFR",SiteA,INT-012,"Download everything you have about me",CAP_EXPORT_DATA,btn-export-data,EXECUTED,true,true,0.09
+EXP_0046_B1,1789530409290,"Baseline 1: Fixed Selector",SiteB,INT-012,"Download everything you have about me",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0046_B2,1789530409290,"Baseline 2: Keyword Matching",SiteB,INT-012,"Download everything you have about me",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0046_B3,1789530409290,"Baseline 3: Semantic Only",SiteB,INT-012,"Download everything you have about me",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0046_B4,1789530409290,"Baseline 4: Page Navigation",SiteB,INT-012,"Download everything you have about me",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0046_B5,1789530409290,"IntentNav-SCFR",SiteB,INT-012,"Download everything you have about me",CAP_EXPORT_DATA,btn-download-records,EXECUTED,true,true,0.08
+EXP_0047_B1,1789530409290,"Baseline 1: Fixed Selector",SiteC,INT-012,"Download everything you have about me",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0047_B2,1789530409290,"Baseline 2: Keyword Matching",SiteC,INT-012,"Download everything you have about me",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0047_B3,1789530409290,"Baseline 3: Semantic Only",SiteC,INT-012,"Download everything you have about me",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0047_B4,1789530409290,"Baseline 4: Page Navigation",SiteC,INT-012,"Download everything you have about me",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0047_B5,1789530409290,"IntentNav-SCFR",SiteC,INT-012,"Download everything you have about me",CAP_EXPORT_DATA,ember992,EXECUTED,true,true,0.08
+EXP_0048_B1,1789530409290,"Baseline 1: Fixed Selector",SiteD,INT-012,"Download everything you have about me",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0048_B2,1789530409290,"Baseline 2: Keyword Matching",SiteD,INT-012,"Download everything you have about me",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0048_B3,1789530409290,"Baseline 3: Semantic Only",SiteD,INT-012,"Download everything you have about me",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0048_B4,1789530409290,"Baseline 4: Page Navigation",SiteD,INT-012,"Download everything you have about me",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0048_B5,1789530409290,"IntentNav-SCFR",SiteD,INT-012,"Download everything you have about me",CAP_EXPORT_DATA,NONE,ABSTAINED,false,false,0.05
+EXP_0049_B1,1789530409290,"Baseline 1: Fixed Selector",SiteA,INT-013,"Export my personal information",CAP_EXPORT_DATA,btn-export-data,SUCCESS,false,true,0
+EXP_0049_B2,1789530409290,"Baseline 2: Keyword Matching",SiteA,INT-013,"Export my personal information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0049_B3,1789530409290,"Baseline 3: Semantic Only",SiteA,INT-013,"Export my personal information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0049_B4,1789530409290,"Baseline 4: Page Navigation",SiteA,INT-013,"Export my personal information",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0049_B5,1789530409290,"IntentNav-SCFR",SiteA,INT-013,"Export my personal information",CAP_EXPORT_DATA,btn-export-data,EXECUTED,true,true,0.09
+EXP_0050_B1,1789530409290,"Baseline 1: Fixed Selector",SiteB,INT-013,"Export my personal information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0050_B2,1789530409290,"Baseline 2: Keyword Matching",SiteB,INT-013,"Export my personal information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0050_B3,1789530409290,"Baseline 3: Semantic Only",SiteB,INT-013,"Export my personal information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0050_B4,1789530409290,"Baseline 4: Page Navigation",SiteB,INT-013,"Export my personal information",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0050_B5,1789530409290,"IntentNav-SCFR",SiteB,INT-013,"Export my personal information",CAP_EXPORT_DATA,btn-download-records,EXECUTED,true,true,0.08
+EXP_0051_B1,1789530409290,"Baseline 1: Fixed Selector",SiteC,INT-013,"Export my personal information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0051_B2,1789530409290,"Baseline 2: Keyword Matching",SiteC,INT-013,"Export my personal information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0051_B3,1789530409290,"Baseline 3: Semantic Only",SiteC,INT-013,"Export my personal information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0051_B4,1789530409290,"Baseline 4: Page Navigation",SiteC,INT-013,"Export my personal information",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0051_B5,1789530409290,"IntentNav-SCFR",SiteC,INT-013,"Export my personal information",CAP_EXPORT_DATA,ember992,EXECUTED,true,true,0.08
+EXP_0052_B1,1789530409290,"Baseline 1: Fixed Selector",SiteD,INT-013,"Export my personal information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0052_B2,1789530409290,"Baseline 2: Keyword Matching",SiteD,INT-013,"Export my personal information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0052_B3,1789530409290,"Baseline 3: Semantic Only",SiteD,INT-013,"Export my personal information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0052_B4,1789530409290,"Baseline 4: Page Navigation",SiteD,INT-013,"Export my personal information",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0052_B5,1789530409290,"IntentNav-SCFR",SiteD,INT-013,"Export my personal information",CAP_EXPORT_DATA,NONE,ABSTAINED,false,false,0.04
+EXP_0053_B1,1789530409290,"Baseline 1: Fixed Selector",SiteA,INT-014,"Download GDPR personal data archive",CAP_EXPORT_DATA,btn-export-data,SUCCESS,false,true,0
+EXP_0053_B2,1789530409290,"Baseline 2: Keyword Matching",SiteA,INT-014,"Download GDPR personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0053_B3,1789530409290,"Baseline 3: Semantic Only",SiteA,INT-014,"Download GDPR personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0053_B4,1789530409290,"Baseline 4: Page Navigation",SiteA,INT-014,"Download GDPR personal data archive",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0053_B5,1789530409290,"IntentNav-SCFR",SiteA,INT-014,"Download GDPR personal data archive",CAP_EXPORT_DATA,btn-export-data,EXECUTED,true,true,0.08
+EXP_0054_B1,1789530409290,"Baseline 1: Fixed Selector",SiteB,INT-014,"Download GDPR personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0054_B2,1789530409290,"Baseline 2: Keyword Matching",SiteB,INT-014,"Download GDPR personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0054_B3,1789530409290,"Baseline 3: Semantic Only",SiteB,INT-014,"Download GDPR personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0054_B4,1789530409290,"Baseline 4: Page Navigation",SiteB,INT-014,"Download GDPR personal data archive",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0054_B5,1789530409290,"IntentNav-SCFR",SiteB,INT-014,"Download GDPR personal data archive",CAP_EXPORT_DATA,btn-download-records,EXECUTED,true,true,0.08
+EXP_0055_B1,1789530409290,"Baseline 1: Fixed Selector",SiteC,INT-014,"Download GDPR personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0055_B2,1789530409290,"Baseline 2: Keyword Matching",SiteC,INT-014,"Download GDPR personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0055_B3,1789530409290,"Baseline 3: Semantic Only",SiteC,INT-014,"Download GDPR personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0055_B4,1789530409290,"Baseline 4: Page Navigation",SiteC,INT-014,"Download GDPR personal data archive",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0055_B5,1789530409290,"IntentNav-SCFR",SiteC,INT-014,"Download GDPR personal data archive",CAP_EXPORT_DATA,ember992,EXECUTED,true,true,0.08
+EXP_0056_B1,1789530409290,"Baseline 1: Fixed Selector",SiteD,INT-014,"Download GDPR personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0056_B2,1789530409290,"Baseline 2: Keyword Matching",SiteD,INT-014,"Download GDPR personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0056_B3,1789530409290,"Baseline 3: Semantic Only",SiteD,INT-014,"Download GDPR personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0056_B4,1789530409290,"Baseline 4: Page Navigation",SiteD,INT-014,"Download GDPR personal data archive",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0056_B5,1789530409290,"IntentNav-SCFR",SiteD,INT-014,"Download GDPR personal data archive",CAP_EXPORT_DATA,NONE,ABSTAINED,false,false,0.04
+EXP_0057_B1,1789530409290,"Baseline 1: Fixed Selector",SiteA,INT-015,"Get a copy of all my account data",CAP_EXPORT_DATA,btn-export-data,SUCCESS,false,true,0
+EXP_0057_B2,1789530409290,"Baseline 2: Keyword Matching",SiteA,INT-015,"Get a copy of all my account data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0057_B3,1789530409290,"Baseline 3: Semantic Only",SiteA,INT-015,"Get a copy of all my account data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0057_B4,1789530409290,"Baseline 4: Page Navigation",SiteA,INT-015,"Get a copy of all my account data",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0057_B5,1789530409290,"IntentNav-SCFR",SiteA,INT-015,"Get a copy of all my account data",CAP_EXPORT_DATA,NONE,ABSTAINED,false,false,0.02
+EXP_0058_B1,1789530409290,"Baseline 1: Fixed Selector",SiteB,INT-015,"Get a copy of all my account data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0058_B2,1789530409290,"Baseline 2: Keyword Matching",SiteB,INT-015,"Get a copy of all my account data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0058_B3,1789530409290,"Baseline 3: Semantic Only",SiteB,INT-015,"Get a copy of all my account data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0058_B4,1789530409290,"Baseline 4: Page Navigation",SiteB,INT-015,"Get a copy of all my account data",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0058_B5,1789530409290,"IntentNav-SCFR",SiteB,INT-015,"Get a copy of all my account data",CAP_EXPORT_DATA,NONE,ABSTAINED,false,false,0.01
+EXP_0059_B1,1789530409290,"Baseline 1: Fixed Selector",SiteC,INT-015,"Get a copy of all my account data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0059_B2,1789530409290,"Baseline 2: Keyword Matching",SiteC,INT-015,"Get a copy of all my account data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0059_B3,1789530409290,"Baseline 3: Semantic Only",SiteC,INT-015,"Get a copy of all my account data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0059_B4,1789530409290,"Baseline 4: Page Navigation",SiteC,INT-015,"Get a copy of all my account data",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0059_B5,1789530409290,"IntentNav-SCFR",SiteC,INT-015,"Get a copy of all my account data",CAP_EXPORT_DATA,NONE,ABSTAINED,false,false,0.01
+EXP_0060_B1,1789530409290,"Baseline 1: Fixed Selector",SiteD,INT-015,"Get a copy of all my account data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0060_B2,1789530409290,"Baseline 2: Keyword Matching",SiteD,INT-015,"Get a copy of all my account data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0060_B3,1789530409290,"Baseline 3: Semantic Only",SiteD,INT-015,"Get a copy of all my account data",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0060_B4,1789530409290,"Baseline 4: Page Navigation",SiteD,INT-015,"Get a copy of all my account data",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0060_B5,1789530409290,"IntentNav-SCFR",SiteD,INT-015,"Get a copy of all my account data",CAP_EXPORT_DATA,NONE,ABSTAINED,false,false,0.01
+EXP_0061_B1,1789530409290,"Baseline 1: Fixed Selector",SiteA,INT-016,"Request my personal records download",CAP_EXPORT_DATA,btn-export-data,SUCCESS,false,true,0
+EXP_0061_B2,1789530409290,"Baseline 2: Keyword Matching",SiteA,INT-016,"Request my personal records download",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0061_B3,1789530409290,"Baseline 3: Semantic Only",SiteA,INT-016,"Request my personal records download",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0061_B4,1789530409290,"Baseline 4: Page Navigation",SiteA,INT-016,"Request my personal records download",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0061_B5,1789530409291,"IntentNav-SCFR",SiteA,INT-016,"Request my personal records download",CAP_EXPORT_DATA,btn-export-data,EXECUTED,true,true,0.11
+EXP_0062_B1,1789530409291,"Baseline 1: Fixed Selector",SiteB,INT-016,"Request my personal records download",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0062_B2,1789530409291,"Baseline 2: Keyword Matching",SiteB,INT-016,"Request my personal records download",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0062_B3,1789530409291,"Baseline 3: Semantic Only",SiteB,INT-016,"Request my personal records download",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0062_B4,1789530409291,"Baseline 4: Page Navigation",SiteB,INT-016,"Request my personal records download",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0062_B5,1789530409291,"IntentNav-SCFR",SiteB,INT-016,"Request my personal records download",CAP_EXPORT_DATA,btn-download-records,EXECUTED,true,true,0.07
+EXP_0063_B1,1789530409291,"Baseline 1: Fixed Selector",SiteC,INT-016,"Request my personal records download",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0063_B2,1789530409291,"Baseline 2: Keyword Matching",SiteC,INT-016,"Request my personal records download",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0063_B3,1789530409291,"Baseline 3: Semantic Only",SiteC,INT-016,"Request my personal records download",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0063_B4,1789530409291,"Baseline 4: Page Navigation",SiteC,INT-016,"Request my personal records download",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0063_B5,1789530409291,"IntentNav-SCFR",SiteC,INT-016,"Request my personal records download",CAP_EXPORT_DATA,ember992,EXECUTED,true,true,0.07
+EXP_0064_B1,1789530409291,"Baseline 1: Fixed Selector",SiteD,INT-016,"Request my personal records download",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0064_B2,1789530409291,"Baseline 2: Keyword Matching",SiteD,INT-016,"Request my personal records download",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0064_B3,1789530409291,"Baseline 3: Semantic Only",SiteD,INT-016,"Request my personal records download",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0064_B4,1789530409291,"Baseline 4: Page Navigation",SiteD,INT-016,"Request my personal records download",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0064_B5,1789530409291,"IntentNav-SCFR",SiteD,INT-016,"Request my personal records download",CAP_EXPORT_DATA,NONE,ABSTAINED,false,false,0.04
+EXP_0065_B1,1789530409291,"Baseline 1: Fixed Selector",SiteA,INT-017,"Save all my data locally",CAP_EXPORT_DATA,btn-export-data,SUCCESS,false,true,0
+EXP_0065_B2,1789530409291,"Baseline 2: Keyword Matching",SiteA,INT-017,"Save all my data locally",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0065_B3,1789530409291,"Baseline 3: Semantic Only",SiteA,INT-017,"Save all my data locally",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0065_B4,1789530409291,"Baseline 4: Page Navigation",SiteA,INT-017,"Save all my data locally",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0065_B5,1789530409291,"IntentNav-SCFR",SiteA,INT-017,"Save all my data locally",CAP_EXPORT_DATA,btn-export-data,EXECUTED,true,true,0.09
+EXP_0066_B1,1789530409291,"Baseline 1: Fixed Selector",SiteB,INT-017,"Save all my data locally",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0066_B2,1789530409291,"Baseline 2: Keyword Matching",SiteB,INT-017,"Save all my data locally",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0066_B3,1789530409291,"Baseline 3: Semantic Only",SiteB,INT-017,"Save all my data locally",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0066_B4,1789530409291,"Baseline 4: Page Navigation",SiteB,INT-017,"Save all my data locally",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0066_B5,1789530409291,"IntentNav-SCFR",SiteB,INT-017,"Save all my data locally",CAP_EXPORT_DATA,btn-download-records,EXECUTED,true,true,0.08
+EXP_0067_B1,1789530409291,"Baseline 1: Fixed Selector",SiteC,INT-017,"Save all my data locally",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0067_B2,1789530409291,"Baseline 2: Keyword Matching",SiteC,INT-017,"Save all my data locally",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0067_B3,1789530409291,"Baseline 3: Semantic Only",SiteC,INT-017,"Save all my data locally",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0067_B4,1789530409291,"Baseline 4: Page Navigation",SiteC,INT-017,"Save all my data locally",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0067_B5,1789530409291,"IntentNav-SCFR",SiteC,INT-017,"Save all my data locally",CAP_EXPORT_DATA,ember992,EXECUTED,true,true,0.1
+EXP_0068_B1,1789530409291,"Baseline 1: Fixed Selector",SiteD,INT-017,"Save all my data locally",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0068_B2,1789530409291,"Baseline 2: Keyword Matching",SiteD,INT-017,"Save all my data locally",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0068_B3,1789530409291,"Baseline 3: Semantic Only",SiteD,INT-017,"Save all my data locally",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0068_B4,1789530409291,"Baseline 4: Page Navigation",SiteD,INT-017,"Save all my data locally",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0068_B5,1789530409291,"IntentNav-SCFR",SiteD,INT-017,"Save all my data locally",CAP_EXPORT_DATA,NONE,ABSTAINED,false,false,0.04
+EXP_0069_B1,1789530409291,"Baseline 1: Fixed Selector",SiteA,INT-018,"Export full history and profile information",CAP_EXPORT_DATA,btn-export-data,SUCCESS,false,true,0
+EXP_0069_B2,1789530409291,"Baseline 2: Keyword Matching",SiteA,INT-018,"Export full history and profile information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0069_B3,1789530409291,"Baseline 3: Semantic Only",SiteA,INT-018,"Export full history and profile information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0069_B4,1789530409291,"Baseline 4: Page Navigation",SiteA,INT-018,"Export full history and profile information",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0069_B5,1789530409291,"IntentNav-SCFR",SiteA,INT-018,"Export full history and profile information",CAP_EXPORT_DATA,btn-export-data,EXECUTED,true,true,0.08
+EXP_0070_B1,1789530409291,"Baseline 1: Fixed Selector",SiteB,INT-018,"Export full history and profile information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0070_B2,1789530409291,"Baseline 2: Keyword Matching",SiteB,INT-018,"Export full history and profile information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0070_B3,1789530409291,"Baseline 3: Semantic Only",SiteB,INT-018,"Export full history and profile information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0070_B4,1789530409291,"Baseline 4: Page Navigation",SiteB,INT-018,"Export full history and profile information",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0070_B5,1789530409291,"IntentNav-SCFR",SiteB,INT-018,"Export full history and profile information",CAP_EXPORT_DATA,btn-download-records,EXECUTED,true,true,0.08
+EXP_0071_B1,1789530409291,"Baseline 1: Fixed Selector",SiteC,INT-018,"Export full history and profile information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0071_B2,1789530409291,"Baseline 2: Keyword Matching",SiteC,INT-018,"Export full history and profile information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0071_B3,1789530409291,"Baseline 3: Semantic Only",SiteC,INT-018,"Export full history and profile information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0071_B4,1789530409291,"Baseline 4: Page Navigation",SiteC,INT-018,"Export full history and profile information",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0071_B5,1789530409291,"IntentNav-SCFR",SiteC,INT-018,"Export full history and profile information",CAP_EXPORT_DATA,ember992,EXECUTED,true,true,0.08
+EXP_0072_B1,1789530409291,"Baseline 1: Fixed Selector",SiteD,INT-018,"Export full history and profile information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0072_B2,1789530409291,"Baseline 2: Keyword Matching",SiteD,INT-018,"Export full history and profile information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0072_B3,1789530409291,"Baseline 3: Semantic Only",SiteD,INT-018,"Export full history and profile information",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0072_B4,1789530409291,"Baseline 4: Page Navigation",SiteD,INT-018,"Export full history and profile information",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0072_B5,1789530409291,"IntentNav-SCFR",SiteD,INT-018,"Export full history and profile information",CAP_EXPORT_DATA,NONE,ABSTAINED,false,false,0.04
+EXP_0073_B1,1789530409291,"Baseline 1: Fixed Selector",SiteA,INT-019,"Give me my personal data archive",CAP_EXPORT_DATA,btn-export-data,SUCCESS,false,true,0
+EXP_0073_B2,1789530409291,"Baseline 2: Keyword Matching",SiteA,INT-019,"Give me my personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0073_B3,1789530409291,"Baseline 3: Semantic Only",SiteA,INT-019,"Give me my personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0073_B4,1789530409291,"Baseline 4: Page Navigation",SiteA,INT-019,"Give me my personal data archive",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0073_B5,1789530409292,"IntentNav-SCFR",SiteA,INT-019,"Give me my personal data archive",CAP_EXPORT_DATA,btn-export-data,EXECUTED,true,true,0.1
+EXP_0074_B1,1789530409292,"Baseline 1: Fixed Selector",SiteB,INT-019,"Give me my personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0074_B2,1789530409292,"Baseline 2: Keyword Matching",SiteB,INT-019,"Give me my personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0074_B3,1789530409292,"Baseline 3: Semantic Only",SiteB,INT-019,"Give me my personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0074_B4,1789530409292,"Baseline 4: Page Navigation",SiteB,INT-019,"Give me my personal data archive",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0074_B5,1789530409292,"IntentNav-SCFR",SiteB,INT-019,"Give me my personal data archive",CAP_EXPORT_DATA,btn-download-records,EXECUTED,true,true,0.08
+EXP_0075_B1,1789530409292,"Baseline 1: Fixed Selector",SiteC,INT-019,"Give me my personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0075_B2,1789530409292,"Baseline 2: Keyword Matching",SiteC,INT-019,"Give me my personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0075_B3,1789530409292,"Baseline 3: Semantic Only",SiteC,INT-019,"Give me my personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0075_B4,1789530409292,"Baseline 4: Page Navigation",SiteC,INT-019,"Give me my personal data archive",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0075_B5,1789530409292,"IntentNav-SCFR",SiteC,INT-019,"Give me my personal data archive",CAP_EXPORT_DATA,ember992,EXECUTED,true,true,0.07
+EXP_0076_B1,1789530409292,"Baseline 1: Fixed Selector",SiteD,INT-019,"Give me my personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0076_B2,1789530409292,"Baseline 2: Keyword Matching",SiteD,INT-019,"Give me my personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0076_B3,1789530409292,"Baseline 3: Semantic Only",SiteD,INT-019,"Give me my personal data archive",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0076_B4,1789530409292,"Baseline 4: Page Navigation",SiteD,INT-019,"Give me my personal data archive",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0076_B5,1789530409292,"IntentNav-SCFR",SiteD,INT-019,"Give me my personal data archive",CAP_EXPORT_DATA,NONE,ABSTAINED,false,false,0.04
+EXP_0077_B1,1789530409292,"Baseline 1: Fixed Selector",SiteA,INT-020,"Download my user records export",CAP_EXPORT_DATA,btn-export-data,SUCCESS,false,true,0
+EXP_0077_B2,1789530409292,"Baseline 2: Keyword Matching",SiteA,INT-020,"Download my user records export",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0077_B3,1789530409292,"Baseline 3: Semantic Only",SiteA,INT-020,"Download my user records export",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0077_B4,1789530409292,"Baseline 4: Page Navigation",SiteA,INT-020,"Download my user records export",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0077_B5,1789530409292,"IntentNav-SCFR",SiteA,INT-020,"Download my user records export",CAP_EXPORT_DATA,btn-export-data,EXECUTED,true,true,0.29
+EXP_0078_B1,1789530409292,"Baseline 1: Fixed Selector",SiteB,INT-020,"Download my user records export",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0078_B2,1789530409292,"Baseline 2: Keyword Matching",SiteB,INT-020,"Download my user records export",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0078_B3,1789530409292,"Baseline 3: Semantic Only",SiteB,INT-020,"Download my user records export",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0078_B4,1789530409292,"Baseline 4: Page Navigation",SiteB,INT-020,"Download my user records export",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0078_B5,1789530409292,"IntentNav-SCFR",SiteB,INT-020,"Download my user records export",CAP_EXPORT_DATA,btn-download-records,EXECUTED,true,true,0.13
+EXP_0079_B1,1789530409292,"Baseline 1: Fixed Selector",SiteC,INT-020,"Download my user records export",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0079_B2,1789530409292,"Baseline 2: Keyword Matching",SiteC,INT-020,"Download my user records export",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0079_B3,1789530409292,"Baseline 3: Semantic Only",SiteC,INT-020,"Download my user records export",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0079_B4,1789530409292,"Baseline 4: Page Navigation",SiteC,INT-020,"Download my user records export",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0079_B5,1789530409292,"IntentNav-SCFR",SiteC,INT-020,"Download my user records export",CAP_EXPORT_DATA,ember992,EXECUTED,true,true,0.1
+EXP_0080_B1,1789530409292,"Baseline 1: Fixed Selector",SiteD,INT-020,"Download my user records export",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0080_B2,1789530409292,"Baseline 2: Keyword Matching",SiteD,INT-020,"Download my user records export",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0080_B3,1789530409292,"Baseline 3: Semantic Only",SiteD,INT-020,"Download my user records export",CAP_EXPORT_DATA,NONE,FAILED,false,false,0
+EXP_0080_B4,1789530409292,"Baseline 4: Page Navigation",SiteD,INT-020,"Download my user records export",CAP_EXPORT_DATA,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0080_B5,1789530409292,"IntentNav-SCFR",SiteD,INT-020,"Download my user records export",CAP_EXPORT_DATA,NONE,ABSTAINED,false,false,0.05
+EXP_0081_B1,1789530409292,"Baseline 1: Fixed Selector",SiteA,INT-021,"I want to disable two-factor authentication",CAP_DISABLE_2FA,btn-disable-2fa,SUCCESS,false,true,0
+EXP_0081_B2,1789530409292,"Baseline 2: Keyword Matching",SiteA,INT-021,"I want to disable two-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0081_B3,1789530409292,"Baseline 3: Semantic Only",SiteA,INT-021,"I want to disable two-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0081_B4,1789530409292,"Baseline 4: Page Navigation",SiteA,INT-021,"I want to disable two-factor authentication",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0.01
+EXP_0081_B5,1789530409292,"IntentNav-SCFR",SiteA,INT-021,"I want to disable two-factor authentication",CAP_DISABLE_2FA,btn-disable-2fa,CONFIRMATION_PENDING,true,false,0.14
+EXP_0082_B1,1789530409292,"Baseline 1: Fixed Selector",SiteB,INT-021,"I want to disable two-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0082_B2,1789530409292,"Baseline 2: Keyword Matching",SiteB,INT-021,"I want to disable two-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0082_B3,1789530409292,"Baseline 3: Semantic Only",SiteB,INT-021,"I want to disable two-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0082_B4,1789530409292,"Baseline 4: Page Navigation",SiteB,INT-021,"I want to disable two-factor authentication",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0082_B5,1789530409296,"IntentNav-SCFR",SiteB,INT-021,"I want to disable two-factor authentication",CAP_DISABLE_2FA,btn-mfa-protection,CONFIRMATION_PENDING,true,false,3.32
+EXP_0083_B1,1789530409296,"Baseline 1: Fixed Selector",SiteC,INT-021,"I want to disable two-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0083_B2,1789530409296,"Baseline 2: Keyword Matching",SiteC,INT-021,"I want to disable two-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0.01
+EXP_0083_B3,1789530409296,"Baseline 3: Semantic Only",SiteC,INT-021,"I want to disable two-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0083_B4,1789530409296,"Baseline 4: Page Navigation",SiteC,INT-021,"I want to disable two-factor authentication",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0083_B5,1789530409296,"IntentNav-SCFR",SiteC,INT-021,"I want to disable two-factor authentication",CAP_DISABLE_2FA,btn-open-2fa-modal,CONFIRMATION_PENDING,true,false,0.16
+EXP_0084_B1,1789530409296,"Baseline 1: Fixed Selector",SiteD,INT-021,"I want to disable two-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0084_B2,1789530409296,"Baseline 2: Keyword Matching",SiteD,INT-021,"I want to disable two-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0084_B3,1789530409296,"Baseline 3: Semantic Only",SiteD,INT-021,"I want to disable two-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0084_B4,1789530409296,"Baseline 4: Page Navigation",SiteD,INT-021,"I want to disable two-factor authentication",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0084_B5,1789530409296,"IntentNav-SCFR",SiteD,INT-021,"I want to disable two-factor authentication",CAP_DISABLE_2FA,NONE,ABSTAINED,false,false,0.06
+EXP_0085_B1,1789530409296,"Baseline 1: Fixed Selector",SiteA,INT-022,"Turn off 2FA",CAP_DISABLE_2FA,btn-disable-2fa,SUCCESS,false,true,0
+EXP_0085_B2,1789530409296,"Baseline 2: Keyword Matching",SiteA,INT-022,"Turn off 2FA",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0085_B3,1789530409296,"Baseline 3: Semantic Only",SiteA,INT-022,"Turn off 2FA",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0085_B4,1789530409296,"Baseline 4: Page Navigation",SiteA,INT-022,"Turn off 2FA",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0085_B5,1789530409296,"IntentNav-SCFR",SiteA,INT-022,"Turn off 2FA",CAP_DISABLE_2FA,btn-disable-2fa,CONFIRMATION_PENDING,true,false,0.11
+EXP_0086_B1,1789530409296,"Baseline 1: Fixed Selector",SiteB,INT-022,"Turn off 2FA",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0086_B2,1789530409296,"Baseline 2: Keyword Matching",SiteB,INT-022,"Turn off 2FA",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0086_B3,1789530409296,"Baseline 3: Semantic Only",SiteB,INT-022,"Turn off 2FA",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0086_B4,1789530409296,"Baseline 4: Page Navigation",SiteB,INT-022,"Turn off 2FA",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0086_B5,1789530409296,"IntentNav-SCFR",SiteB,INT-022,"Turn off 2FA",CAP_DISABLE_2FA,btn-mfa-protection,CONFIRMATION_PENDING,true,false,0.1
+EXP_0087_B1,1789530409296,"Baseline 1: Fixed Selector",SiteC,INT-022,"Turn off 2FA",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0087_B2,1789530409296,"Baseline 2: Keyword Matching",SiteC,INT-022,"Turn off 2FA",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0087_B3,1789530409296,"Baseline 3: Semantic Only",SiteC,INT-022,"Turn off 2FA",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0087_B4,1789530409296,"Baseline 4: Page Navigation",SiteC,INT-022,"Turn off 2FA",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0087_B5,1789530409296,"IntentNav-SCFR",SiteC,INT-022,"Turn off 2FA",CAP_DISABLE_2FA,btn-open-2fa-modal,CONFIRMATION_PENDING,true,false,0.08
+EXP_0088_B1,1789530409296,"Baseline 1: Fixed Selector",SiteD,INT-022,"Turn off 2FA",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0088_B2,1789530409296,"Baseline 2: Keyword Matching",SiteD,INT-022,"Turn off 2FA",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0088_B3,1789530409296,"Baseline 3: Semantic Only",SiteD,INT-022,"Turn off 2FA",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0088_B4,1789530409296,"Baseline 4: Page Navigation",SiteD,INT-022,"Turn off 2FA",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0088_B5,1789530409296,"IntentNav-SCFR",SiteD,INT-022,"Turn off 2FA",CAP_DISABLE_2FA,NONE,ABSTAINED,false,false,0.04
+EXP_0089_B1,1789530409296,"Baseline 1: Fixed Selector",SiteA,INT-023,"Remove multi-factor authentication",CAP_DISABLE_2FA,btn-disable-2fa,SUCCESS,false,true,0
+EXP_0089_B2,1789530409296,"Baseline 2: Keyword Matching",SiteA,INT-023,"Remove multi-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0089_B3,1789530409296,"Baseline 3: Semantic Only",SiteA,INT-023,"Remove multi-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0089_B4,1789530409296,"Baseline 4: Page Navigation",SiteA,INT-023,"Remove multi-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0089_B5,1789530409297,"IntentNav-SCFR",SiteA,INT-023,"Remove multi-factor authentication",CAP_DISABLE_2FA,btn-disable-2fa,CONFIRMATION_PENDING,true,false,0.09
+EXP_0090_B1,1789530409297,"Baseline 1: Fixed Selector",SiteB,INT-023,"Remove multi-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0090_B2,1789530409297,"Baseline 2: Keyword Matching",SiteB,INT-023,"Remove multi-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0090_B3,1789530409297,"Baseline 3: Semantic Only",SiteB,INT-023,"Remove multi-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0090_B4,1789530409297,"Baseline 4: Page Navigation",SiteB,INT-023,"Remove multi-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0090_B5,1789530409297,"IntentNav-SCFR",SiteB,INT-023,"Remove multi-factor authentication",CAP_DISABLE_2FA,btn-mfa-protection,CONFIRMATION_PENDING,true,false,0.08
+EXP_0091_B1,1789530409297,"Baseline 1: Fixed Selector",SiteC,INT-023,"Remove multi-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0091_B2,1789530409297,"Baseline 2: Keyword Matching",SiteC,INT-023,"Remove multi-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0091_B3,1789530409297,"Baseline 3: Semantic Only",SiteC,INT-023,"Remove multi-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0091_B4,1789530409297,"Baseline 4: Page Navigation",SiteC,INT-023,"Remove multi-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0091_B5,1789530409297,"IntentNav-SCFR",SiteC,INT-023,"Remove multi-factor authentication",CAP_DISABLE_2FA,btn-open-2fa-modal,CONFIRMATION_PENDING,true,false,0.07
+EXP_0092_B1,1789530409297,"Baseline 1: Fixed Selector",SiteD,INT-023,"Remove multi-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0092_B2,1789530409297,"Baseline 2: Keyword Matching",SiteD,INT-023,"Remove multi-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0092_B3,1789530409297,"Baseline 3: Semantic Only",SiteD,INT-023,"Remove multi-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0092_B4,1789530409297,"Baseline 4: Page Navigation",SiteD,INT-023,"Remove multi-factor authentication",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0092_B5,1789530409297,"IntentNav-SCFR",SiteD,INT-023,"Remove multi-factor authentication",CAP_DISABLE_2FA,NONE,ABSTAINED,false,false,0.04
+EXP_0093_B1,1789530409297,"Baseline 1: Fixed Selector",SiteA,INT-024,"Stop asking for 2FA codes",CAP_DISABLE_2FA,btn-disable-2fa,SUCCESS,false,true,0
+EXP_0093_B2,1789530409297,"Baseline 2: Keyword Matching",SiteA,INT-024,"Stop asking for 2FA codes",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0093_B3,1789530409297,"Baseline 3: Semantic Only",SiteA,INT-024,"Stop asking for 2FA codes",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0093_B4,1789530409297,"Baseline 4: Page Navigation",SiteA,INT-024,"Stop asking for 2FA codes",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0093_B5,1789530409297,"IntentNav-SCFR",SiteA,INT-024,"Stop asking for 2FA codes",CAP_DISABLE_2FA,btn-disable-2fa,CONFIRMATION_PENDING,true,false,0.08
+EXP_0094_B1,1789530409297,"Baseline 1: Fixed Selector",SiteB,INT-024,"Stop asking for 2FA codes",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0094_B2,1789530409297,"Baseline 2: Keyword Matching",SiteB,INT-024,"Stop asking for 2FA codes",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0094_B3,1789530409297,"Baseline 3: Semantic Only",SiteB,INT-024,"Stop asking for 2FA codes",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0094_B4,1789530409297,"Baseline 4: Page Navigation",SiteB,INT-024,"Stop asking for 2FA codes",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0094_B5,1789530409297,"IntentNav-SCFR",SiteB,INT-024,"Stop asking for 2FA codes",CAP_DISABLE_2FA,btn-mfa-protection,CONFIRMATION_PENDING,true,false,0.08
+EXP_0095_B1,1789530409297,"Baseline 1: Fixed Selector",SiteC,INT-024,"Stop asking for 2FA codes",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0095_B2,1789530409297,"Baseline 2: Keyword Matching",SiteC,INT-024,"Stop asking for 2FA codes",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0095_B3,1789530409297,"Baseline 3: Semantic Only",SiteC,INT-024,"Stop asking for 2FA codes",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0095_B4,1789530409297,"Baseline 4: Page Navigation",SiteC,INT-024,"Stop asking for 2FA codes",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0095_B5,1789530409297,"IntentNav-SCFR",SiteC,INT-024,"Stop asking for 2FA codes",CAP_DISABLE_2FA,btn-open-2fa-modal,CONFIRMATION_PENDING,true,false,0.07
+EXP_0096_B1,1789530409297,"Baseline 1: Fixed Selector",SiteD,INT-024,"Stop asking for 2FA codes",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0096_B2,1789530409297,"Baseline 2: Keyword Matching",SiteD,INT-024,"Stop asking for 2FA codes",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0096_B3,1789530409297,"Baseline 3: Semantic Only",SiteD,INT-024,"Stop asking for 2FA codes",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0096_B4,1789530409297,"Baseline 4: Page Navigation",SiteD,INT-024,"Stop asking for 2FA codes",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0096_B5,1789530409297,"IntentNav-SCFR",SiteD,INT-024,"Stop asking for 2FA codes",CAP_DISABLE_2FA,NONE,ABSTAINED,false,false,0.04
+EXP_0097_B1,1789530409297,"Baseline 1: Fixed Selector",SiteA,INT-025,"Deactivate two-factor auth shield",CAP_DISABLE_2FA,btn-disable-2fa,SUCCESS,false,true,0
+EXP_0097_B2,1789530409297,"Baseline 2: Keyword Matching",SiteA,INT-025,"Deactivate two-factor auth shield",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0097_B3,1789530409297,"Baseline 3: Semantic Only",SiteA,INT-025,"Deactivate two-factor auth shield",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0097_B4,1789530409297,"Baseline 4: Page Navigation",SiteA,INT-025,"Deactivate two-factor auth shield",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0097_B5,1789530409297,"IntentNav-SCFR",SiteA,INT-025,"Deactivate two-factor auth shield",CAP_DISABLE_2FA,btn-disable-2fa,CONFIRMATION_PENDING,true,false,0.09
+EXP_0098_B1,1789530409297,"Baseline 1: Fixed Selector",SiteB,INT-025,"Deactivate two-factor auth shield",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0098_B2,1789530409297,"Baseline 2: Keyword Matching",SiteB,INT-025,"Deactivate two-factor auth shield",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0098_B3,1789530409297,"Baseline 3: Semantic Only",SiteB,INT-025,"Deactivate two-factor auth shield",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0098_B4,1789530409297,"Baseline 4: Page Navigation",SiteB,INT-025,"Deactivate two-factor auth shield",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0098_B5,1789530409297,"IntentNav-SCFR",SiteB,INT-025,"Deactivate two-factor auth shield",CAP_DISABLE_2FA,btn-mfa-protection,CONFIRMATION_PENDING,true,false,0.08
+EXP_0099_B1,1789530409297,"Baseline 1: Fixed Selector",SiteC,INT-025,"Deactivate two-factor auth shield",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0099_B2,1789530409297,"Baseline 2: Keyword Matching",SiteC,INT-025,"Deactivate two-factor auth shield",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0099_B3,1789530409297,"Baseline 3: Semantic Only",SiteC,INT-025,"Deactivate two-factor auth shield",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0099_B4,1789530409297,"Baseline 4: Page Navigation",SiteC,INT-025,"Deactivate two-factor auth shield",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0099_B5,1789530409297,"IntentNav-SCFR",SiteC,INT-025,"Deactivate two-factor auth shield",CAP_DISABLE_2FA,btn-open-2fa-modal,CONFIRMATION_PENDING,true,false,0.07
+EXP_0100_B1,1789530409297,"Baseline 1: Fixed Selector",SiteD,INT-025,"Deactivate two-factor auth shield",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0100_B2,1789530409297,"Baseline 2: Keyword Matching",SiteD,INT-025,"Deactivate two-factor auth shield",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0100_B3,1789530409297,"Baseline 3: Semantic Only",SiteD,INT-025,"Deactivate two-factor auth shield",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0100_B4,1789530409297,"Baseline 4: Page Navigation",SiteD,INT-025,"Deactivate two-factor auth shield",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0100_B5,1789530409297,"IntentNav-SCFR",SiteD,INT-025,"Deactivate two-factor auth shield",CAP_DISABLE_2FA,NONE,ABSTAINED,false,false,0.04
+EXP_0101_B1,1789530409297,"Baseline 1: Fixed Selector",SiteA,INT-026,"Disable MFA security protection",CAP_DISABLE_2FA,btn-disable-2fa,SUCCESS,false,true,0
+EXP_0101_B2,1789530409297,"Baseline 2: Keyword Matching",SiteA,INT-026,"Disable MFA security protection",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0101_B3,1789530409297,"Baseline 3: Semantic Only",SiteA,INT-026,"Disable MFA security protection",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0101_B4,1789530409297,"Baseline 4: Page Navigation",SiteA,INT-026,"Disable MFA security protection",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0101_B5,1789530409297,"IntentNav-SCFR",SiteA,INT-026,"Disable MFA security protection",CAP_DISABLE_2FA,btn-disable-2fa,CONFIRMATION_PENDING,true,false,0.09
+EXP_0102_B1,1789530409297,"Baseline 1: Fixed Selector",SiteB,INT-026,"Disable MFA security protection",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0102_B2,1789530409297,"Baseline 2: Keyword Matching",SiteB,INT-026,"Disable MFA security protection",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0102_B3,1789530409297,"Baseline 3: Semantic Only",SiteB,INT-026,"Disable MFA security protection",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0102_B4,1789530409297,"Baseline 4: Page Navigation",SiteB,INT-026,"Disable MFA security protection",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0102_B5,1789530409298,"IntentNav-SCFR",SiteB,INT-026,"Disable MFA security protection",CAP_DISABLE_2FA,btn-mfa-protection,CONFIRMATION_PENDING,true,false,0.08
+EXP_0103_B1,1789530409298,"Baseline 1: Fixed Selector",SiteC,INT-026,"Disable MFA security protection",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0103_B2,1789530409298,"Baseline 2: Keyword Matching",SiteC,INT-026,"Disable MFA security protection",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0103_B3,1789530409298,"Baseline 3: Semantic Only",SiteC,INT-026,"Disable MFA security protection",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0103_B4,1789530409298,"Baseline 4: Page Navigation",SiteC,INT-026,"Disable MFA security protection",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0103_B5,1789530409298,"IntentNav-SCFR",SiteC,INT-026,"Disable MFA security protection",CAP_DISABLE_2FA,btn-open-2fa-modal,CONFIRMATION_PENDING,true,false,0.16
+EXP_0104_B1,1789530409298,"Baseline 1: Fixed Selector",SiteD,INT-026,"Disable MFA security protection",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0104_B2,1789530409298,"Baseline 2: Keyword Matching",SiteD,INT-026,"Disable MFA security protection",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0104_B3,1789530409298,"Baseline 3: Semantic Only",SiteD,INT-026,"Disable MFA security protection",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0104_B4,1789530409298,"Baseline 4: Page Navigation",SiteD,INT-026,"Disable MFA security protection",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0104_B5,1789530409298,"IntentNav-SCFR",SiteD,INT-026,"Disable MFA security protection",CAP_DISABLE_2FA,NONE,ABSTAINED,false,false,0.06
+EXP_0105_B1,1789530409298,"Baseline 1: Fixed Selector",SiteA,INT-027,"Turn off two-step verification",CAP_DISABLE_2FA,btn-disable-2fa,SUCCESS,false,true,0
+EXP_0105_B2,1789530409298,"Baseline 2: Keyword Matching",SiteA,INT-027,"Turn off two-step verification",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0105_B3,1789530409298,"Baseline 3: Semantic Only",SiteA,INT-027,"Turn off two-step verification",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0105_B4,1789530409298,"Baseline 4: Page Navigation",SiteA,INT-027,"Turn off two-step verification",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0105_B5,1789530409298,"IntentNav-SCFR",SiteA,INT-027,"Turn off two-step verification",CAP_DISABLE_2FA,btn-disable-2fa,CONFIRMATION_PENDING,true,false,0.26
+EXP_0106_B1,1789530409298,"Baseline 1: Fixed Selector",SiteB,INT-027,"Turn off two-step verification",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0106_B2,1789530409298,"Baseline 2: Keyword Matching",SiteB,INT-027,"Turn off two-step verification",CAP_DISABLE_2FA,NONE,FAILED,false,false,0.01
+EXP_0106_B3,1789530409298,"Baseline 3: Semantic Only",SiteB,INT-027,"Turn off two-step verification",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0106_B4,1789530409298,"Baseline 4: Page Navigation",SiteB,INT-027,"Turn off two-step verification",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0106_B5,1789530409298,"IntentNav-SCFR",SiteB,INT-027,"Turn off two-step verification",CAP_DISABLE_2FA,btn-mfa-protection,CONFIRMATION_PENDING,true,false,0.26
+EXP_0107_B1,1789530409298,"Baseline 1: Fixed Selector",SiteC,INT-027,"Turn off two-step verification",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0107_B2,1789530409298,"Baseline 2: Keyword Matching",SiteC,INT-027,"Turn off two-step verification",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0107_B3,1789530409298,"Baseline 3: Semantic Only",SiteC,INT-027,"Turn off two-step verification",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0107_B4,1789530409298,"Baseline 4: Page Navigation",SiteC,INT-027,"Turn off two-step verification",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0107_B5,1789530409298,"IntentNav-SCFR",SiteC,INT-027,"Turn off two-step verification",CAP_DISABLE_2FA,btn-open-2fa-modal,CONFIRMATION_PENDING,true,false,0.09
+EXP_0108_B1,1789530409298,"Baseline 1: Fixed Selector",SiteD,INT-027,"Turn off two-step verification",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0108_B2,1789530409298,"Baseline 2: Keyword Matching",SiteD,INT-027,"Turn off two-step verification",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0108_B3,1789530409298,"Baseline 3: Semantic Only",SiteD,INT-027,"Turn off two-step verification",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0108_B4,1789530409298,"Baseline 4: Page Navigation",SiteD,INT-027,"Turn off two-step verification",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0108_B5,1789530409298,"IntentNav-SCFR",SiteD,INT-027,"Turn off two-step verification",CAP_DISABLE_2FA,NONE,ABSTAINED,false,false,0.04
+EXP_0109_B1,1789530409298,"Baseline 1: Fixed Selector",SiteA,INT-028,"Remove 2FA authenticator app link",CAP_DISABLE_2FA,btn-disable-2fa,SUCCESS,false,true,0
+EXP_0109_B2,1789530409298,"Baseline 2: Keyword Matching",SiteA,INT-028,"Remove 2FA authenticator app link",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0109_B3,1789530409298,"Baseline 3: Semantic Only",SiteA,INT-028,"Remove 2FA authenticator app link",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0109_B4,1789530409298,"Baseline 4: Page Navigation",SiteA,INT-028,"Remove 2FA authenticator app link",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0109_B5,1789530409299,"IntentNav-SCFR",SiteA,INT-028,"Remove 2FA authenticator app link",CAP_DISABLE_2FA,btn-disable-2fa,CONFIRMATION_PENDING,true,false,0.09
+EXP_0110_B1,1789530409299,"Baseline 1: Fixed Selector",SiteB,INT-028,"Remove 2FA authenticator app link",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0110_B2,1789530409299,"Baseline 2: Keyword Matching",SiteB,INT-028,"Remove 2FA authenticator app link",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0110_B3,1789530409299,"Baseline 3: Semantic Only",SiteB,INT-028,"Remove 2FA authenticator app link",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0110_B4,1789530409299,"Baseline 4: Page Navigation",SiteB,INT-028,"Remove 2FA authenticator app link",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0110_B5,1789530409299,"IntentNav-SCFR",SiteB,INT-028,"Remove 2FA authenticator app link",CAP_DISABLE_2FA,btn-mfa-protection,CONFIRMATION_PENDING,true,false,0.08
+EXP_0111_B1,1789530409299,"Baseline 1: Fixed Selector",SiteC,INT-028,"Remove 2FA authenticator app link",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0111_B2,1789530409299,"Baseline 2: Keyword Matching",SiteC,INT-028,"Remove 2FA authenticator app link",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0111_B3,1789530409299,"Baseline 3: Semantic Only",SiteC,INT-028,"Remove 2FA authenticator app link",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0111_B4,1789530409299,"Baseline 4: Page Navigation",SiteC,INT-028,"Remove 2FA authenticator app link",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0111_B5,1789530409299,"IntentNav-SCFR",SiteC,INT-028,"Remove 2FA authenticator app link",CAP_DISABLE_2FA,btn-open-2fa-modal,CONFIRMATION_PENDING,true,false,0.07
+EXP_0112_B1,1789530409299,"Baseline 1: Fixed Selector",SiteD,INT-028,"Remove 2FA authenticator app link",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0112_B2,1789530409299,"Baseline 2: Keyword Matching",SiteD,INT-028,"Remove 2FA authenticator app link",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0112_B3,1789530409299,"Baseline 3: Semantic Only",SiteD,INT-028,"Remove 2FA authenticator app link",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0112_B4,1789530409299,"Baseline 4: Page Navigation",SiteD,INT-028,"Remove 2FA authenticator app link",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0112_B5,1789530409299,"IntentNav-SCFR",SiteD,INT-028,"Remove 2FA authenticator app link",CAP_DISABLE_2FA,NONE,ABSTAINED,false,false,0.04
+EXP_0113_B1,1789530409299,"Baseline 1: Fixed Selector",SiteA,INT-029,"Revoke two-factor authentication requirement",CAP_DISABLE_2FA,btn-disable-2fa,SUCCESS,false,true,0
+EXP_0113_B2,1789530409299,"Baseline 2: Keyword Matching",SiteA,INT-029,"Revoke two-factor authentication requirement",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0113_B3,1789530409299,"Baseline 3: Semantic Only",SiteA,INT-029,"Revoke two-factor authentication requirement",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0113_B4,1789530409299,"Baseline 4: Page Navigation",SiteA,INT-029,"Revoke two-factor authentication requirement",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0113_B5,1789530409299,"IntentNav-SCFR",SiteA,INT-029,"Revoke two-factor authentication requirement",CAP_DISABLE_2FA,btn-disable-2fa,CONFIRMATION_PENDING,true,false,0.14
+EXP_0114_B1,1789530409299,"Baseline 1: Fixed Selector",SiteB,INT-029,"Revoke two-factor authentication requirement",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0114_B2,1789530409299,"Baseline 2: Keyword Matching",SiteB,INT-029,"Revoke two-factor authentication requirement",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0114_B3,1789530409299,"Baseline 3: Semantic Only",SiteB,INT-029,"Revoke two-factor authentication requirement",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0114_B4,1789530409299,"Baseline 4: Page Navigation",SiteB,INT-029,"Revoke two-factor authentication requirement",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0114_B5,1789530409299,"IntentNav-SCFR",SiteB,INT-029,"Revoke two-factor authentication requirement",CAP_DISABLE_2FA,btn-mfa-protection,CONFIRMATION_PENDING,true,false,0.12
+EXP_0115_B1,1789530409299,"Baseline 1: Fixed Selector",SiteC,INT-029,"Revoke two-factor authentication requirement",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0115_B2,1789530409299,"Baseline 2: Keyword Matching",SiteC,INT-029,"Revoke two-factor authentication requirement",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0115_B3,1789530409299,"Baseline 3: Semantic Only",SiteC,INT-029,"Revoke two-factor authentication requirement",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0115_B4,1789530409299,"Baseline 4: Page Navigation",SiteC,INT-029,"Revoke two-factor authentication requirement",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0115_B5,1789530409299,"IntentNav-SCFR",SiteC,INT-029,"Revoke two-factor authentication requirement",CAP_DISABLE_2FA,btn-open-2fa-modal,CONFIRMATION_PENDING,true,false,0.07
+EXP_0116_B1,1789530409299,"Baseline 1: Fixed Selector",SiteD,INT-029,"Revoke two-factor authentication requirement",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0116_B2,1789530409299,"Baseline 2: Keyword Matching",SiteD,INT-029,"Revoke two-factor authentication requirement",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0116_B3,1789530409299,"Baseline 3: Semantic Only",SiteD,INT-029,"Revoke two-factor authentication requirement",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0116_B4,1789530409299,"Baseline 4: Page Navigation",SiteD,INT-029,"Revoke two-factor authentication requirement",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0116_B5,1789530409299,"IntentNav-SCFR",SiteD,INT-029,"Revoke two-factor authentication requirement",CAP_DISABLE_2FA,NONE,ABSTAINED,false,false,0.04
+EXP_0117_B1,1789530409299,"Baseline 1: Fixed Selector",SiteA,INT-030,"Disable 2FA security key",CAP_DISABLE_2FA,btn-disable-2fa,SUCCESS,false,true,0
+EXP_0117_B2,1789530409299,"Baseline 2: Keyword Matching",SiteA,INT-030,"Disable 2FA security key",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0117_B3,1789530409299,"Baseline 3: Semantic Only",SiteA,INT-030,"Disable 2FA security key",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0117_B4,1789530409299,"Baseline 4: Page Navigation",SiteA,INT-030,"Disable 2FA security key",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0117_B5,1789530409299,"IntentNav-SCFR",SiteA,INT-030,"Disable 2FA security key",CAP_DISABLE_2FA,btn-disable-2fa,CONFIRMATION_PENDING,true,false,0.09
+EXP_0118_B1,1789530409299,"Baseline 1: Fixed Selector",SiteB,INT-030,"Disable 2FA security key",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0118_B2,1789530409299,"Baseline 2: Keyword Matching",SiteB,INT-030,"Disable 2FA security key",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0118_B3,1789530409299,"Baseline 3: Semantic Only",SiteB,INT-030,"Disable 2FA security key",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0118_B4,1789530409299,"Baseline 4: Page Navigation",SiteB,INT-030,"Disable 2FA security key",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0118_B5,1789530409299,"IntentNav-SCFR",SiteB,INT-030,"Disable 2FA security key",CAP_DISABLE_2FA,btn-mfa-protection,CONFIRMATION_PENDING,true,false,0.08
+EXP_0119_B1,1789530409299,"Baseline 1: Fixed Selector",SiteC,INT-030,"Disable 2FA security key",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0119_B2,1789530409299,"Baseline 2: Keyword Matching",SiteC,INT-030,"Disable 2FA security key",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0119_B3,1789530409299,"Baseline 3: Semantic Only",SiteC,INT-030,"Disable 2FA security key",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0119_B4,1789530409299,"Baseline 4: Page Navigation",SiteC,INT-030,"Disable 2FA security key",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0119_B5,1789530409299,"IntentNav-SCFR",SiteC,INT-030,"Disable 2FA security key",CAP_DISABLE_2FA,btn-open-2fa-modal,CONFIRMATION_PENDING,true,false,0.08
+EXP_0120_B1,1789530409299,"Baseline 1: Fixed Selector",SiteD,INT-030,"Disable 2FA security key",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0120_B2,1789530409299,"Baseline 2: Keyword Matching",SiteD,INT-030,"Disable 2FA security key",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0120_B3,1789530409299,"Baseline 3: Semantic Only",SiteD,INT-030,"Disable 2FA security key",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0120_B4,1789530409299,"Baseline 4: Page Navigation",SiteD,INT-030,"Disable 2FA security key",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0120_B5,1789530409299,"IntentNav-SCFR",SiteD,INT-030,"Disable 2FA security key",CAP_DISABLE_2FA,NONE,ABSTAINED,false,false,0.04
+EXP_0121_B1,1789530409299,"Baseline 1: Fixed Selector",SiteA,INT-031,"I want a break from this account",CAP_DEACTIVATE_ACCOUNT,btn-deactivate-account,SUCCESS,false,true,0
+EXP_0121_B2,1789530409299,"Baseline 2: Keyword Matching",SiteA,INT-031,"I want a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0121_B3,1789530409299,"Baseline 3: Semantic Only",SiteA,INT-031,"I want a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0121_B4,1789530409299,"Baseline 4: Page Navigation",SiteA,INT-031,"I want a break from this account",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0.01
+EXP_0121_B5,1789530409300,"IntentNav-SCFR",SiteA,INT-031,"I want a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.07
+EXP_0122_B1,1789530409300,"Baseline 1: Fixed Selector",SiteB,INT-031,"I want a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0122_B2,1789530409300,"Baseline 2: Keyword Matching",SiteB,INT-031,"I want a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0122_B3,1789530409300,"Baseline 3: Semantic Only",SiteB,INT-031,"I want a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0122_B4,1789530409300,"Baseline 4: Page Navigation",SiteB,INT-031,"I want a break from this account",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0122_B5,1789530409300,"IntentNav-SCFR",SiteB,INT-031,"I want a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.05
+EXP_0123_B1,1789530409300,"Baseline 1: Fixed Selector",SiteC,INT-031,"I want a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0123_B2,1789530409300,"Baseline 2: Keyword Matching",SiteC,INT-031,"I want a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0123_B3,1789530409300,"Baseline 3: Semantic Only",SiteC,INT-031,"I want a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0123_B4,1789530409300,"Baseline 4: Page Navigation",SiteC,INT-031,"I want a break from this account",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0123_B5,1789530409300,"IntentNav-SCFR",SiteC,INT-031,"I want a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.08
+EXP_0124_B1,1789530409300,"Baseline 1: Fixed Selector",SiteD,INT-031,"I want a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0124_B2,1789530409300,"Baseline 2: Keyword Matching",SiteD,INT-031,"I want a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0124_B3,1789530409300,"Baseline 3: Semantic Only",SiteD,INT-031,"I want a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0124_B4,1789530409300,"Baseline 4: Page Navigation",SiteD,INT-031,"I want a break from this account",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0124_B5,1789530409300,"IntentNav-SCFR",SiteD,INT-031,"I want a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.07
+EXP_0125_B1,1789530409300,"Baseline 1: Fixed Selector",SiteA,INT-032,"Pause my account membership",CAP_DEACTIVATE_ACCOUNT,btn-deactivate-account,SUCCESS,false,true,0
+EXP_0125_B2,1789530409300,"Baseline 2: Keyword Matching",SiteA,INT-032,"Pause my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0125_B3,1789530409300,"Baseline 3: Semantic Only",SiteA,INT-032,"Pause my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0125_B4,1789530409300,"Baseline 4: Page Navigation",SiteA,INT-032,"Pause my account membership",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0125_B5,1789530409300,"IntentNav-SCFR",SiteA,INT-032,"Pause my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.07
+EXP_0126_B1,1789530409300,"Baseline 1: Fixed Selector",SiteB,INT-032,"Pause my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0126_B2,1789530409300,"Baseline 2: Keyword Matching",SiteB,INT-032,"Pause my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0126_B3,1789530409300,"Baseline 3: Semantic Only",SiteB,INT-032,"Pause my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0126_B4,1789530409300,"Baseline 4: Page Navigation",SiteB,INT-032,"Pause my account membership",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0126_B5,1789530409300,"IntentNav-SCFR",SiteB,INT-032,"Pause my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.06
+EXP_0127_B1,1789530409300,"Baseline 1: Fixed Selector",SiteC,INT-032,"Pause my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0127_B2,1789530409300,"Baseline 2: Keyword Matching",SiteC,INT-032,"Pause my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0127_B3,1789530409300,"Baseline 3: Semantic Only",SiteC,INT-032,"Pause my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0127_B4,1789530409300,"Baseline 4: Page Navigation",SiteC,INT-032,"Pause my account membership",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0127_B5,1789530409300,"IntentNav-SCFR",SiteC,INT-032,"Pause my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.07
+EXP_0128_B1,1789530409300,"Baseline 1: Fixed Selector",SiteD,INT-032,"Pause my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0128_B2,1789530409300,"Baseline 2: Keyword Matching",SiteD,INT-032,"Pause my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0128_B3,1789530409300,"Baseline 3: Semantic Only",SiteD,INT-032,"Pause my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0128_B4,1789530409300,"Baseline 4: Page Navigation",SiteD,INT-032,"Pause my account membership",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0128_B5,1789530409300,"IntentNav-SCFR",SiteD,INT-032,"Pause my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.04
+EXP_0129_B1,1789530409300,"Baseline 1: Fixed Selector",SiteA,INT-033,"Deactivate my profile temporarily",CAP_DEACTIVATE_ACCOUNT,btn-deactivate-account,SUCCESS,false,true,0
+EXP_0129_B2,1789530409300,"Baseline 2: Keyword Matching",SiteA,INT-033,"Deactivate my profile temporarily",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0129_B3,1789530409300,"Baseline 3: Semantic Only",SiteA,INT-033,"Deactivate my profile temporarily",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0129_B4,1789530409300,"Baseline 4: Page Navigation",SiteA,INT-033,"Deactivate my profile temporarily",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0129_B5,1789530409300,"IntentNav-SCFR",SiteA,INT-033,"Deactivate my profile temporarily",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.06
+EXP_0130_B1,1789530409300,"Baseline 1: Fixed Selector",SiteB,INT-033,"Deactivate my profile temporarily",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0130_B2,1789530409300,"Baseline 2: Keyword Matching",SiteB,INT-033,"Deactivate my profile temporarily",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0130_B3,1789530409300,"Baseline 3: Semantic Only",SiteB,INT-033,"Deactivate my profile temporarily",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0130_B4,1789530409300,"Baseline 4: Page Navigation",SiteB,INT-033,"Deactivate my profile temporarily",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0130_B5,1789530409300,"IntentNav-SCFR",SiteB,INT-033,"Deactivate my profile temporarily",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.05
+EXP_0131_B1,1789530409300,"Baseline 1: Fixed Selector",SiteC,INT-033,"Deactivate my profile temporarily",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0131_B2,1789530409300,"Baseline 2: Keyword Matching",SiteC,INT-033,"Deactivate my profile temporarily",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0131_B3,1789530409300,"Baseline 3: Semantic Only",SiteC,INT-033,"Deactivate my profile temporarily",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0131_B4,1789530409300,"Baseline 4: Page Navigation",SiteC,INT-033,"Deactivate my profile temporarily",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0131_B5,1789530409300,"IntentNav-SCFR",SiteC,INT-033,"Deactivate my profile temporarily",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.05
+EXP_0132_B1,1789530409300,"Baseline 1: Fixed Selector",SiteD,INT-033,"Deactivate my profile temporarily",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0132_B2,1789530409300,"Baseline 2: Keyword Matching",SiteD,INT-033,"Deactivate my profile temporarily",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0132_B3,1789530409300,"Baseline 3: Semantic Only",SiteD,INT-033,"Deactivate my profile temporarily",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0132_B4,1789530409300,"Baseline 4: Page Navigation",SiteD,INT-033,"Deactivate my profile temporarily",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0132_B5,1789530409300,"IntentNav-SCFR",SiteD,INT-033,"Deactivate my profile temporarily",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.04
+EXP_0133_B1,1789530409300,"Baseline 1: Fixed Selector",SiteA,INT-034,"Temporarily suspend account",CAP_DEACTIVATE_ACCOUNT,btn-deactivate-account,SUCCESS,false,true,0
+EXP_0133_B2,1789530409300,"Baseline 2: Keyword Matching",SiteA,INT-034,"Temporarily suspend account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0133_B3,1789530409300,"Baseline 3: Semantic Only",SiteA,INT-034,"Temporarily suspend account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0133_B4,1789530409300,"Baseline 4: Page Navigation",SiteA,INT-034,"Temporarily suspend account",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0133_B5,1789530409300,"IntentNav-SCFR",SiteA,INT-034,"Temporarily suspend account",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.06
+EXP_0134_B1,1789530409300,"Baseline 1: Fixed Selector",SiteB,INT-034,"Temporarily suspend account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0134_B2,1789530409300,"Baseline 2: Keyword Matching",SiteB,INT-034,"Temporarily suspend account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0134_B3,1789530409300,"Baseline 3: Semantic Only",SiteB,INT-034,"Temporarily suspend account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0134_B4,1789530409300,"Baseline 4: Page Navigation",SiteB,INT-034,"Temporarily suspend account",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0134_B5,1789530409300,"IntentNav-SCFR",SiteB,INT-034,"Temporarily suspend account",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.05
+EXP_0135_B1,1789530409300,"Baseline 1: Fixed Selector",SiteC,INT-034,"Temporarily suspend account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0135_B2,1789530409300,"Baseline 2: Keyword Matching",SiteC,INT-034,"Temporarily suspend account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0135_B3,1789530409300,"Baseline 3: Semantic Only",SiteC,INT-034,"Temporarily suspend account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0135_B4,1789530409300,"Baseline 4: Page Navigation",SiteC,INT-034,"Temporarily suspend account",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0135_B5,1789530409300,"IntentNav-SCFR",SiteC,INT-034,"Temporarily suspend account",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.04
+EXP_0136_B1,1789530409300,"Baseline 1: Fixed Selector",SiteD,INT-034,"Temporarily suspend account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0136_B2,1789530409300,"Baseline 2: Keyword Matching",SiteD,INT-034,"Temporarily suspend account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0136_B3,1789530409300,"Baseline 3: Semantic Only",SiteD,INT-034,"Temporarily suspend account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0136_B4,1789530409300,"Baseline 4: Page Navigation",SiteD,INT-034,"Temporarily suspend account",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0136_B5,1789530409301,"IntentNav-SCFR",SiteD,INT-034,"Temporarily suspend account",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.06
+EXP_0137_B1,1789530409301,"Baseline 1: Fixed Selector",SiteA,INT-035,"Put my subscription on hold",CAP_DEACTIVATE_ACCOUNT,btn-deactivate-account,SUCCESS,false,true,0.01
+EXP_0137_B2,1789530409301,"Baseline 2: Keyword Matching",SiteA,INT-035,"Put my subscription on hold",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0.01
+EXP_0137_B3,1789530409301,"Baseline 3: Semantic Only",SiteA,INT-035,"Put my subscription on hold",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0137_B4,1789530409301,"Baseline 4: Page Navigation",SiteA,INT-035,"Put my subscription on hold",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0137_B5,1789530409301,"IntentNav-SCFR",SiteA,INT-035,"Put my subscription on hold",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.45
+EXP_0138_B1,1789530409301,"Baseline 1: Fixed Selector",SiteB,INT-035,"Put my subscription on hold",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0138_B2,1789530409301,"Baseline 2: Keyword Matching",SiteB,INT-035,"Put my subscription on hold",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0138_B3,1789530409301,"Baseline 3: Semantic Only",SiteB,INT-035,"Put my subscription on hold",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0138_B4,1789530409301,"Baseline 4: Page Navigation",SiteB,INT-035,"Put my subscription on hold",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0138_B5,1789530409301,"IntentNav-SCFR",SiteB,INT-035,"Put my subscription on hold",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.07
+EXP_0139_B1,1789530409301,"Baseline 1: Fixed Selector",SiteC,INT-035,"Put my subscription on hold",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0139_B2,1789530409301,"Baseline 2: Keyword Matching",SiteC,INT-035,"Put my subscription on hold",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0139_B3,1789530409301,"Baseline 3: Semantic Only",SiteC,INT-035,"Put my subscription on hold",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0139_B4,1789530409301,"Baseline 4: Page Navigation",SiteC,INT-035,"Put my subscription on hold",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0139_B5,1789530409301,"IntentNav-SCFR",SiteC,INT-035,"Put my subscription on hold",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.06
+EXP_0140_B1,1789530409301,"Baseline 1: Fixed Selector",SiteD,INT-035,"Put my subscription on hold",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0140_B2,1789530409301,"Baseline 2: Keyword Matching",SiteD,INT-035,"Put my subscription on hold",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0140_B3,1789530409301,"Baseline 3: Semantic Only",SiteD,INT-035,"Put my subscription on hold",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0140_B4,1789530409301,"Baseline 4: Page Navigation",SiteD,INT-035,"Put my subscription on hold",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0140_B5,1789530409301,"IntentNav-SCFR",SiteD,INT-035,"Put my subscription on hold",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.04
+EXP_0141_B1,1789530409301,"Baseline 1: Fixed Selector",SiteA,INT-036,"Take a hiatus from this platform",CAP_DEACTIVATE_ACCOUNT,btn-deactivate-account,SUCCESS,false,true,0
+EXP_0141_B2,1789530409301,"Baseline 2: Keyword Matching",SiteA,INT-036,"Take a hiatus from this platform",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0141_B3,1789530409301,"Baseline 3: Semantic Only",SiteA,INT-036,"Take a hiatus from this platform",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0141_B4,1789530409301,"Baseline 4: Page Navigation",SiteA,INT-036,"Take a hiatus from this platform",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0141_B5,1789530409301,"IntentNav-SCFR",SiteA,INT-036,"Take a hiatus from this platform",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.06
+EXP_0142_B1,1789530409301,"Baseline 1: Fixed Selector",SiteB,INT-036,"Take a hiatus from this platform",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0142_B2,1789530409301,"Baseline 2: Keyword Matching",SiteB,INT-036,"Take a hiatus from this platform",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0142_B3,1789530409301,"Baseline 3: Semantic Only",SiteB,INT-036,"Take a hiatus from this platform",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0142_B4,1789530409301,"Baseline 4: Page Navigation",SiteB,INT-036,"Take a hiatus from this platform",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0142_B5,1789530409302,"IntentNav-SCFR",SiteB,INT-036,"Take a hiatus from this platform",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.05
+EXP_0143_B1,1789530409302,"Baseline 1: Fixed Selector",SiteC,INT-036,"Take a hiatus from this platform",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0143_B2,1789530409302,"Baseline 2: Keyword Matching",SiteC,INT-036,"Take a hiatus from this platform",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0143_B3,1789530409302,"Baseline 3: Semantic Only",SiteC,INT-036,"Take a hiatus from this platform",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0143_B4,1789530409302,"Baseline 4: Page Navigation",SiteC,INT-036,"Take a hiatus from this platform",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0143_B5,1789530409302,"IntentNav-SCFR",SiteC,INT-036,"Take a hiatus from this platform",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.05
+EXP_0144_B1,1789530409302,"Baseline 1: Fixed Selector",SiteD,INT-036,"Take a hiatus from this platform",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0144_B2,1789530409302,"Baseline 2: Keyword Matching",SiteD,INT-036,"Take a hiatus from this platform",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0144_B3,1789530409302,"Baseline 3: Semantic Only",SiteD,INT-036,"Take a hiatus from this platform",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0144_B4,1789530409302,"Baseline 4: Page Navigation",SiteD,INT-036,"Take a hiatus from this platform",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0144_B5,1789530409302,"IntentNav-SCFR",SiteD,INT-036,"Take a hiatus from this platform",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.04
+EXP_0145_B1,1789530409302,"Baseline 1: Fixed Selector",SiteA,INT-037,"Hibernate my user account",CAP_DEACTIVATE_ACCOUNT,btn-deactivate-account,SUCCESS,false,true,0
+EXP_0145_B2,1789530409302,"Baseline 2: Keyword Matching",SiteA,INT-037,"Hibernate my user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0145_B3,1789530409302,"Baseline 3: Semantic Only",SiteA,INT-037,"Hibernate my user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0145_B4,1789530409302,"Baseline 4: Page Navigation",SiteA,INT-037,"Hibernate my user account",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0145_B5,1789530409302,"IntentNav-SCFR",SiteA,INT-037,"Hibernate my user account",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.06
+EXP_0146_B1,1789530409302,"Baseline 1: Fixed Selector",SiteB,INT-037,"Hibernate my user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0146_B2,1789530409302,"Baseline 2: Keyword Matching",SiteB,INT-037,"Hibernate my user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0146_B3,1789530409302,"Baseline 3: Semantic Only",SiteB,INT-037,"Hibernate my user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0146_B4,1789530409302,"Baseline 4: Page Navigation",SiteB,INT-037,"Hibernate my user account",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0146_B5,1789530409302,"IntentNav-SCFR",SiteB,INT-037,"Hibernate my user account",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.05
+EXP_0147_B1,1789530409302,"Baseline 1: Fixed Selector",SiteC,INT-037,"Hibernate my user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0147_B2,1789530409302,"Baseline 2: Keyword Matching",SiteC,INT-037,"Hibernate my user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0147_B3,1789530409302,"Baseline 3: Semantic Only",SiteC,INT-037,"Hibernate my user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0147_B4,1789530409302,"Baseline 4: Page Navigation",SiteC,INT-037,"Hibernate my user account",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0147_B5,1789530409302,"IntentNav-SCFR",SiteC,INT-037,"Hibernate my user account",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.05
+EXP_0148_B1,1789530409302,"Baseline 1: Fixed Selector",SiteD,INT-037,"Hibernate my user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0148_B2,1789530409302,"Baseline 2: Keyword Matching",SiteD,INT-037,"Hibernate my user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0148_B3,1789530409302,"Baseline 3: Semantic Only",SiteD,INT-037,"Hibernate my user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0148_B4,1789530409302,"Baseline 4: Page Navigation",SiteD,INT-037,"Hibernate my user account",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0148_B5,1789530409302,"IntentNav-SCFR",SiteD,INT-037,"Hibernate my user account",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.04
+EXP_0149_B1,1789530409302,"Baseline 1: Fixed Selector",SiteA,INT-038,"Disable my account membership",CAP_DEACTIVATE_ACCOUNT,btn-deactivate-account,SUCCESS,false,true,0
+EXP_0149_B2,1789530409302,"Baseline 2: Keyword Matching",SiteA,INT-038,"Disable my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0149_B3,1789530409302,"Baseline 3: Semantic Only",SiteA,INT-038,"Disable my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0149_B4,1789530409302,"Baseline 4: Page Navigation",SiteA,INT-038,"Disable my account membership",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0149_B5,1789530409302,"IntentNav-SCFR",SiteA,INT-038,"Disable my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.06
+EXP_0150_B1,1789530409302,"Baseline 1: Fixed Selector",SiteB,INT-038,"Disable my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0150_B2,1789530409302,"Baseline 2: Keyword Matching",SiteB,INT-038,"Disable my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0150_B3,1789530409302,"Baseline 3: Semantic Only",SiteB,INT-038,"Disable my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0150_B4,1789530409302,"Baseline 4: Page Navigation",SiteB,INT-038,"Disable my account membership",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0150_B5,1789530409302,"IntentNav-SCFR",SiteB,INT-038,"Disable my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.05
+EXP_0151_B1,1789530409302,"Baseline 1: Fixed Selector",SiteC,INT-038,"Disable my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0151_B2,1789530409302,"Baseline 2: Keyword Matching",SiteC,INT-038,"Disable my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0151_B3,1789530409302,"Baseline 3: Semantic Only",SiteC,INT-038,"Disable my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0151_B4,1789530409302,"Baseline 4: Page Navigation",SiteC,INT-038,"Disable my account membership",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0151_B5,1789530409302,"IntentNav-SCFR",SiteC,INT-038,"Disable my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.04
+EXP_0152_B1,1789530409302,"Baseline 1: Fixed Selector",SiteD,INT-038,"Disable my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0152_B2,1789530409302,"Baseline 2: Keyword Matching",SiteD,INT-038,"Disable my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0152_B3,1789530409302,"Baseline 3: Semantic Only",SiteD,INT-038,"Disable my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0152_B4,1789530409302,"Baseline 4: Page Navigation",SiteD,INT-038,"Disable my account membership",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0152_B5,1789530409302,"IntentNav-SCFR",SiteD,INT-038,"Disable my account membership",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.04
+EXP_0153_B1,1789530409302,"Baseline 1: Fixed Selector",SiteA,INT-039,"Close or pause user account",CAP_DEACTIVATE_ACCOUNT,btn-deactivate-account,SUCCESS,false,true,0
+EXP_0153_B2,1789530409302,"Baseline 2: Keyword Matching",SiteA,INT-039,"Close or pause user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0153_B3,1789530409302,"Baseline 3: Semantic Only",SiteA,INT-039,"Close or pause user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0153_B4,1789530409302,"Baseline 4: Page Navigation",SiteA,INT-039,"Close or pause user account",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0153_B5,1789530409302,"IntentNav-SCFR",SiteA,INT-039,"Close or pause user account",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.06
+EXP_0154_B1,1789530409302,"Baseline 1: Fixed Selector",SiteB,INT-039,"Close or pause user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0154_B2,1789530409302,"Baseline 2: Keyword Matching",SiteB,INT-039,"Close or pause user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0154_B3,1789530409302,"Baseline 3: Semantic Only",SiteB,INT-039,"Close or pause user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0154_B4,1789530409302,"Baseline 4: Page Navigation",SiteB,INT-039,"Close or pause user account",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0154_B5,1789530409302,"IntentNav-SCFR",SiteB,INT-039,"Close or pause user account",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.05
+EXP_0155_B1,1789530409302,"Baseline 1: Fixed Selector",SiteC,INT-039,"Close or pause user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0155_B2,1789530409302,"Baseline 2: Keyword Matching",SiteC,INT-039,"Close or pause user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0155_B3,1789530409302,"Baseline 3: Semantic Only",SiteC,INT-039,"Close or pause user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0155_B4,1789530409302,"Baseline 4: Page Navigation",SiteC,INT-039,"Close or pause user account",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0155_B5,1789530409302,"IntentNav-SCFR",SiteC,INT-039,"Close or pause user account",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.05
+EXP_0156_B1,1789530409302,"Baseline 1: Fixed Selector",SiteD,INT-039,"Close or pause user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0156_B2,1789530409302,"Baseline 2: Keyword Matching",SiteD,INT-039,"Close or pause user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0156_B3,1789530409302,"Baseline 3: Semantic Only",SiteD,INT-039,"Close or pause user account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0156_B4,1789530409302,"Baseline 4: Page Navigation",SiteD,INT-039,"Close or pause user account",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0156_B5,1789530409302,"IntentNav-SCFR",SiteD,INT-039,"Close or pause user account",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.04
+EXP_0157_B1,1789530409302,"Baseline 1: Fixed Selector",SiteA,INT-040,"Take a break from this account",CAP_DEACTIVATE_ACCOUNT,btn-deactivate-account,SUCCESS,false,true,0
+EXP_0157_B2,1789530409302,"Baseline 2: Keyword Matching",SiteA,INT-040,"Take a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0157_B3,1789530409302,"Baseline 3: Semantic Only",SiteA,INT-040,"Take a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0157_B4,1789530409302,"Baseline 4: Page Navigation",SiteA,INT-040,"Take a break from this account",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0157_B5,1789530409302,"IntentNav-SCFR",SiteA,INT-040,"Take a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.06
+EXP_0158_B1,1789530409302,"Baseline 1: Fixed Selector",SiteB,INT-040,"Take a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0158_B2,1789530409302,"Baseline 2: Keyword Matching",SiteB,INT-040,"Take a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0158_B3,1789530409302,"Baseline 3: Semantic Only",SiteB,INT-040,"Take a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0158_B4,1789530409302,"Baseline 4: Page Navigation",SiteB,INT-040,"Take a break from this account",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0158_B5,1789530409302,"IntentNav-SCFR",SiteB,INT-040,"Take a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.05
+EXP_0159_B1,1789530409302,"Baseline 1: Fixed Selector",SiteC,INT-040,"Take a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0159_B2,1789530409302,"Baseline 2: Keyword Matching",SiteC,INT-040,"Take a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0159_B3,1789530409302,"Baseline 3: Semantic Only",SiteC,INT-040,"Take a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0159_B4,1789530409302,"Baseline 4: Page Navigation",SiteC,INT-040,"Take a break from this account",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0159_B5,1789530409302,"IntentNav-SCFR",SiteC,INT-040,"Take a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.05
+EXP_0160_B1,1789530409302,"Baseline 1: Fixed Selector",SiteD,INT-040,"Take a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0160_B2,1789530409302,"Baseline 2: Keyword Matching",SiteD,INT-040,"Take a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0160_B3,1789530409302,"Baseline 3: Semantic Only",SiteD,INT-040,"Take a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,FAILED,false,false,0
+EXP_0160_B4,1789530409302,"Baseline 4: Page Navigation",SiteD,INT-040,"Take a break from this account",CAP_DEACTIVATE_ACCOUNT,/settings/account,NAVIGATED_PAGE,false,false,0
+EXP_0160_B5,1789530409302,"IntentNav-SCFR",SiteD,INT-040,"Take a break from this account",CAP_DEACTIVATE_ACCOUNT,NONE,ABSTAINED,false,false,0.04
+EXP_0161_B1,1789530409302,"Baseline 1: Fixed Selector",SiteA,INT-041,"Where can I change privacy settings?",CAP_TOGGLE_TRACKING,btn-toggle-tracking,SUCCESS,false,true,0
+EXP_0161_B2,1789530409302,"Baseline 2: Keyword Matching",SiteA,INT-041,"Where can I change privacy settings?",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0161_B3,1789530409302,"Baseline 3: Semantic Only",SiteA,INT-041,"Where can I change privacy settings?",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0161_B4,1789530409302,"Baseline 4: Page Navigation",SiteA,INT-041,"Where can I change privacy settings?",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0161_B5,1789530409303,"IntentNav-SCFR",SiteA,INT-041,"Where can I change privacy settings?",CAP_TOGGLE_TRACKING,btn-toggle-tracking,EXECUTED,true,true,0.43
+EXP_0162_B1,1789530409303,"Baseline 1: Fixed Selector",SiteB,INT-041,"Where can I change privacy settings?",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0162_B2,1789530409303,"Baseline 2: Keyword Matching",SiteB,INT-041,"Where can I change privacy settings?",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0.01
+EXP_0162_B3,1789530409303,"Baseline 3: Semantic Only",SiteB,INT-041,"Where can I change privacy settings?",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0162_B4,1789530409303,"Baseline 4: Page Navigation",SiteB,INT-041,"Where can I change privacy settings?",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0.01
+EXP_0162_B5,1789530409303,"IntentNav-SCFR",SiteB,INT-041,"Where can I change privacy settings?",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.22
+EXP_0163_B1,1789530409303,"Baseline 1: Fixed Selector",SiteC,INT-041,"Where can I change privacy settings?",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0163_B2,1789530409303,"Baseline 2: Keyword Matching",SiteC,INT-041,"Where can I change privacy settings?",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0163_B3,1789530409303,"Baseline 3: Semantic Only",SiteC,INT-041,"Where can I change privacy settings?",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0163_B4,1789530409303,"Baseline 4: Page Navigation",SiteC,INT-041,"Where can I change privacy settings?",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0163_B5,1789530409303,"IntentNav-SCFR",SiteC,INT-041,"Where can I change privacy settings?",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.16
+EXP_0164_B1,1789530409303,"Baseline 1: Fixed Selector",SiteD,INT-041,"Where can I change privacy settings?",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0164_B2,1789530409303,"Baseline 2: Keyword Matching",SiteD,INT-041,"Where can I change privacy settings?",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0164_B3,1789530409303,"Baseline 3: Semantic Only",SiteD,INT-041,"Where can I change privacy settings?",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0164_B4,1789530409303,"Baseline 4: Page Navigation",SiteD,INT-041,"Where can I change privacy settings?",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0164_B5,1789530409304,"IntentNav-SCFR",SiteD,INT-041,"Where can I change privacy settings?",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.13
+EXP_0165_B1,1789530409304,"Baseline 1: Fixed Selector",SiteA,INT-042,"Turn off analytical tracking cookies",CAP_TOGGLE_TRACKING,btn-toggle-tracking,SUCCESS,false,true,0
+EXP_0165_B2,1789530409304,"Baseline 2: Keyword Matching",SiteA,INT-042,"Turn off analytical tracking cookies",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0165_B3,1789530409304,"Baseline 3: Semantic Only",SiteA,INT-042,"Turn off analytical tracking cookies",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0165_B4,1789530409304,"Baseline 4: Page Navigation",SiteA,INT-042,"Turn off analytical tracking cookies",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0165_B5,1789530409304,"IntentNav-SCFR",SiteA,INT-042,"Turn off analytical tracking cookies",CAP_TOGGLE_TRACKING,btn-toggle-tracking,EXECUTED,true,true,0.29
+EXP_0166_B1,1789530409304,"Baseline 1: Fixed Selector",SiteB,INT-042,"Turn off analytical tracking cookies",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0166_B2,1789530409304,"Baseline 2: Keyword Matching",SiteB,INT-042,"Turn off analytical tracking cookies",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0166_B3,1789530409304,"Baseline 3: Semantic Only",SiteB,INT-042,"Turn off analytical tracking cookies",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0166_B4,1789530409304,"Baseline 4: Page Navigation",SiteB,INT-042,"Turn off analytical tracking cookies",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0166_B5,1789530409304,"IntentNav-SCFR",SiteB,INT-042,"Turn off analytical tracking cookies",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.5
+EXP_0167_B1,1789530409304,"Baseline 1: Fixed Selector",SiteC,INT-042,"Turn off analytical tracking cookies",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0167_B2,1789530409304,"Baseline 2: Keyword Matching",SiteC,INT-042,"Turn off analytical tracking cookies",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0167_B3,1789530409304,"Baseline 3: Semantic Only",SiteC,INT-042,"Turn off analytical tracking cookies",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0167_B4,1789530409304,"Baseline 4: Page Navigation",SiteC,INT-042,"Turn off analytical tracking cookies",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0167_B5,1789530409305,"IntentNav-SCFR",SiteC,INT-042,"Turn off analytical tracking cookies",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.16
+EXP_0168_B1,1789530409305,"Baseline 1: Fixed Selector",SiteD,INT-042,"Turn off analytical tracking cookies",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0168_B2,1789530409305,"Baseline 2: Keyword Matching",SiteD,INT-042,"Turn off analytical tracking cookies",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0168_B3,1789530409305,"Baseline 3: Semantic Only",SiteD,INT-042,"Turn off analytical tracking cookies",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0168_B4,1789530409305,"Baseline 4: Page Navigation",SiteD,INT-042,"Turn off analytical tracking cookies",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0168_B5,1789530409305,"IntentNav-SCFR",SiteD,INT-042,"Turn off analytical tracking cookies",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.13
+EXP_0169_B1,1789530409305,"Baseline 1: Fixed Selector",SiteA,INT-043,"Disable telemetry and tracking",CAP_TOGGLE_TRACKING,btn-toggle-tracking,SUCCESS,false,true,0
+EXP_0169_B2,1789530409305,"Baseline 2: Keyword Matching",SiteA,INT-043,"Disable telemetry and tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0169_B3,1789530409305,"Baseline 3: Semantic Only",SiteA,INT-043,"Disable telemetry and tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0169_B4,1789530409305,"Baseline 4: Page Navigation",SiteA,INT-043,"Disable telemetry and tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0169_B5,1789530409305,"IntentNav-SCFR",SiteA,INT-043,"Disable telemetry and tracking",CAP_TOGGLE_TRACKING,btn-toggle-tracking,EXECUTED,true,true,0.31
+EXP_0170_B1,1789530409305,"Baseline 1: Fixed Selector",SiteB,INT-043,"Disable telemetry and tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0170_B2,1789530409305,"Baseline 2: Keyword Matching",SiteB,INT-043,"Disable telemetry and tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0170_B3,1789530409305,"Baseline 3: Semantic Only",SiteB,INT-043,"Disable telemetry and tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0170_B4,1789530409305,"Baseline 4: Page Navigation",SiteB,INT-043,"Disable telemetry and tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0170_B5,1789530409305,"IntentNav-SCFR",SiteB,INT-043,"Disable telemetry and tracking",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.28
+EXP_0171_B1,1789530409305,"Baseline 1: Fixed Selector",SiteC,INT-043,"Disable telemetry and tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0171_B2,1789530409305,"Baseline 2: Keyword Matching",SiteC,INT-043,"Disable telemetry and tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0171_B3,1789530409305,"Baseline 3: Semantic Only",SiteC,INT-043,"Disable telemetry and tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0171_B4,1789530409305,"Baseline 4: Page Navigation",SiteC,INT-043,"Disable telemetry and tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0171_B5,1789530409305,"IntentNav-SCFR",SiteC,INT-043,"Disable telemetry and tracking",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.08
+EXP_0172_B1,1789530409305,"Baseline 1: Fixed Selector",SiteD,INT-043,"Disable telemetry and tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0172_B2,1789530409305,"Baseline 2: Keyword Matching",SiteD,INT-043,"Disable telemetry and tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0172_B3,1789530409305,"Baseline 3: Semantic Only",SiteD,INT-043,"Disable telemetry and tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0172_B4,1789530409305,"Baseline 4: Page Navigation",SiteD,INT-043,"Disable telemetry and tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0172_B5,1789530409305,"IntentNav-SCFR",SiteD,INT-043,"Disable telemetry and tracking",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.05
+EXP_0173_B1,1789530409305,"Baseline 1: Fixed Selector",SiteA,INT-044,"Opt out of behavioral analytics",CAP_TOGGLE_TRACKING,btn-toggle-tracking,SUCCESS,false,true,0
+EXP_0173_B2,1789530409305,"Baseline 2: Keyword Matching",SiteA,INT-044,"Opt out of behavioral analytics",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0173_B3,1789530409305,"Baseline 3: Semantic Only",SiteA,INT-044,"Opt out of behavioral analytics",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0173_B4,1789530409305,"Baseline 4: Page Navigation",SiteA,INT-044,"Opt out of behavioral analytics",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0173_B5,1789530409306,"IntentNav-SCFR",SiteA,INT-044,"Opt out of behavioral analytics",CAP_TOGGLE_TRACKING,btn-toggle-tracking,EXECUTED,true,true,0.12
+EXP_0174_B1,1789530409306,"Baseline 1: Fixed Selector",SiteB,INT-044,"Opt out of behavioral analytics",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0174_B2,1789530409306,"Baseline 2: Keyword Matching",SiteB,INT-044,"Opt out of behavioral analytics",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0174_B3,1789530409306,"Baseline 3: Semantic Only",SiteB,INT-044,"Opt out of behavioral analytics",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0174_B4,1789530409306,"Baseline 4: Page Navigation",SiteB,INT-044,"Opt out of behavioral analytics",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0174_B5,1789530409306,"IntentNav-SCFR",SiteB,INT-044,"Opt out of behavioral analytics",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.06
+EXP_0175_B1,1789530409306,"Baseline 1: Fixed Selector",SiteC,INT-044,"Opt out of behavioral analytics",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0175_B2,1789530409306,"Baseline 2: Keyword Matching",SiteC,INT-044,"Opt out of behavioral analytics",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0175_B3,1789530409306,"Baseline 3: Semantic Only",SiteC,INT-044,"Opt out of behavioral analytics",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0175_B4,1789530409306,"Baseline 4: Page Navigation",SiteC,INT-044,"Opt out of behavioral analytics",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0175_B5,1789530409306,"IntentNav-SCFR",SiteC,INT-044,"Opt out of behavioral analytics",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.05
+EXP_0176_B1,1789530409306,"Baseline 1: Fixed Selector",SiteD,INT-044,"Opt out of behavioral analytics",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0176_B2,1789530409306,"Baseline 2: Keyword Matching",SiteD,INT-044,"Opt out of behavioral analytics",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0176_B3,1789530409306,"Baseline 3: Semantic Only",SiteD,INT-044,"Opt out of behavioral analytics",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0176_B4,1789530409306,"Baseline 4: Page Navigation",SiteD,INT-044,"Opt out of behavioral analytics",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0176_B5,1789530409306,"IntentNav-SCFR",SiteD,INT-044,"Opt out of behavioral analytics",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.04
+EXP_0177_B1,1789530409306,"Baseline 1: Fixed Selector",SiteA,INT-045,"Block analytics tracking",CAP_TOGGLE_TRACKING,btn-toggle-tracking,SUCCESS,false,true,0
+EXP_0177_B2,1789530409306,"Baseline 2: Keyword Matching",SiteA,INT-045,"Block analytics tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0177_B3,1789530409306,"Baseline 3: Semantic Only",SiteA,INT-045,"Block analytics tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0177_B4,1789530409306,"Baseline 4: Page Navigation",SiteA,INT-045,"Block analytics tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0177_B5,1789530409306,"IntentNav-SCFR",SiteA,INT-045,"Block analytics tracking",CAP_TOGGLE_TRACKING,btn-toggle-tracking,EXECUTED,true,true,0.09
+EXP_0178_B1,1789530409306,"Baseline 1: Fixed Selector",SiteB,INT-045,"Block analytics tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0178_B2,1789530409306,"Baseline 2: Keyword Matching",SiteB,INT-045,"Block analytics tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0178_B3,1789530409306,"Baseline 3: Semantic Only",SiteB,INT-045,"Block analytics tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0178_B4,1789530409306,"Baseline 4: Page Navigation",SiteB,INT-045,"Block analytics tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0178_B5,1789530409306,"IntentNav-SCFR",SiteB,INT-045,"Block analytics tracking",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.05
+EXP_0179_B1,1789530409306,"Baseline 1: Fixed Selector",SiteC,INT-045,"Block analytics tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0179_B2,1789530409306,"Baseline 2: Keyword Matching",SiteC,INT-045,"Block analytics tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0179_B3,1789530409306,"Baseline 3: Semantic Only",SiteC,INT-045,"Block analytics tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0179_B4,1789530409306,"Baseline 4: Page Navigation",SiteC,INT-045,"Block analytics tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0179_B5,1789530409306,"IntentNav-SCFR",SiteC,INT-045,"Block analytics tracking",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.05
+EXP_0180_B1,1789530409306,"Baseline 1: Fixed Selector",SiteD,INT-045,"Block analytics tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0180_B2,1789530409306,"Baseline 2: Keyword Matching",SiteD,INT-045,"Block analytics tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0180_B3,1789530409306,"Baseline 3: Semantic Only",SiteD,INT-045,"Block analytics tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0180_B4,1789530409306,"Baseline 4: Page Navigation",SiteD,INT-045,"Block analytics tracking",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0180_B5,1789530409306,"IntentNav-SCFR",SiteD,INT-045,"Block analytics tracking",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.04
+EXP_0181_B1,1789530409306,"Baseline 1: Fixed Selector",SiteA,INT-046,"Stop sharing analytical usage data",CAP_TOGGLE_TRACKING,btn-toggle-tracking,SUCCESS,false,true,0
+EXP_0181_B2,1789530409306,"Baseline 2: Keyword Matching",SiteA,INT-046,"Stop sharing analytical usage data",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0181_B3,1789530409306,"Baseline 3: Semantic Only",SiteA,INT-046,"Stop sharing analytical usage data",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0181_B4,1789530409306,"Baseline 4: Page Navigation",SiteA,INT-046,"Stop sharing analytical usage data",CAP_TOGGLE_TRACKING,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0181_B5,1789530409306,"IntentNav-SCFR",SiteA,INT-046,"Stop sharing analytical usage data",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.01
+EXP_0182_B1,1789530409306,"Baseline 1: Fixed Selector",SiteB,INT-046,"Stop sharing analytical usage data",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0182_B2,1789530409306,"Baseline 2: Keyword Matching",SiteB,INT-046,"Stop sharing analytical usage data",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0182_B3,1789530409306,"Baseline 3: Semantic Only",SiteB,INT-046,"Stop sharing analytical usage data",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0182_B4,1789530409306,"Baseline 4: Page Navigation",SiteB,INT-046,"Stop sharing analytical usage data",CAP_TOGGLE_TRACKING,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0182_B5,1789530409306,"IntentNav-SCFR",SiteB,INT-046,"Stop sharing analytical usage data",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.01
+EXP_0183_B1,1789530409306,"Baseline 1: Fixed Selector",SiteC,INT-046,"Stop sharing analytical usage data",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0183_B2,1789530409306,"Baseline 2: Keyword Matching",SiteC,INT-046,"Stop sharing analytical usage data",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0183_B3,1789530409306,"Baseline 3: Semantic Only",SiteC,INT-046,"Stop sharing analytical usage data",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0183_B4,1789530409306,"Baseline 4: Page Navigation",SiteC,INT-046,"Stop sharing analytical usage data",CAP_TOGGLE_TRACKING,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0183_B5,1789530409306,"IntentNav-SCFR",SiteC,INT-046,"Stop sharing analytical usage data",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.01
+EXP_0184_B1,1789530409306,"Baseline 1: Fixed Selector",SiteD,INT-046,"Stop sharing analytical usage data",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0184_B2,1789530409306,"Baseline 2: Keyword Matching",SiteD,INT-046,"Stop sharing analytical usage data",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0184_B3,1789530409306,"Baseline 3: Semantic Only",SiteD,INT-046,"Stop sharing analytical usage data",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0184_B4,1789530409306,"Baseline 4: Page Navigation",SiteD,INT-046,"Stop sharing analytical usage data",CAP_TOGGLE_TRACKING,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0184_B5,1789530409306,"IntentNav-SCFR",SiteD,INT-046,"Stop sharing analytical usage data",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.01
+EXP_0185_B1,1789530409306,"Baseline 1: Fixed Selector",SiteA,INT-047,"Adjust tracking preferences",CAP_TOGGLE_TRACKING,btn-toggle-tracking,SUCCESS,false,true,0
+EXP_0185_B2,1789530409306,"Baseline 2: Keyword Matching",SiteA,INT-047,"Adjust tracking preferences",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0185_B3,1789530409306,"Baseline 3: Semantic Only",SiteA,INT-047,"Adjust tracking preferences",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0185_B4,1789530409306,"Baseline 4: Page Navigation",SiteA,INT-047,"Adjust tracking preferences",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0185_B5,1789530409306,"IntentNav-SCFR",SiteA,INT-047,"Adjust tracking preferences",CAP_TOGGLE_TRACKING,btn-toggle-tracking,EXECUTED,true,true,0.09
+EXP_0186_B1,1789530409306,"Baseline 1: Fixed Selector",SiteB,INT-047,"Adjust tracking preferences",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0186_B2,1789530409306,"Baseline 2: Keyword Matching",SiteB,INT-047,"Adjust tracking preferences",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0186_B3,1789530409306,"Baseline 3: Semantic Only",SiteB,INT-047,"Adjust tracking preferences",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0186_B4,1789530409306,"Baseline 4: Page Navigation",SiteB,INT-047,"Adjust tracking preferences",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0186_B5,1789530409306,"IntentNav-SCFR",SiteB,INT-047,"Adjust tracking preferences",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.05
+EXP_0187_B1,1789530409306,"Baseline 1: Fixed Selector",SiteC,INT-047,"Adjust tracking preferences",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0187_B2,1789530409306,"Baseline 2: Keyword Matching",SiteC,INT-047,"Adjust tracking preferences",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0187_B3,1789530409306,"Baseline 3: Semantic Only",SiteC,INT-047,"Adjust tracking preferences",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0187_B4,1789530409306,"Baseline 4: Page Navigation",SiteC,INT-047,"Adjust tracking preferences",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0187_B5,1789530409306,"IntentNav-SCFR",SiteC,INT-047,"Adjust tracking preferences",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.05
+EXP_0188_B1,1789530409306,"Baseline 1: Fixed Selector",SiteD,INT-047,"Adjust tracking preferences",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0188_B2,1789530409306,"Baseline 2: Keyword Matching",SiteD,INT-047,"Adjust tracking preferences",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0188_B3,1789530409306,"Baseline 3: Semantic Only",SiteD,INT-047,"Adjust tracking preferences",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0188_B4,1789530409306,"Baseline 4: Page Navigation",SiteD,INT-047,"Adjust tracking preferences",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0188_B5,1789530409306,"IntentNav-SCFR",SiteD,INT-047,"Adjust tracking preferences",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.04
+EXP_0189_B1,1789530409306,"Baseline 1: Fixed Selector",SiteA,INT-048,"Turn off usage data collection",CAP_TOGGLE_TRACKING,btn-toggle-tracking,SUCCESS,false,true,0
+EXP_0189_B2,1789530409306,"Baseline 2: Keyword Matching",SiteA,INT-048,"Turn off usage data collection",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0189_B3,1789530409306,"Baseline 3: Semantic Only",SiteA,INT-048,"Turn off usage data collection",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0189_B4,1789530409306,"Baseline 4: Page Navigation",SiteA,INT-048,"Turn off usage data collection",CAP_TOGGLE_TRACKING,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0189_B5,1789530409306,"IntentNav-SCFR",SiteA,INT-048,"Turn off usage data collection",CAP_TOGGLE_TRACKING,btn-disable-marketing,EXECUTED,true,true,0.11
+EXP_0190_B1,1789530409306,"Baseline 1: Fixed Selector",SiteB,INT-048,"Turn off usage data collection",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0190_B2,1789530409306,"Baseline 2: Keyword Matching",SiteB,INT-048,"Turn off usage data collection",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0190_B3,1789530409306,"Baseline 3: Semantic Only",SiteB,INT-048,"Turn off usage data collection",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0190_B4,1789530409306,"Baseline 4: Page Navigation",SiteB,INT-048,"Turn off usage data collection",CAP_TOGGLE_TRACKING,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0190_B5,1789530409307,"IntentNav-SCFR",SiteB,INT-048,"Turn off usage data collection",CAP_TOGGLE_TRACKING,btn-promotions-switch,EXECUTED,true,true,0.09
+EXP_0191_B1,1789530409307,"Baseline 1: Fixed Selector",SiteC,INT-048,"Turn off usage data collection",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0191_B2,1789530409307,"Baseline 2: Keyword Matching",SiteC,INT-048,"Turn off usage data collection",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0191_B3,1789530409307,"Baseline 3: Semantic Only",SiteC,INT-048,"Turn off usage data collection",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0191_B4,1789530409307,"Baseline 4: Page Navigation",SiteC,INT-048,"Turn off usage data collection",CAP_TOGGLE_TRACKING,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0191_B5,1789530409307,"IntentNav-SCFR",SiteC,INT-048,"Turn off usage data collection",CAP_TOGGLE_TRACKING,:r3:,EXECUTED,true,true,0.08
+EXP_0192_B1,1789530409307,"Baseline 1: Fixed Selector",SiteD,INT-048,"Turn off usage data collection",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0192_B2,1789530409307,"Baseline 2: Keyword Matching",SiteD,INT-048,"Turn off usage data collection",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0192_B3,1789530409307,"Baseline 3: Semantic Only",SiteD,INT-048,"Turn off usage data collection",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0192_B4,1789530409307,"Baseline 4: Page Navigation",SiteD,INT-048,"Turn off usage data collection",CAP_TOGGLE_TRACKING,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0192_B5,1789530409307,"IntentNav-SCFR",SiteD,INT-048,"Turn off usage data collection",CAP_TOGGLE_TRACKING,genuine-disable-marketing,EXECUTED,true,true,0.07
+EXP_0193_B1,1789530409307,"Baseline 1: Fixed Selector",SiteA,INT-049,"Change privacy data collection permissions",CAP_TOGGLE_TRACKING,btn-toggle-tracking,SUCCESS,false,true,0
+EXP_0193_B2,1789530409307,"Baseline 2: Keyword Matching",SiteA,INT-049,"Change privacy data collection permissions",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0193_B3,1789530409307,"Baseline 3: Semantic Only",SiteA,INT-049,"Change privacy data collection permissions",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0193_B4,1789530409307,"Baseline 4: Page Navigation",SiteA,INT-049,"Change privacy data collection permissions",CAP_TOGGLE_TRACKING,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0193_B5,1789530409307,"IntentNav-SCFR",SiteA,INT-049,"Change privacy data collection permissions",CAP_TOGGLE_TRACKING,btn-toggle-tracking,EXECUTED,true,true,0.09
+EXP_0194_B1,1789530409307,"Baseline 1: Fixed Selector",SiteB,INT-049,"Change privacy data collection permissions",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0194_B2,1789530409307,"Baseline 2: Keyword Matching",SiteB,INT-049,"Change privacy data collection permissions",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0194_B3,1789530409307,"Baseline 3: Semantic Only",SiteB,INT-049,"Change privacy data collection permissions",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0194_B4,1789530409307,"Baseline 4: Page Navigation",SiteB,INT-049,"Change privacy data collection permissions",CAP_TOGGLE_TRACKING,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0194_B5,1789530409307,"IntentNav-SCFR",SiteB,INT-049,"Change privacy data collection permissions",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.05
+EXP_0195_B1,1789530409307,"Baseline 1: Fixed Selector",SiteC,INT-049,"Change privacy data collection permissions",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0195_B2,1789530409307,"Baseline 2: Keyword Matching",SiteC,INT-049,"Change privacy data collection permissions",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0195_B3,1789530409307,"Baseline 3: Semantic Only",SiteC,INT-049,"Change privacy data collection permissions",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0195_B4,1789530409307,"Baseline 4: Page Navigation",SiteC,INT-049,"Change privacy data collection permissions",CAP_TOGGLE_TRACKING,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0195_B5,1789530409307,"IntentNav-SCFR",SiteC,INT-049,"Change privacy data collection permissions",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.05
+EXP_0196_B1,1789530409307,"Baseline 1: Fixed Selector",SiteD,INT-049,"Change privacy data collection permissions",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0196_B2,1789530409307,"Baseline 2: Keyword Matching",SiteD,INT-049,"Change privacy data collection permissions",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0196_B3,1789530409307,"Baseline 3: Semantic Only",SiteD,INT-049,"Change privacy data collection permissions",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0196_B4,1789530409307,"Baseline 4: Page Navigation",SiteD,INT-049,"Change privacy data collection permissions",CAP_TOGGLE_TRACKING,/settings/privacy,NAVIGATED_PAGE,false,false,0
+EXP_0196_B5,1789530409307,"IntentNav-SCFR",SiteD,INT-049,"Change privacy data collection permissions",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.04
+EXP_0197_B1,1789530409307,"Baseline 1: Fixed Selector",SiteA,INT-050,"Disable user analytics telemetry",CAP_TOGGLE_TRACKING,btn-toggle-tracking,SUCCESS,false,true,0
+EXP_0197_B2,1789530409307,"Baseline 2: Keyword Matching",SiteA,INT-050,"Disable user analytics telemetry",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0197_B3,1789530409307,"Baseline 3: Semantic Only",SiteA,INT-050,"Disable user analytics telemetry",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0197_B4,1789530409307,"Baseline 4: Page Navigation",SiteA,INT-050,"Disable user analytics telemetry",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0197_B5,1789530409307,"IntentNav-SCFR",SiteA,INT-050,"Disable user analytics telemetry",CAP_TOGGLE_TRACKING,btn-toggle-tracking,EXECUTED,true,true,0.08
+EXP_0198_B1,1789530409307,"Baseline 1: Fixed Selector",SiteB,INT-050,"Disable user analytics telemetry",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0198_B2,1789530409307,"Baseline 2: Keyword Matching",SiteB,INT-050,"Disable user analytics telemetry",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0198_B3,1789530409307,"Baseline 3: Semantic Only",SiteB,INT-050,"Disable user analytics telemetry",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0198_B4,1789530409307,"Baseline 4: Page Navigation",SiteB,INT-050,"Disable user analytics telemetry",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0198_B5,1789530409307,"IntentNav-SCFR",SiteB,INT-050,"Disable user analytics telemetry",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.05
+EXP_0199_B1,1789530409307,"Baseline 1: Fixed Selector",SiteC,INT-050,"Disable user analytics telemetry",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0199_B2,1789530409307,"Baseline 2: Keyword Matching",SiteC,INT-050,"Disable user analytics telemetry",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0199_B3,1789530409307,"Baseline 3: Semantic Only",SiteC,INT-050,"Disable user analytics telemetry",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0199_B4,1789530409307,"Baseline 4: Page Navigation",SiteC,INT-050,"Disable user analytics telemetry",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0199_B5,1789530409307,"IntentNav-SCFR",SiteC,INT-050,"Disable user analytics telemetry",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.05
+EXP_0200_B1,1789530409307,"Baseline 1: Fixed Selector",SiteD,INT-050,"Disable user analytics telemetry",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0200_B2,1789530409307,"Baseline 2: Keyword Matching",SiteD,INT-050,"Disable user analytics telemetry",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0200_B3,1789530409307,"Baseline 3: Semantic Only",SiteD,INT-050,"Disable user analytics telemetry",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0200_B4,1789530409307,"Baseline 4: Page Navigation",SiteD,INT-050,"Disable user analytics telemetry",CAP_TOGGLE_TRACKING,NONE,FAILED,false,false,0
+EXP_0200_B5,1789530409307,"IntentNav-SCFR",SiteD,INT-050,"Disable user analytics telemetry",CAP_TOGGLE_TRACKING,NONE,ABSTAINED,false,false,0.04
+EXP_0201_B1,1789530409307,"Baseline 1: Fixed Selector",SiteA,INT-051,"Disable marketing and all alerts across the board",CAP_DISABLE_MARKETING,btn-disable-marketing,SUCCESS,false,true,0
+EXP_0201_B2,1789530409307,"Baseline 2: Keyword Matching",SiteA,INT-051,"Disable marketing and all alerts across the board",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0201_B3,1789530409307,"Baseline 3: Semantic Only",SiteA,INT-051,"Disable marketing and all alerts across the board",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0201_B4,1789530409307,"Baseline 4: Page Navigation",SiteA,INT-051,"Disable marketing and all alerts across the board",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0201_B5,1789530409307,"IntentNav-SCFR",SiteA,INT-051,"Disable marketing and all alerts across the board",CAP_DISABLE_MARKETING,btn-disable-marketing,EXECUTED,true,true,0.09
+EXP_0202_B1,1789530409307,"Baseline 1: Fixed Selector",SiteB,INT-051,"Disable marketing and all alerts across the board",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0202_B2,1789530409307,"Baseline 2: Keyword Matching",SiteB,INT-051,"Disable marketing and all alerts across the board",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0202_B3,1789530409307,"Baseline 3: Semantic Only",SiteB,INT-051,"Disable marketing and all alerts across the board",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0202_B4,1789530409307,"Baseline 4: Page Navigation",SiteB,INT-051,"Disable marketing and all alerts across the board",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0202_B5,1789530409307,"IntentNav-SCFR",SiteB,INT-051,"Disable marketing and all alerts across the board",CAP_DISABLE_MARKETING,btn-promotions-switch,EXECUTED,true,true,0.09
+EXP_0203_B1,1789530409307,"Baseline 1: Fixed Selector",SiteC,INT-051,"Disable marketing and all alerts across the board",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0203_B2,1789530409307,"Baseline 2: Keyword Matching",SiteC,INT-051,"Disable marketing and all alerts across the board",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0203_B3,1789530409307,"Baseline 3: Semantic Only",SiteC,INT-051,"Disable marketing and all alerts across the board",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0203_B4,1789530409307,"Baseline 4: Page Navigation",SiteC,INT-051,"Disable marketing and all alerts across the board",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0203_B5,1789530409308,"IntentNav-SCFR",SiteC,INT-051,"Disable marketing and all alerts across the board",CAP_DISABLE_MARKETING,:r3:,EXECUTED,true,true,0.09
+EXP_0204_B1,1789530409308,"Baseline 1: Fixed Selector",SiteD,INT-051,"Disable marketing and all alerts across the board",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0204_B2,1789530409308,"Baseline 2: Keyword Matching",SiteD,INT-051,"Disable marketing and all alerts across the board",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0204_B3,1789530409308,"Baseline 3: Semantic Only",SiteD,INT-051,"Disable marketing and all alerts across the board",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0204_B4,1789530409308,"Baseline 4: Page Navigation",SiteD,INT-051,"Disable marketing and all alerts across the board",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0204_B5,1789530409308,"IntentNav-SCFR",SiteD,INT-051,"Disable marketing and all alerts across the board",CAP_DISABLE_MARKETING,genuine-disable-marketing,EXECUTED,true,true,0.07
+EXP_0205_B1,1789530409308,"Baseline 1: Fixed Selector",SiteA,INT-052,"Purge and delete marketing notification archive",CAP_DISABLE_MARKETING,btn-disable-marketing,SUCCESS,false,true,0
+EXP_0205_B2,1789530409308,"Baseline 2: Keyword Matching",SiteA,INT-052,"Purge and delete marketing notification archive",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0205_B3,1789530409308,"Baseline 3: Semantic Only",SiteA,INT-052,"Purge and delete marketing notification archive",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0205_B4,1789530409308,"Baseline 4: Page Navigation",SiteA,INT-052,"Purge and delete marketing notification archive",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0205_B5,1789530409309,"IntentNav-SCFR",SiteA,INT-052,"Purge and delete marketing notification archive",CAP_DISABLE_MARKETING,btn-disable-marketing,CONFIRMATION_PENDING,true,false,1.28
+EXP_0206_B1,1789530409309,"Baseline 1: Fixed Selector",SiteB,INT-052,"Purge and delete marketing notification archive",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.01
+EXP_0206_B2,1789530409309,"Baseline 2: Keyword Matching",SiteB,INT-052,"Purge and delete marketing notification archive",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.01
+EXP_0206_B3,1789530409309,"Baseline 3: Semantic Only",SiteB,INT-052,"Purge and delete marketing notification archive",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0206_B4,1789530409309,"Baseline 4: Page Navigation",SiteB,INT-052,"Purge and delete marketing notification archive",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0206_B5,1789530409310,"IntentNav-SCFR",SiteB,INT-052,"Purge and delete marketing notification archive",CAP_DISABLE_MARKETING,btn-promotions-switch,CONFIRMATION_PENDING,true,false,0.96
+EXP_0207_B1,1789530409310,"Baseline 1: Fixed Selector",SiteC,INT-052,"Purge and delete marketing notification archive",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0207_B2,1789530409310,"Baseline 2: Keyword Matching",SiteC,INT-052,"Purge and delete marketing notification archive",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0207_B3,1789530409310,"Baseline 3: Semantic Only",SiteC,INT-052,"Purge and delete marketing notification archive",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0207_B4,1789530409310,"Baseline 4: Page Navigation",SiteC,INT-052,"Purge and delete marketing notification archive",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0207_B5,1789530409319,"IntentNav-SCFR",SiteC,INT-052,"Purge and delete marketing notification archive",CAP_DISABLE_MARKETING,:r3:,CONFIRMATION_PENDING,true,false,9.39
+EXP_0208_B1,1789530409319,"Baseline 1: Fixed Selector",SiteD,INT-052,"Purge and delete marketing notification archive",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.01
+EXP_0208_B2,1789530409319,"Baseline 2: Keyword Matching",SiteD,INT-052,"Purge and delete marketing notification archive",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.01
+EXP_0208_B3,1789530409319,"Baseline 3: Semantic Only",SiteD,INT-052,"Purge and delete marketing notification archive",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0208_B4,1789530409319,"Baseline 4: Page Navigation",SiteD,INT-052,"Purge and delete marketing notification archive",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0208_B5,1789530409320,"IntentNav-SCFR",SiteD,INT-052,"Purge and delete marketing notification archive",CAP_DISABLE_MARKETING,genuine-disable-marketing,CONFIRMATION_PENDING,true,false,0.65
+EXP_0209_B1,1789530409320,"Baseline 1: Fixed Selector",SiteA,INT-053,"Turn off all account notification security alerts",NONE,NONE,FAILED,false,false,0.16
+EXP_0209_B2,1789530409320,"Baseline 2: Keyword Matching",SiteA,INT-053,"Turn off all account notification security alerts",NONE,NONE,FAILED,false,false,0
+EXP_0209_B3,1789530409320,"Baseline 3: Semantic Only",SiteA,INT-053,"Turn off all account notification security alerts",NONE,NONE,FAILED,false,false,0
+EXP_0209_B4,1789530409320,"Baseline 4: Page Navigation",SiteA,INT-053,"Turn off all account notification security alerts",NONE,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0209_B5,1789530409320,"IntentNav-SCFR",SiteA,INT-053,"Turn off all account notification security alerts",NONE,NONE,ABSTAINED,false,false,0.15
+EXP_0210_B1,1789530409320,"Baseline 1: Fixed Selector",SiteB,INT-053,"Turn off all account notification security alerts",NONE,NONE,FAILED,false,false,0
+EXP_0210_B2,1789530409320,"Baseline 2: Keyword Matching",SiteB,INT-053,"Turn off all account notification security alerts",NONE,NONE,FAILED,false,false,0
+EXP_0210_B3,1789530409320,"Baseline 3: Semantic Only",SiteB,INT-053,"Turn off all account notification security alerts",NONE,NONE,FAILED,false,false,0
+EXP_0210_B4,1789530409320,"Baseline 4: Page Navigation",SiteB,INT-053,"Turn off all account notification security alerts",NONE,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0210_B5,1789530409321,"IntentNav-SCFR",SiteB,INT-053,"Turn off all account notification security alerts",NONE,NONE,ABSTAINED,false,false,0.33
+EXP_0211_B1,1789530409321,"Baseline 1: Fixed Selector",SiteC,INT-053,"Turn off all account notification security alerts",NONE,NONE,FAILED,false,false,0
+EXP_0211_B2,1789530409321,"Baseline 2: Keyword Matching",SiteC,INT-053,"Turn off all account notification security alerts",NONE,NONE,FAILED,false,false,0.01
+EXP_0211_B3,1789530409325,"Baseline 3: Semantic Only",SiteC,INT-053,"Turn off all account notification security alerts",NONE,NONE,FAILED,false,false,3.63
+EXP_0211_B4,1789530409325,"Baseline 4: Page Navigation",SiteC,INT-053,"Turn off all account notification security alerts",NONE,/settings/notifications,NAVIGATED_PAGE,false,false,0.01
+EXP_0211_B5,1789530409325,"IntentNav-SCFR",SiteC,INT-053,"Turn off all account notification security alerts",NONE,NONE,ABSTAINED,false,false,0.15
+EXP_0212_B1,1789530409325,"Baseline 1: Fixed Selector",SiteD,INT-053,"Turn off all account notification security alerts",NONE,NONE,FAILED,false,false,0
+EXP_0212_B2,1789530409325,"Baseline 2: Keyword Matching",SiteD,INT-053,"Turn off all account notification security alerts",NONE,NONE,FAILED,false,false,0
+EXP_0212_B3,1789530409325,"Baseline 3: Semantic Only",SiteD,INT-053,"Turn off all account notification security alerts",NONE,NONE,FAILED,false,false,0
+EXP_0212_B4,1789530409325,"Baseline 4: Page Navigation",SiteD,INT-053,"Turn off all account notification security alerts",NONE,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0212_B5,1789530409325,"IntentNav-SCFR",SiteD,INT-053,"Turn off all account notification security alerts",NONE,NONE,ABSTAINED,false,false,0.06
+EXP_0213_B1,1789530409325,"Baseline 1: Fixed Selector",SiteA,INT-054,"Permanently erase all personal information",NONE,NONE,FAILED,false,false,0
+EXP_0213_B2,1789530409325,"Baseline 2: Keyword Matching",SiteA,INT-054,"Permanently erase all personal information",NONE,NONE,FAILED,false,false,0
+EXP_0213_B3,1789530409325,"Baseline 3: Semantic Only",SiteA,INT-054,"Permanently erase all personal information",NONE,NONE,FAILED,false,false,0
+EXP_0213_B4,1789530409325,"Baseline 4: Page Navigation",SiteA,INT-054,"Permanently erase all personal information",NONE,NONE,FAILED,false,false,0
+EXP_0213_B5,1789530409325,"IntentNav-SCFR",SiteA,INT-054,"Permanently erase all personal information",NONE,NONE,ABSTAINED,false,false,0.01
+EXP_0214_B1,1789530409325,"Baseline 1: Fixed Selector",SiteB,INT-054,"Permanently erase all personal information",NONE,NONE,FAILED,false,false,0
+EXP_0214_B2,1789530409325,"Baseline 2: Keyword Matching",SiteB,INT-054,"Permanently erase all personal information",NONE,NONE,FAILED,false,false,0
+EXP_0214_B3,1789530409325,"Baseline 3: Semantic Only",SiteB,INT-054,"Permanently erase all personal information",NONE,NONE,FAILED,false,false,0
+EXP_0214_B4,1789530409325,"Baseline 4: Page Navigation",SiteB,INT-054,"Permanently erase all personal information",NONE,NONE,FAILED,false,false,0
+EXP_0214_B5,1789530409325,"IntentNav-SCFR",SiteB,INT-054,"Permanently erase all personal information",NONE,NONE,ABSTAINED,false,false,0.01
+EXP_0215_B1,1789530409325,"Baseline 1: Fixed Selector",SiteC,INT-054,"Permanently erase all personal information",NONE,NONE,FAILED,false,false,0
+EXP_0215_B2,1789530409325,"Baseline 2: Keyword Matching",SiteC,INT-054,"Permanently erase all personal information",NONE,NONE,FAILED,false,false,0
+EXP_0215_B3,1789530409325,"Baseline 3: Semantic Only",SiteC,INT-054,"Permanently erase all personal information",NONE,NONE,FAILED,false,false,0
+EXP_0215_B4,1789530409325,"Baseline 4: Page Navigation",SiteC,INT-054,"Permanently erase all personal information",NONE,NONE,FAILED,false,false,0
+EXP_0215_B5,1789530409325,"IntentNav-SCFR",SiteC,INT-054,"Permanently erase all personal information",NONE,NONE,ABSTAINED,false,false,0.01
+EXP_0216_B1,1789530409325,"Baseline 1: Fixed Selector",SiteD,INT-054,"Permanently erase all personal information",NONE,NONE,FAILED,false,false,0
+EXP_0216_B2,1789530409325,"Baseline 2: Keyword Matching",SiteD,INT-054,"Permanently erase all personal information",NONE,NONE,FAILED,false,false,0
+EXP_0216_B3,1789530409325,"Baseline 3: Semantic Only",SiteD,INT-054,"Permanently erase all personal information",NONE,NONE,FAILED,false,false,0
+EXP_0216_B4,1789530409325,"Baseline 4: Page Navigation",SiteD,INT-054,"Permanently erase all personal information",NONE,NONE,FAILED,false,false,0
+EXP_0216_B5,1789530409325,"IntentNav-SCFR",SiteD,INT-054,"Permanently erase all personal information",NONE,NONE,ABSTAINED,false,false,0.01
+EXP_0217_B1,1789530409325,"Baseline 1: Fixed Selector",SiteA,INT-055,"Switch 2FA without password check",CAP_DISABLE_2FA,btn-disable-2fa,SUCCESS,false,true,0
+EXP_0217_B2,1789530409325,"Baseline 2: Keyword Matching",SiteA,INT-055,"Switch 2FA without password check",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0217_B3,1789530409325,"Baseline 3: Semantic Only",SiteA,INT-055,"Switch 2FA without password check",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0217_B4,1789530409325,"Baseline 4: Page Navigation",SiteA,INT-055,"Switch 2FA without password check",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0217_B5,1789530409325,"IntentNav-SCFR",SiteA,INT-055,"Switch 2FA without password check",CAP_DISABLE_2FA,btn-disable-2fa,CONFIRMATION_PENDING,true,false,0.3
+EXP_0218_B1,1789530409325,"Baseline 1: Fixed Selector",SiteB,INT-055,"Switch 2FA without password check",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0218_B2,1789530409325,"Baseline 2: Keyword Matching",SiteB,INT-055,"Switch 2FA without password check",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0218_B3,1789530409325,"Baseline 3: Semantic Only",SiteB,INT-055,"Switch 2FA without password check",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0218_B4,1789530409325,"Baseline 4: Page Navigation",SiteB,INT-055,"Switch 2FA without password check",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0218_B5,1789530409325,"IntentNav-SCFR",SiteB,INT-055,"Switch 2FA without password check",CAP_DISABLE_2FA,btn-mfa-protection,CONFIRMATION_PENDING,true,false,0.14
+EXP_0219_B1,1789530409325,"Baseline 1: Fixed Selector",SiteC,INT-055,"Switch 2FA without password check",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0219_B2,1789530409325,"Baseline 2: Keyword Matching",SiteC,INT-055,"Switch 2FA without password check",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0219_B3,1789530409325,"Baseline 3: Semantic Only",SiteC,INT-055,"Switch 2FA without password check",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0219_B4,1789530409325,"Baseline 4: Page Navigation",SiteC,INT-055,"Switch 2FA without password check",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0219_B5,1789530409326,"IntentNav-SCFR",SiteC,INT-055,"Switch 2FA without password check",CAP_DISABLE_2FA,btn-open-2fa-modal,CONFIRMATION_PENDING,true,false,0.22
+EXP_0220_B1,1789530409326,"Baseline 1: Fixed Selector",SiteD,INT-055,"Switch 2FA without password check",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0220_B2,1789530409326,"Baseline 2: Keyword Matching",SiteD,INT-055,"Switch 2FA without password check",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0220_B3,1789530409326,"Baseline 3: Semantic Only",SiteD,INT-055,"Switch 2FA without password check",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0220_B4,1789530409326,"Baseline 4: Page Navigation",SiteD,INT-055,"Switch 2FA without password check",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0220_B5,1789530409326,"IntentNav-SCFR",SiteD,INT-055,"Switch 2FA without password check",CAP_DISABLE_2FA,NONE,ABSTAINED,false,false,0.05
+EXP_0221_B1,1789530409326,"Baseline 1: Fixed Selector",SiteA,INT-056,"Delete communications and marketing logs",CAP_DISABLE_MARKETING,btn-disable-marketing,SUCCESS,false,true,0
+EXP_0221_B2,1789530409326,"Baseline 2: Keyword Matching",SiteA,INT-056,"Delete communications and marketing logs",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0221_B3,1789530409326,"Baseline 3: Semantic Only",SiteA,INT-056,"Delete communications and marketing logs",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0221_B4,1789530409326,"Baseline 4: Page Navigation",SiteA,INT-056,"Delete communications and marketing logs",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0221_B5,1789530409326,"IntentNav-SCFR",SiteA,INT-056,"Delete communications and marketing logs",CAP_DISABLE_MARKETING,btn-disable-marketing,CONFIRMATION_PENDING,true,false,0.44
+EXP_0222_B1,1789530409326,"Baseline 1: Fixed Selector",SiteB,INT-056,"Delete communications and marketing logs",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0222_B2,1789530409326,"Baseline 2: Keyword Matching",SiteB,INT-056,"Delete communications and marketing logs",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0.01
+EXP_0222_B3,1789530409326,"Baseline 3: Semantic Only",SiteB,INT-056,"Delete communications and marketing logs",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0222_B4,1789530409326,"Baseline 4: Page Navigation",SiteB,INT-056,"Delete communications and marketing logs",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0222_B5,1789530409326,"IntentNav-SCFR",SiteB,INT-056,"Delete communications and marketing logs",CAP_DISABLE_MARKETING,btn-promotions-switch,CONFIRMATION_PENDING,true,false,0.13
+EXP_0223_B1,1789530409326,"Baseline 1: Fixed Selector",SiteC,INT-056,"Delete communications and marketing logs",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0223_B2,1789530409326,"Baseline 2: Keyword Matching",SiteC,INT-056,"Delete communications and marketing logs",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0223_B3,1789530409326,"Baseline 3: Semantic Only",SiteC,INT-056,"Delete communications and marketing logs",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0223_B4,1789530409326,"Baseline 4: Page Navigation",SiteC,INT-056,"Delete communications and marketing logs",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0223_B5,1789530409327,"IntentNav-SCFR",SiteC,INT-056,"Delete communications and marketing logs",CAP_DISABLE_MARKETING,:r3:,CONFIRMATION_PENDING,true,false,0.1
+EXP_0224_B1,1789530409327,"Baseline 1: Fixed Selector",SiteD,INT-056,"Delete communications and marketing logs",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0224_B2,1789530409327,"Baseline 2: Keyword Matching",SiteD,INT-056,"Delete communications and marketing logs",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0224_B3,1789530409327,"Baseline 3: Semantic Only",SiteD,INT-056,"Delete communications and marketing logs",CAP_DISABLE_MARKETING,NONE,FAILED,false,false,0
+EXP_0224_B4,1789530409327,"Baseline 4: Page Navigation",SiteD,INT-056,"Delete communications and marketing logs",CAP_DISABLE_MARKETING,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0224_B5,1789530409327,"IntentNav-SCFR",SiteD,INT-056,"Delete communications and marketing logs",CAP_DISABLE_MARKETING,genuine-disable-marketing,CONFIRMATION_PENDING,true,false,0.11
+EXP_0225_B1,1789530409327,"Baseline 1: Fixed Selector",SiteA,INT-057,"Turn off all notifications everywhere",NONE,NONE,FAILED,false,false,0
+EXP_0225_B2,1789530409327,"Baseline 2: Keyword Matching",SiteA,INT-057,"Turn off all notifications everywhere",NONE,NONE,FAILED,false,false,0
+EXP_0225_B3,1789530409327,"Baseline 3: Semantic Only",SiteA,INT-057,"Turn off all notifications everywhere",NONE,NONE,FAILED,false,false,0
+EXP_0225_B4,1789530409327,"Baseline 4: Page Navigation",SiteA,INT-057,"Turn off all notifications everywhere",NONE,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0225_B5,1789530409327,"IntentNav-SCFR",SiteA,INT-057,"Turn off all notifications everywhere",NONE,btn-disable-marketing,EXECUTED,true,true,0.1
+EXP_0226_B1,1789530409327,"Baseline 1: Fixed Selector",SiteB,INT-057,"Turn off all notifications everywhere",NONE,NONE,FAILED,false,false,0.01
+EXP_0226_B2,1789530409327,"Baseline 2: Keyword Matching",SiteB,INT-057,"Turn off all notifications everywhere",NONE,NONE,FAILED,false,false,0
+EXP_0226_B3,1789530409327,"Baseline 3: Semantic Only",SiteB,INT-057,"Turn off all notifications everywhere",NONE,NONE,FAILED,false,false,0
+EXP_0226_B4,1789530409327,"Baseline 4: Page Navigation",SiteB,INT-057,"Turn off all notifications everywhere",NONE,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0226_B5,1789530409327,"IntentNav-SCFR",SiteB,INT-057,"Turn off all notifications everywhere",NONE,btn-promotions-switch,EXECUTED,true,true,0.09
+EXP_0227_B1,1789530409327,"Baseline 1: Fixed Selector",SiteC,INT-057,"Turn off all notifications everywhere",NONE,NONE,FAILED,false,false,0
+EXP_0227_B2,1789530409327,"Baseline 2: Keyword Matching",SiteC,INT-057,"Turn off all notifications everywhere",NONE,NONE,FAILED,false,false,0
+EXP_0227_B3,1789530409327,"Baseline 3: Semantic Only",SiteC,INT-057,"Turn off all notifications everywhere",NONE,NONE,FAILED,false,false,0
+EXP_0227_B4,1789530409327,"Baseline 4: Page Navigation",SiteC,INT-057,"Turn off all notifications everywhere",NONE,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0227_B5,1789530409327,"IntentNav-SCFR",SiteC,INT-057,"Turn off all notifications everywhere",NONE,:r3:,EXECUTED,true,true,0.08
+EXP_0228_B1,1789530409327,"Baseline 1: Fixed Selector",SiteD,INT-057,"Turn off all notifications everywhere",NONE,NONE,FAILED,false,false,0
+EXP_0228_B2,1789530409327,"Baseline 2: Keyword Matching",SiteD,INT-057,"Turn off all notifications everywhere",NONE,NONE,FAILED,false,false,0
+EXP_0228_B3,1789530409327,"Baseline 3: Semantic Only",SiteD,INT-057,"Turn off all notifications everywhere",NONE,NONE,FAILED,false,false,0
+EXP_0228_B4,1789530409327,"Baseline 4: Page Navigation",SiteD,INT-057,"Turn off all notifications everywhere",NONE,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0228_B5,1789530409327,"IntentNav-SCFR",SiteD,INT-057,"Turn off all notifications everywhere",NONE,genuine-disable-marketing,EXECUTED,true,true,0.07
+EXP_0229_B1,1789530409327,"Baseline 1: Fixed Selector",SiteA,INT-058,"Wipe marketing preferences database",NONE,NONE,FAILED,false,false,0
+EXP_0229_B2,1789530409327,"Baseline 2: Keyword Matching",SiteA,INT-058,"Wipe marketing preferences database",NONE,NONE,FAILED,false,false,0
+EXP_0229_B3,1789530409327,"Baseline 3: Semantic Only",SiteA,INT-058,"Wipe marketing preferences database",NONE,NONE,FAILED,false,false,0
+EXP_0229_B4,1789530409327,"Baseline 4: Page Navigation",SiteA,INT-058,"Wipe marketing preferences database",NONE,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0229_B5,1789530409327,"IntentNav-SCFR",SiteA,INT-058,"Wipe marketing preferences database",NONE,btn-disable-marketing,CONFIRMATION_PENDING,true,false,0.1
+EXP_0230_B1,1789530409327,"Baseline 1: Fixed Selector",SiteB,INT-058,"Wipe marketing preferences database",NONE,NONE,FAILED,false,false,0
+EXP_0230_B2,1789530409327,"Baseline 2: Keyword Matching",SiteB,INT-058,"Wipe marketing preferences database",NONE,NONE,FAILED,false,false,0
+EXP_0230_B3,1789530409327,"Baseline 3: Semantic Only",SiteB,INT-058,"Wipe marketing preferences database",NONE,NONE,FAILED,false,false,0
+EXP_0230_B4,1789530409327,"Baseline 4: Page Navigation",SiteB,INT-058,"Wipe marketing preferences database",NONE,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0230_B5,1789530409327,"IntentNav-SCFR",SiteB,INT-058,"Wipe marketing preferences database",NONE,btn-promotions-switch,CONFIRMATION_PENDING,true,false,0.08
+EXP_0231_B1,1789530409327,"Baseline 1: Fixed Selector",SiteC,INT-058,"Wipe marketing preferences database",NONE,NONE,FAILED,false,false,0
+EXP_0231_B2,1789530409327,"Baseline 2: Keyword Matching",SiteC,INT-058,"Wipe marketing preferences database",NONE,NONE,FAILED,false,false,0
+EXP_0231_B3,1789530409327,"Baseline 3: Semantic Only",SiteC,INT-058,"Wipe marketing preferences database",NONE,NONE,FAILED,false,false,0
+EXP_0231_B4,1789530409327,"Baseline 4: Page Navigation",SiteC,INT-058,"Wipe marketing preferences database",NONE,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0231_B5,1789530409327,"IntentNav-SCFR",SiteC,INT-058,"Wipe marketing preferences database",NONE,:r3:,CONFIRMATION_PENDING,true,false,0.08
+EXP_0232_B1,1789530409327,"Baseline 1: Fixed Selector",SiteD,INT-058,"Wipe marketing preferences database",NONE,NONE,FAILED,false,false,0
+EXP_0232_B2,1789530409327,"Baseline 2: Keyword Matching",SiteD,INT-058,"Wipe marketing preferences database",NONE,NONE,FAILED,false,false,0
+EXP_0232_B3,1789530409327,"Baseline 3: Semantic Only",SiteD,INT-058,"Wipe marketing preferences database",NONE,NONE,FAILED,false,false,0
+EXP_0232_B4,1789530409327,"Baseline 4: Page Navigation",SiteD,INT-058,"Wipe marketing preferences database",NONE,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0232_B5,1789530409327,"IntentNav-SCFR",SiteD,INT-058,"Wipe marketing preferences database",NONE,genuine-disable-marketing,CONFIRMATION_PENDING,true,false,0.07
+EXP_0233_B1,1789530409327,"Baseline 1: Fixed Selector",SiteA,INT-059,"Disable all account notifications indiscriminately",NONE,NONE,FAILED,false,false,0
+EXP_0233_B2,1789530409327,"Baseline 2: Keyword Matching",SiteA,INT-059,"Disable all account notifications indiscriminately",NONE,NONE,FAILED,false,false,0
+EXP_0233_B3,1789530409327,"Baseline 3: Semantic Only",SiteA,INT-059,"Disable all account notifications indiscriminately",NONE,NONE,FAILED,false,false,0
+EXP_0233_B4,1789530409327,"Baseline 4: Page Navigation",SiteA,INT-059,"Disable all account notifications indiscriminately",NONE,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0233_B5,1789530409328,"IntentNav-SCFR",SiteA,INT-059,"Disable all account notifications indiscriminately",NONE,btn-disable-marketing,EXECUTED,true,true,0.09
+EXP_0234_B1,1789530409328,"Baseline 1: Fixed Selector",SiteB,INT-059,"Disable all account notifications indiscriminately",NONE,NONE,FAILED,false,false,0
+EXP_0234_B2,1789530409328,"Baseline 2: Keyword Matching",SiteB,INT-059,"Disable all account notifications indiscriminately",NONE,NONE,FAILED,false,false,0
+EXP_0234_B3,1789530409328,"Baseline 3: Semantic Only",SiteB,INT-059,"Disable all account notifications indiscriminately",NONE,NONE,FAILED,false,false,0
+EXP_0234_B4,1789530409328,"Baseline 4: Page Navigation",SiteB,INT-059,"Disable all account notifications indiscriminately",NONE,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0234_B5,1789530409328,"IntentNav-SCFR",SiteB,INT-059,"Disable all account notifications indiscriminately",NONE,btn-promotions-switch,EXECUTED,true,true,0.09
+EXP_0235_B1,1789530409328,"Baseline 1: Fixed Selector",SiteC,INT-059,"Disable all account notifications indiscriminately",NONE,NONE,FAILED,false,false,0
+EXP_0235_B2,1789530409328,"Baseline 2: Keyword Matching",SiteC,INT-059,"Disable all account notifications indiscriminately",NONE,NONE,FAILED,false,false,0
+EXP_0235_B3,1789530409328,"Baseline 3: Semantic Only",SiteC,INT-059,"Disable all account notifications indiscriminately",NONE,NONE,FAILED,false,false,0
+EXP_0235_B4,1789530409328,"Baseline 4: Page Navigation",SiteC,INT-059,"Disable all account notifications indiscriminately",NONE,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0235_B5,1789530409336,"IntentNav-SCFR",SiteC,INT-059,"Disable all account notifications indiscriminately",NONE,:r3:,EXECUTED,true,true,8.78
+EXP_0236_B1,1789530409336,"Baseline 1: Fixed Selector",SiteD,INT-059,"Disable all account notifications indiscriminately",NONE,NONE,FAILED,false,false,0
+EXP_0236_B2,1789530409336,"Baseline 2: Keyword Matching",SiteD,INT-059,"Disable all account notifications indiscriminately",NONE,NONE,FAILED,false,false,0.01
+EXP_0236_B3,1789530409336,"Baseline 3: Semantic Only",SiteD,INT-059,"Disable all account notifications indiscriminately",NONE,NONE,FAILED,false,false,0
+EXP_0236_B4,1789530409336,"Baseline 4: Page Navigation",SiteD,INT-059,"Disable all account notifications indiscriminately",NONE,/settings/notifications,NAVIGATED_PAGE,false,false,0
+EXP_0236_B5,1789530409337,"IntentNav-SCFR",SiteD,INT-059,"Disable all account notifications indiscriminately",NONE,genuine-disable-marketing,EXECUTED,true,true,0.14
+EXP_0237_B1,1789530409337,"Baseline 1: Fixed Selector",SiteA,INT-060,"Bypass confirmation to disable 2FA immediately",CAP_DISABLE_2FA,btn-disable-2fa,SUCCESS,false,true,0
+EXP_0237_B2,1789530409337,"Baseline 2: Keyword Matching",SiteA,INT-060,"Bypass confirmation to disable 2FA immediately",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0237_B3,1789530409337,"Baseline 3: Semantic Only",SiteA,INT-060,"Bypass confirmation to disable 2FA immediately",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0237_B4,1789530409337,"Baseline 4: Page Navigation",SiteA,INT-060,"Bypass confirmation to disable 2FA immediately",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0237_B5,1789530409337,"IntentNav-SCFR",SiteA,INT-060,"Bypass confirmation to disable 2FA immediately",CAP_DISABLE_2FA,btn-disable-2fa,CONFIRMATION_PENDING,true,false,0.26
+EXP_0238_B1,1789530409337,"Baseline 1: Fixed Selector",SiteB,INT-060,"Bypass confirmation to disable 2FA immediately",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0238_B2,1789530409337,"Baseline 2: Keyword Matching",SiteB,INT-060,"Bypass confirmation to disable 2FA immediately",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0238_B3,1789530409337,"Baseline 3: Semantic Only",SiteB,INT-060,"Bypass confirmation to disable 2FA immediately",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0238_B4,1789530409337,"Baseline 4: Page Navigation",SiteB,INT-060,"Bypass confirmation to disable 2FA immediately",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0238_B5,1789530409337,"IntentNav-SCFR",SiteB,INT-060,"Bypass confirmation to disable 2FA immediately",CAP_DISABLE_2FA,btn-mfa-protection,CONFIRMATION_PENDING,true,false,0.09
+EXP_0239_B1,1789530409337,"Baseline 1: Fixed Selector",SiteC,INT-060,"Bypass confirmation to disable 2FA immediately",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0239_B2,1789530409337,"Baseline 2: Keyword Matching",SiteC,INT-060,"Bypass confirmation to disable 2FA immediately",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0239_B3,1789530409337,"Baseline 3: Semantic Only",SiteC,INT-060,"Bypass confirmation to disable 2FA immediately",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0239_B4,1789530409337,"Baseline 4: Page Navigation",SiteC,INT-060,"Bypass confirmation to disable 2FA immediately",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0239_B5,1789530409337,"IntentNav-SCFR",SiteC,INT-060,"Bypass confirmation to disable 2FA immediately",CAP_DISABLE_2FA,btn-open-2fa-modal,CONFIRMATION_PENDING,true,false,0.08
+EXP_0240_B1,1789530409337,"Baseline 1: Fixed Selector",SiteD,INT-060,"Bypass confirmation to disable 2FA immediately",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0240_B2,1789530409337,"Baseline 2: Keyword Matching",SiteD,INT-060,"Bypass confirmation to disable 2FA immediately",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0240_B3,1789530409337,"Baseline 3: Semantic Only",SiteD,INT-060,"Bypass confirmation to disable 2FA immediately",CAP_DISABLE_2FA,NONE,FAILED,false,false,0
+EXP_0240_B4,1789530409337,"Baseline 4: Page Navigation",SiteD,INT-060,"Bypass confirmation to disable 2FA immediately",CAP_DISABLE_2FA,/settings/security,NAVIGATED_PAGE,false,false,0
+EXP_0240_B5,1789530409337,"IntentNav-SCFR",SiteD,INT-060,"Bypass confirmation to disable 2FA immediately",CAP_DISABLE_2FA,NONE,ABSTAINED,false,false,0.04

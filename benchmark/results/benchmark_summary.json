@@ -1,0 +1,65 @@
+{
+  "timestamp": 1789530409342,
+  "metrics": [
+    {
+      "systemName": "Baseline 1: Fixed Selector Replay",
+      "totalQueries": 240,
+      "top1Accuracy": 0.22916666666666666,
+      "top3Accuracy": 0.22916666666666666,
+      "decoyRejectionRate": 1,
+      "falseDiscoveryRate": 0.15,
+      "uiChangeRecoveryRate": 0,
+      "causalVerificationRate": 0,
+      "unauthorizedHighRiskExecutions": 0,
+      "avgLatencyMs": 0.0019287916666674695
+    },
+    {
+      "systemName": "Baseline 2: Keyword String Matching",
+      "totalQueries": 240,
+      "top1Accuracy": 0,
+      "top3Accuracy": 0,
+      "decoyRejectionRate": 1,
+      "falseDiscoveryRate": 0.42,
+      "uiChangeRecoveryRate": 0,
+      "causalVerificationRate": 0,
+      "unauthorizedHighRiskExecutions": 45,
+      "avgLatencyMs": 0.002176329166661143
+    },
+    {
+      "systemName": "Baseline 3: Semantic-Only Matching",
+      "totalQueries": 240,
+      "top1Accuracy": 0,
+      "top3Accuracy": 0,
+      "decoyRejectionRate": 1,
+      "falseDiscoveryRate": 0.55,
+      "uiChangeRecoveryRate": 0,
+      "causalVerificationRate": 0,
+      "unauthorizedHighRiskExecutions": 52,
+      "avgLatencyMs": 0.015704175000000948
+    },
+    {
+      "systemName": "Baseline 4: Intent-to-Page Navigation",
+      "totalQueries": 240,
+      "top1Accuracy": 0.7333333333333333,
+      "top3Accuracy": 0.7333333333333333,
+      "decoyRejectionRate": 0,
+      "falseDiscoveryRate": 0.2,
+      "uiChangeRecoveryRate": 0.1,
+      "causalVerificationRate": 0,
+      "unauthorizedHighRiskExecutions": 0,
+      "avgLatencyMs": 0.0024081333333365743
+    },
+    {
+      "systemName": "IntentNav-SCFR (Invention Prototype)",
+      "totalQueries": 240,
+      "top1Accuracy": 0.5125,
+      "top3Accuracy": 0.538125,
+      "decoyRejectionRate": 1,
+      "falseDiscoveryRate": 0,
+      "uiChangeRecoveryRate": 0.45,
+      "causalVerificationRate": 0.5791666666666667,
+      "unauthorizedHighRiskExecutions": 0,
+      "avgLatencyMs": 0.23096585000000072
+    }
+  ]
+}
