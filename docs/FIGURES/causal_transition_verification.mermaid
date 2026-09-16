@@ -1,0 +1,23 @@
+sequenceDiagram
+    autonumber
+    participant Controller as IntentNav Controller
+    participant TargetDOM as Webpage Interactive Target
+    participant Collector as Witness Collector
+    participant Verifier as Causal Transition Verifier
+
+    Note over Controller,TargetDOM: Candidate Selected; Transition Signature Defined
+    Controller->>Collector: Register Activation Event (ID: act_101, t0 = 1000ms)
+    Controller->>TargetDOM: Dispatch Activation Event (Click / Keydown)
+    
+    par Multi-Class Witness Generation
+        TargetDOM->>Collector: Witness 1: DOM Mutation (t = 1040ms, delta matched)
+        TargetDOM->>Collector: Witness 2: Accessibility State Mutation (t = 1080ms, stateChanged)
+        TargetDOM->>Collector: Witness 3: Route State / History Mutation (t = 1110ms)
+    end
+
+    Controller->>Collector: Retrieve Witnesses for Window [1000ms, 3000ms]
+    Collector->>Verifier: Send Activation Event + Witness Log
+    
+    Note over Verifier: Causality Check:<br/>1. t_witness > t_activation? (YES)<br/>2. t_witness - t_activation <= 2000ms? (YES)<br/>3. Delta matches expectedStateDelta? (YES)<br/>4. >= 2 independent witness classes? (YES: DOM + A11y + History)
+
+    Verifier-->>Controller: CAUSALLY VERIFIED (Promote to ACTIVE_VALIDATED)
