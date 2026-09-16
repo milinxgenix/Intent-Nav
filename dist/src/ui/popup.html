@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IntentNav-SCFR</title>
+  <script type="module" crossorigin src="/assets/popup-C3Vvwc_a.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/popup-DboSd8kE.css">
+</head>
+<body>
+  <div class="header">
+    <div class="logo-title">
+      <span class="icon">🧭</span>
+      <div>
+        <h1>IntentNav-SCFR</h1>
+        <p class="subtitle">Adaptive Capability Identity & Invariant Navigation</p>
+      </div>
+    </div>
+    <div class="mode-toggle">
+      <label for="researchModeCheckbox">Research Mode</label>
+      <input type="checkbox" id="researchModeCheckbox">
+    </div>
+  </div>
+
+  <main class="container">
+    <!-- Intent Input Section -->
+    <section class="card input-section">
+      <label for="intentInput"><strong>Natural Language Objective:</strong></label>
+      <div class="input-row">
+        <input type="text" id="intentInput" placeholder="e.g., Turn off marketing emails or Export personal data" />
+        <button id="navigateBtn" class="primary-btn">Execute</button>
+      </div>
+      <div class="quick-examples">
+        <button class="chip" data-intent="Disable marketing emails">Disable marketing emails</button>
+        <button class="chip" data-intent="Export personal data">Export personal data</button>
+        <button class="chip" data-intent="Turn off two-factor authentication">Turn off 2FA</button>
+      </div>
+    </section>
+
+    <!-- Status Banner -->
+    <div id="statusBanner" class="status-banner status-idle">
+      <span id="statusIcon">⚪</span>
+      <span id="statusText">System Ready. Enter an objective.</span>
+    </div>
+
+    <!-- High Risk Confirmation Card (Initially hidden) -->
+    <div id="confirmationCard" class="card confirmation-card hidden">
+      <h3>⚠️ High-Risk Action Confirmation Required</h3>
+      <p id="confirmationMessage">This action involves security or account modifications.</p>
+      <div class="btn-group">
+        <button id="confirmActionBtn" class="danger-btn">Confirm & Execute</button>
+        <button id="cancelActionBtn" class="secondary-btn">Cancel / Abstain</button>
+      </div>
+    </div>
+
+    <!-- Normal Mode Summary -->
+    <section id="normalSummary" class="card">
+      <h3>Navigation Summary</h3>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span class="label">Identified Capability:</span>
+          <span id="summaryCap" class="value">-</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Route Version:</span>
+          <span id="summaryRoute" class="value">-</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Risk Category:</span>
+          <span id="summaryRisk" class="badge badge-low">LOW</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Authorization:</span>
+          <span id="summaryAuth" class="badge badge-pending">PENDING</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Research / Debug Mode Panels (Hidden by default) -->
+    <div id="researchPanel" class="research-panel hidden">
+      <!-- Normalized Intent -->
+      <section class="card">
+        <h3>1. Normalized Functional Intent</h3>
+        <pre id="normalizedIntentCode">No intent processed yet.</pre>
+      </section>
+
+      <!-- Typed Drift Vector -->
+      <section class="card">
+        <h3>2. Typed Drift Localization Vector</h3>
+        <div id="driftBars" class="drift-bars">
+          <!-- Populated by JS -->
+        </div>
+        <p id="driftExplanation" class="note"></p>
+      </section>
+
+      <!-- Invariant Closure & Contradictions -->
+      <section class="card">
+        <h3>3. Invariant Closure & Candidate Hard Gates</h3>
+        <div id="candidateGatesList">
+          <p class="placeholder">Candidates will appear here upon execution.</p>
+        </div>
+      </section>
+
+      <!-- Causal Transition Verification -->
+      <section class="card">
+        <h3>4. Causal Transition Verification</h3>
+        <div id="transitionVerificationBox">
+          <p class="placeholder">Verification status will appear here.</p>
+        </div>
+      </section>
+
+      <!-- Independent Authorization & Quorum -->
+      <section class="card">
+        <h3>5. Risk Policy & Evidence Quorum</h3>
+        <div id="quorumBox">
+          <p class="placeholder">Quorum details will appear here.</p>
+        </div>
+      </section>
+
+      <!-- Audit Log & Export -->
+      <section class="card">
+        <div class="panel-header">
+          <h3>6. Immutable Audit Log</h3>
+          <button id="exportAuditBtn" class="small-btn">Export Evidence JSON</button>
+        </div>
+        <div id="auditLogContainer" class="audit-log-box"></div>
+      </section>
+    </div>
+  </main>
+
+</body>
+</html>

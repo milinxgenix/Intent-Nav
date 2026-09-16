@@ -1,0 +1,65 @@
+graph TB
+    subgraph ClientInterface["Browser Webpage / DOM Context"]
+        DOM[DOM / ARIA / Custom Elements]
+        Obs[Interface Observer]
+        WCol[Witness Collector]
+        ActEvt[Activation Event Dispatcher]
+    end
+
+    subgraph CoreEngine["IntentNav-SCFR Core Controller"]
+        INorm[Intent Normalizer]
+        CRes[Capability Intent Resolver]
+        DDet[Typed Drift Detector]
+        DClass[Drift Classifier]
+        
+        subgraph HardGatePipeline["Critical Gated Re-Binding Pipeline"]
+            CG[Candidate Generator]
+            InvC[Invariant Closure Engine]
+            NegE[Contradiction & Negative Evidence Store]
+            RankE[Post-Gate Candidate Ranking Engine]
+        end
+
+        subgraph LifecycleVerification["Lifecycle & Causal Verification"]
+            Quar[Provisional Route Quarantine]
+            CVer[Causal Transition Verifier]
+            Promo[Validated Route Promotion]
+            Demote[Demotion & Rollback Controller]
+        end
+
+        subgraph RiskAuthorization["Independent Risk & Policy Layer"]
+            RiskC[Risk Classifier]
+            Quor[Evidence Quorum Checker]
+            AuthC[Execution Authorization Controller]
+        end
+
+        Audit[Immutable Audit Logger]
+        GraphStore[(Capability-State Graph Store)]
+    end
+
+    User[User Input] --> INorm
+    INorm --> CRes
+    CRes --> GraphStore
+    DOM --> Obs
+    Obs --> DDet
+    GraphStore --> DDet
+    DDet --> DClass
+    
+    DClass -- "Recovery Required" --> CG
+    CG --> InvC
+    InvC -- "Hard Predicates" --> NegE
+    NegE -- "Eligible Candidates Only" --> RankE
+    RankE --> Quar
+    Quar --> ActEvt
+    ActEvt --> DOM
+    DOM --> WCol
+    WCol --> CVer
+    CVer -- "Verified" --> Promo
+    CVer -- "Failed" --> Demote
+    Promo --> GraphStore
+
+    DClass -- "Active Route Valid" --> AuthC
+    Promo --> AuthC
+    RiskC --> AuthC
+    Quor --> AuthC
+    AuthC --> Audit
+    AuthC -- "Authorized" --> ActEvt

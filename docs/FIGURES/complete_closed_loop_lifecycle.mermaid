@@ -1,0 +1,37 @@
+stateDiagram-v2
+    [*] --> IDLE
+    IDLE --> INTENT_RECEIVED: Natural Language Input
+    INTENT_RECEIVED --> INTENT_NORMALIZED: Normalize (Action, Target, Hints)
+    INTENT_NORMALIZED --> CAPABILITY_RESOLVED: Resolve Persistent Capability ID
+    CAPABILITY_RESOLVED --> INTERFACE_OBSERVED: Capture DOM & Landmarks
+    INTERFACE_OBSERVED --> DRIFT_CLASSIFIED: Compute 5D Typed Drift Vector
+
+    state DRIFT_CLASSIFIED {
+        [*] --> CheckDrift
+        CheckDrift --> RouteMaintained: Presentation Drift Only
+        CheckDrift --> RecoveryNeeded: Capability / Transition Drift
+    }
+
+    RouteMaintained --> VALIDATED_ROUTE
+    RecoveryNeeded --> CANDIDATE_DISCOVERY: Scan Interactive Controls
+    CANDIDATE_DISCOVERY --> INVARIANT_CLOSURE: Evaluate Hard Invariants
+    INVARIANT_CLOSURE --> CONTRADICTION_FILTER: Purge Contradictions & Decoys
+    CONTRADICTION_FILTER --> REBIND_RANKING: Rank Eligible Candidates Only
+    REBIND_RANKING --> PROVISIONAL_ROUTE: Quarantine In Provisional State
+    PROVISIONAL_ROUTE --> TRANSITION_VERIFYING: Dispatch Activation & Collect Witnesses
+
+    TRANSITION_VERIFYING --> VALIDATED_ROUTE: Causal Verification Pass (>=2 Classes)
+    TRANSITION_VERIFYING --> QUARANTINED: Verification Fail / Unrelated Mutation
+
+    VALIDATED_ROUTE --> EXECUTION_AUTHORIZATION: Evaluate Risk Policy & Quorum
+    
+    EXECUTION_AUTHORIZATION --> EXECUTED: Authorized (Low/Med Risk or High Risk with Confirmation)
+    EXECUTION_AUTHORIZATION --> CONFIRMATION_PENDING: High Risk Awaiting User Approval
+    EXECUTION_AUTHORIZATION --> ABSTAINED: Quorum Incomplete or Confidence Low
+
+    CONFIRMATION_PENDING --> EXECUTED: User Confirmed
+    CONFIRMATION_PENDING --> ABSTAINED: User Cancelled
+
+    QUARANTINED --> ABSTAINED: Stored in Negative Evidence
+    EXECUTED --> [*]
+    ABSTAINED --> [*]
