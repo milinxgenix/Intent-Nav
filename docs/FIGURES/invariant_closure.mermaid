@@ -1,0 +1,24 @@
+graph TD
+    Cand["Raw Candidate from DOM Extraction"] --> TargetCheck{"Positive: Target Entity Matches?"}
+    TargetCheck -- "No" --> FailTarget["STATUS: FAIL (Target Mismatch)"]
+    TargetCheck -- "Yes" --> ActionCheck{"Positive: Action Type Compatible?"}
+    
+    ActionCheck -- "No" --> FailAction["STATUS: FAIL (Action Mismatch)"]
+    ActionCheck -- "Yes" --> PreStateCheck{"Positive: Mandatory Pre-State Satisfied?"}
+
+    PreStateCheck -- "No" --> FailPre["STATUS: FAIL (Pre-State Incompatible)"]
+    PreStateCheck -- "Yes" --> ForbidTarget{"Negative: Targets Forbidden Entity?"}
+
+    ForbidTarget -- "Yes" --> Contradict1["STATUS: CONTRADICTED (Forbidden Entity)"]
+    ForbidTarget -- "No" --> ForbidAction{"Negative: Destructive Action on Non-Destructive Goal?"}
+
+    ForbidAction -- "Yes" --> Contradict2["STATUS: CONTRADICTED (Forbidden Action)"]
+    ForbidAction -- "No" --> Pass["STATUS: PASS (isEligibleForRanking = TRUE)"]
+
+    FailTarget --> Drop["Purge Candidate Before Ranking"]
+    FailAction --> Drop
+    FailPre --> Drop
+    Contradict1 --> Drop
+    Contradict2 --> Drop
+
+    Pass --> Ranking["Forward to Post-Gate Ranking Engine"]
