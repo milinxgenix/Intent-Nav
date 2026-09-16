@@ -1,0 +1,34 @@
+graph LR
+    subgraph RawObservations["Raw DOM & Presentation Observations"]
+        RawID["Volatile Framework IDs (:r1:, dyn-id, ember99)"]
+        RawCSS["Transient CSS Classes (css-19z, p-4, bg-blue)"]
+        RawCoords["Absolute Coordinates (x: 450, y: 120)"]
+        AriaRole["Accessible Role & ARIA Attributes"]
+        VisText["Visible Labels & Nearby Headings"]
+        Ancestors["Semantic Container Landmarks"]
+    end
+
+    subgraph SuppressionEngine["Volatile Feature Suppressor"]
+        FilterID["ID Filter: Strip/Down-Weight to 0.02"]
+        FilterCSS["CSS Filter: Sanitize to Semantic Classes Only"]
+        RelPath["Hierarchy Normalizer: Relative Path Tree"]
+    end
+
+    subgraph Fingerprint["Persistent Functional Capability Fingerprint"]
+        InvCore["Invariant Core: Target, Action, Mandatory Pre/Post Predicates"]
+        SemEv["Semantic Evidence: Canonical Label, Synonyms, Roles"]
+        ContEv["Context Evidence: Container Landmarks, Relative Path"]
+        TransEv["Transition Signature: Expected Delta, Verification Window"]
+        RiskMeta["Risk Metadata: Category, Reversibility, Quorum"]
+        NegEv["Negative Evidence: Decoys, Contradictions"]
+    end
+
+    RawID --> FilterID
+    RawCSS --> FilterCSS
+    RawCoords --> RelPath
+    AriaRole --> InvCore
+    VisText --> SemEv
+    Ancestors --> ContEv
+    FilterID --> ContEv
+    FilterCSS --> ContEv
+    RelPath --> ContEv
