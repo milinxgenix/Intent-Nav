@@ -1,0 +1,18 @@
+graph TD
+    CapConf["Capability Confidence (e.g. 0.99)"]
+    RiskClass["Risk Classification (LOW, MEDIUM, HIGH)"]
+    QuorumCheck["Evidence Quorum (Semantic + Functional + Transition)"]
+    UserConf["User Confirmation Granted?"]
+
+    CapConf --> AuthEngine["Execution Authorization Controller"]
+    RiskClass --> AuthEngine
+    QuorumCheck --> AuthEngine
+    UserConf --> AuthEngine
+
+    AuthEngine --> Eval{"Evaluate Policy"}
+    Eval -- "Confidence < 0.60" --> Abstain["ABSTAIN / SUGGESTION ONLY"]
+    Eval -- "Low Risk (Read-Only Navigation)" --> AuthLow["AUTHORIZED (Direct Navigation)"]
+    Eval -- "Medium Risk (Reversible Preference)" --> AuthMed["AUTHORIZED (If Confidence >= 0.80)"]
+    Eval -- "High Risk (Security / Deletion) + NO Quorum" --> DenyQuorum["DENIED: Insufficient Evidence Quorum"]
+    Eval -- "High Risk + Quorum + NO Confirmation" --> RequireConf["CONFIRMATION REQUIRED (Silent Execution Forbidden!)"]
+    Eval -- "High Risk + Quorum + User Confirmed" --> AuthHigh["AUTHORIZED (Explicit User Consent)"]
