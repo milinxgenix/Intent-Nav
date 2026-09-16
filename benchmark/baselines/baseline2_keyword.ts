@@ -13,8 +13,9 @@ export class Baseline2KeywordMatching {
     let maxOverlap = 0;
 
     for (const c of candidates) {
-      if (!c.label) continue;
-      const labelLower = c.label.toLowerCase();
+      const text = c.candidateLabel || c.label;
+      if (!text) continue;
+      const labelLower = text.toLowerCase();
       let overlap = 0;
       for (const t of queryTokens) {
         if (labelLower.includes(t)) overlap++;
@@ -27,7 +28,7 @@ export class Baseline2KeywordMatching {
     }
 
     if (bestMatch && maxOverlap > 0) {
-      return { success: true, selectedCandidateId: bestMatch.id || bestMatch.label };
+      return { success: true, selectedCandidateId: bestMatch.id || bestMatch.candidateLabel || bestMatch.label };
     }
     return { success: false };
   }

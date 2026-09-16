@@ -9,6 +9,7 @@ export interface BaselineCandidate {
   className?: string;
   role?: string;
   label?: string;
+  candidateLabel?: string;
   targetEntity?: string;
   actionType?: string;
 }
@@ -21,6 +22,10 @@ export class Baseline1SelectorReplay {
     CAP_DISABLE_2FA: '#btn-disable-2fa',
     CAP_DEACTIVATE_ACCOUNT: '#btn-deactivate-account',
     CAP_TOGGLE_TRACKING: '#btn-toggle-tracking',
+    CAP_REVOKE_SESSIONS: '#btn-revoke-sessions',
+    CAP_TOGGLE_DARK_MODE: '#btn-toggle-dark-mode',
+    CAP_DOWNLOAD_INVOICE: '#btn-download-invoice',
+    CAP_VIEW_AUDIT_LOGS: '#btn-view-audit-logs',
   };
 
   public execute(capabilityId: string, candidates: BaselineCandidate[]): { success: boolean; selectedCandidateId?: string } {

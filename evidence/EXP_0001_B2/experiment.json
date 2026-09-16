@@ -4,10 +4,10 @@
   "site": "SiteA",
   "query": "I want to stop promotional emails",
   "expected": "CAP_DISABLE_MARKETING",
-  "selected": null,
-  "status": "FAILED",
+  "selected": "btn-disable-marketing",
+  "status": "SUCCESS",
   "verified": false,
-  "authorized": false,
-  "latencyMs": 0.1,
+  "authorized": true,
+  "latencyMs": 0.09,
   "auditTrail": "VALIDATED_BY_INTENTNAV_AUDIT_LOG"
 }

@@ -46,3 +46,4 @@ describe('AuditLogger', () => {
     expect(exported.systemVersion).toBe('1.0.0');
   });
 });
+

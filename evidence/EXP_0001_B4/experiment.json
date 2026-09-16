@@ -8,6 +8,6 @@
   "status": "NAVIGATED_PAGE",
   "verified": false,
   "authorized": false,
-  "latencyMs": 0.05,
+  "latencyMs": 0.06,
   "auditTrail": "VALIDATED_BY_INTENTNAV_AUDIT_LOG"
 }

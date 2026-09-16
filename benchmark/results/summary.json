@@ -1,0 +1,66 @@
+{
+  "timestamp": 1789534389893,
+  "totalRuns": 2000,
+  "metrics": [
+    {
+      "systemName": "Baseline 1: Fixed Selector Replay",
+      "totalQueries": 400,
+      "top1Accuracy": 0.25,
+      "top3Accuracy": 0.25,
+      "decoyRejectionRate": 1,
+      "falseDiscoveryRate": 0,
+      "uiChangeRecoveryRate": 0,
+      "causalVerificationRate": 0,
+      "unauthorizedHighRiskExecutions": 0,
+      "avgLatencyMs": 0
+    },
+    {
+      "systemName": "Baseline 2: Keyword String Matching",
+      "totalQueries": 400,
+      "top1Accuracy": 0.7053,
+      "top3Accuracy": 0.7053,
+      "decoyRejectionRate": 0.83,
+      "falseDiscoveryRate": 0.0775,
+      "uiChangeRecoveryRate": 0.6947,
+      "causalVerificationRate": 0,
+      "unauthorizedHighRiskExecutions": 96,
+      "avgLatencyMs": 0
+    },
+    {
+      "systemName": "Baseline 3: Semantic-Only Matching",
+      "totalQueries": 400,
+      "top1Accuracy": 0.4474,
+      "top3Accuracy": 0.4921,
+      "decoyRejectionRate": 0.84,
+      "falseDiscoveryRate": 0.0625,
+      "uiChangeRecoveryRate": 0.4316,
+      "causalVerificationRate": 0,
+      "unauthorizedHighRiskExecutions": 63,
+      "avgLatencyMs": 0.03
+    },
+    {
+      "systemName": "Baseline 4: Intent-to-Page Navigation",
+      "totalQueries": 400,
+      "top1Accuracy": 0.7895,
+      "top3Accuracy": 0.7895,
+      "decoyRejectionRate": 0,
+      "falseDiscoveryRate": 0.04,
+      "uiChangeRecoveryRate": 0,
+      "causalVerificationRate": 0,
+      "unauthorizedHighRiskExecutions": 0,
+      "avgLatencyMs": 0
+    },
+    {
+      "systemName": "IntentNav-SCFR (Invention Prototype)",
+      "totalQueries": 400,
+      "top1Accuracy": 0.4,
+      "top3Accuracy": 0.4,
+      "decoyRejectionRate": 1,
+      "falseDiscoveryRate": 0,
+      "uiChangeRecoveryRate": 0.4,
+      "causalVerificationRate": 0.33,
+      "unauthorizedHighRiskExecutions": 0,
+      "avgLatencyMs": 5.76
+    }
+  ]
+}

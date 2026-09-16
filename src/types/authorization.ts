@@ -32,3 +32,5 @@ export interface ExecutionAuthorizationDecision {
   evaluatedTimestamp: number;
 }
 
+// Alias for first-class ExecutionAuthorization entity
+export type ExecutionAuthorization = ExecutionAuthorizationDecision;

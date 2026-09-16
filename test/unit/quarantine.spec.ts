@@ -60,6 +60,16 @@ describe('QuarantineController & RoutePromotionController', () => {
       causallyVerified: true,
       durationMs: 80,
       explanation: 'Causal transition verified',
+      verificationToken: {
+        tokenId: 'tok_test_1',
+        routeId: route.routeId,
+        capabilityId: 'CAP_DISABLE_MARKETING',
+        activationEventId: 'act_1',
+        verifiedWitnessClasses: ['DOM_MUTATION', 'ACCESSIBILITY_STATE_MUTATION'],
+        issuedTimestamp: Date.now(),
+        verifiedStatus: 'VERIFIED',
+        signatureHash: 'hash_test_1',
+      },
     };
 
     const promoResult = promotion.evaluateAndPromote('CAP_DISABLE_MARKETING', route.routeId, successVerification);
@@ -69,3 +79,4 @@ describe('QuarantineController & RoutePromotionController', () => {
     expect(graph.getActiveRoute('CAP_DISABLE_MARKETING')?.routeId).toBe(route.routeId);
   });
 });
+

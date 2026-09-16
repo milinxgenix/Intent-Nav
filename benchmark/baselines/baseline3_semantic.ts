@@ -22,8 +22,9 @@ export class Baseline3SemanticOnly {
     let highestSim = -1;
 
     for (const c of candidates) {
-      if (!c.label) continue;
-      const sim = this.computeSimilarity(query, c.label);
+      const text = c.candidateLabel || c.label;
+      if (!text) continue;
+      const sim = this.computeSimilarity(query, text);
       if (sim > highestSim) {
         highestSim = sim;
         bestCandidate = c;
@@ -31,7 +32,7 @@ export class Baseline3SemanticOnly {
     }
 
     if (bestCandidate && highestSim > 0.15) {
-      return { success: true, selectedCandidateId: bestCandidate.id || bestCandidate.label, similarityScore: highestSim };
+      return { success: true, selectedCandidateId: bestCandidate.id || bestCandidate.candidateLabel || bestCandidate.label, similarityScore: highestSim };
     }
     return { success: false, similarityScore: 0 };
   }

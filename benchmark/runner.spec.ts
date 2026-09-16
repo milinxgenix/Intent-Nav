@@ -38,24 +38,55 @@ describe('Empirical Benchmark Runner', () => {
     }
 
     fs.writeFileSync(
+      path.join(resultsDir, 'raw_runs.json'),
+      JSON.stringify(records, null, 2),
+      'utf8'
+    );
+
+    fs.writeFileSync(
+      path.join(resultsDir, 'summary.json'),
+      JSON.stringify({ timestamp: Date.now(), totalRuns: records.length, metrics }, null, 2),
+      'utf8'
+    );
+
+    fs.writeFileSync(
       path.join(resultsDir, 'benchmark_summary.json'),
-      JSON.stringify({ timestamp: Date.now(), metrics }, null, 2),
+      JSON.stringify({ timestamp: Date.now(), totalRuns: records.length, metrics }, null, 2),
       'utf8'
     );
 
     const csvContent = BenchmarkReporter.generateCSV(records);
+    fs.writeFileSync(path.join(resultsDir, 'results.csv'), csvContent, 'utf8');
     fs.writeFileSync(path.join(resultsDir, 'benchmark_results.csv'), csvContent, 'utf8');
 
     const mdReport = BenchmarkReporter.generateMarkdownReport(metrics, records);
+    fs.writeFileSync(path.join(resultsDir, 'report.md'), mdReport, 'utf8');
+
     const docsDir = path.resolve(__dirname, '../docs');
     if (!fs.existsSync(docsDir)) {
       fs.mkdirSync(docsDir, { recursive: true });
     }
     fs.writeFileSync(path.join(docsDir, 'BENCHMARKS.md'), mdReport, 'utf8');
 
-    // Export sample evidence packages into /evidence/
+    // Export experiment run evidence into /evidence/experiment-run/
     const projectRoot = path.resolve(__dirname, '..');
-    const sampleRuns = records.slice(0, 5);
+    const experimentRunDir = path.join(projectRoot, 'evidence', 'experiment-run');
+    if (!fs.existsSync(experimentRunDir)) {
+      fs.mkdirSync(experimentRunDir, { recursive: true });
+    }
+    fs.writeFileSync(
+      path.join(experimentRunDir, 'metrics.json'),
+      JSON.stringify({ timestamp: Date.now(), totalRuns: records.length, metrics }, null, 2),
+      'utf8'
+    );
+    fs.writeFileSync(
+      path.join(experimentRunDir, 'run_summary.md'),
+      mdReport,
+      'utf8'
+    );
+
+    // Export sample evidence packages into /evidence/
+    const sampleRuns = records.slice(0, 10);
     for (const sample of sampleRuns) {
       BenchmarkReporter.exportEvidencePackage(projectRoot, sample.experimentId, {
         experimentId: sample.experimentId,

@@ -44,9 +44,8 @@ export class BenchmarkReporter {
     lines.push('# IntentNav-SCFR: Empirical Benchmark Evaluation Report');
     lines.push(`*Generated at: ${new Date().toISOString()}*`);
     lines.push('');
-    lines.push('## 1. Executive Summary & Baseline Comparison');
-    lines.push('');
-    lines.push('Comparative evaluation of **IntentNav-SCFR** against 4 alternative architectural baselines across Mock Sites A, B, C, and D over 60 benchmark user intents:');
+    const distinctIntentsCount = new Set(records.map((r) => r.queryId)).size;
+    lines.push(`Comparative evaluation of **IntentNav-SCFR** against 4 alternative architectural baselines across Mock Sites A, B, C, and D over ${distinctIntentsCount} benchmark user intents:`);
     lines.push('');
     lines.push('| System / Baseline | Top-1 Accuracy | UI-Change Recovery | Decoy Rejection | Causal Verification | Unauthorized High-Risk | Avg Latency (ms) |');
     lines.push('| :--- | :---: | :---: | :---: | :---: | :---: | :---: |');

@@ -5,9 +5,9 @@
   "query": "I want to stop promotional emails",
   "expected": "CAP_DISABLE_MARKETING",
   "selected": "btn-disable-marketing",
-  "status": "EXECUTED",
-  "verified": true,
+  "status": "QUARANTINED",
+  "verified": false,
   "authorized": true,
-  "latencyMs": 1.97,
+  "latencyMs": 3.68,
   "auditTrail": "VALIDATED_BY_INTENTNAV_AUDIT_LOG"
 }

@@ -1,0 +1,13 @@
+{
+  "experimentId": "EXP_0002_B3",
+  "system": "Baseline 3: Semantic Only",
+  "site": "SiteB",
+  "query": "I want to stop promotional emails",
+  "expected": "CAP_DISABLE_MARKETING",
+  "selected": "btn-promotions-switch",
+  "status": "SUCCESS",
+  "verified": false,
+  "authorized": true,
+  "latencyMs": 0.03,
+  "auditTrail": "VALIDATED_BY_INTENTNAV_AUDIT_LOG"
+}

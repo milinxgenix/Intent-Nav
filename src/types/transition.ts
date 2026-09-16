@@ -1,11 +1,19 @@
 /**
- * IntentNav-SCFR: Causal Transition Verification Types
+ * IntentNav-SCFR: Causal Transition Verification & Validation Types
+ *
  * Strict Witness Correlation:
  * - Activation event strictly precedes witness observation
  * - Observed within bounded verification window
  * - >=2 independent witness classes required where possible
  * - Unrelated or pre-existing mutations rejected as non-causal
  */
+
+import { FunctionalCapabilityFingerprint, BindingHandle } from './capability';
+import { RouteVersion } from './state';
+import { TypedDriftVector } from './drift';
+import { InvariantClosureResult } from './invariant';
+import { CandidateRebindScore } from './ranking';
+import { ExecutionAuthorizationDecision } from './authorization';
 
 export type WitnessClass =
   | 'DOM_MUTATION'
@@ -22,8 +30,12 @@ export interface ActivationEventRecord {
   targetCandidateId: string;
   eventType: 'click' | 'keydown' | 'change' | 'submit';
   targetSelector?: string;
+  bindingHandle?: BindingHandle;
   initiatingCapabilityId: string;
 }
+
+// Alias for first-class ActivationEvent entity
+export type ActivationEvent = ActivationEventRecord;
 
 export interface TransitionWitness {
   witnessId: string;
@@ -67,3 +79,44 @@ export interface CausalVerificationResult {
   explanation: string;
 }
 
+/**
+ * TransitionVerificationToken
+ * Cryptographic / opaque token proving that causal transition verification passed.
+ * Required by RouteManager to promote PROVISIONAL -> ACTIVE_VALIDATED.
+ */
+export interface TransitionVerificationToken {
+  tokenId: string;
+  routeId: string;
+  capabilityId: string;
+  activationEventId: string;
+  verifiedWitnessClasses: WitnessClass[];
+  issuedTimestamp: number;
+  verifiedStatus: 'VERIFIED';
+  signatureHash: string;
+}
+
+/**
+ * ValidationRecord (Phase 21)
+ * Complete trace of evaluation for candidate, transition, and authorization.
+ */
+export interface ValidationRecord {
+  recordId: string;
+  timestamp: number;
+  candidateIdentity: string;
+  candidateFingerprint: Partial<FunctionalCapabilityFingerprint>;
+  capabilityId: string;
+  interfaceStateId: string;
+  typedDriftVector: TypedDriftVector | null;
+  invariantResults: InvariantClosureResult | null;
+  contradictionResults: Record<string, unknown>;
+  rankingComponents: CandidateRebindScore | null;
+  routeVersion: RouteVersion | null;
+  activationEvent: ActivationEventRecord | null;
+  transitionSignature: TransitionSignature | null;
+  transitionWitnesses: TransitionWitness[];
+  causalVerificationResult: CausalVerificationResult | null;
+  promotionState: string;
+  riskDecision: string;
+  authorizationDecision: ExecutionAuthorizationDecision | null;
+  finalOutcome: 'EXECUTED' | 'QUARANTINED' | 'DEMOTED' | 'ABSTAINED' | 'CONFIRMATION_PENDING' | 'FAILED';
+}

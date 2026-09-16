@@ -7,6 +7,18 @@ import { describe, it, expect } from 'vitest';
 import { CapabilityGraphEngine } from '../../src/core/graph/capabilityGraph';
 import { RouteManager } from '../../src/core/graph/routeManager';
 import { InterfaceStateNode } from '../../src/types/state';
+import { TransitionVerificationToken } from '../../src/types/transition';
+
+const createTestToken = (capabilityId: string, routeId: string): TransitionVerificationToken => ({
+  tokenId: `tok_${routeId}`,
+  routeId,
+  capabilityId,
+  activationEventId: 'act_test',
+  verifiedWitnessClasses: ['DOM_MUTATION', 'ACCESSIBILITY_STATE_MUTATION'],
+  issuedTimestamp: Date.now(),
+  verifiedStatus: 'VERIFIED',
+  signatureHash: 'hash_test',
+});
 
 describe('CapabilityGraphEngine & RouteManager', () => {
   it('differentiates Capability Nodes from Interface-State Nodes', () => {
@@ -63,7 +75,7 @@ describe('CapabilityGraphEngine & RouteManager', () => {
     expect(routeV1.status).toBe('PROVISIONAL');
 
     // Promote V1 to active
-    routeManager.promoteToActive('CAP_DISABLE_MARKETING', routeV1.routeId);
+    routeManager.promoteToActive('CAP_DISABLE_MARKETING', routeV1.routeId, createTestToken('CAP_DISABLE_MARKETING', routeV1.routeId));
     expect(graph.getActiveRoute('CAP_DISABLE_MARKETING')?.routeId).toBe(routeV1.routeId);
 
     // Website changes -> Route V2 created
@@ -87,11 +99,11 @@ describe('CapabilityGraphEngine & RouteManager', () => {
 
     // V1 validated
     const v1 = routeManager.createProvisionalRoute('CAP_EXPORT', [], 0.80);
-    routeManager.promoteToActive('CAP_EXPORT', v1.routeId);
+    routeManager.promoteToActive('CAP_EXPORT', v1.routeId, createTestToken('CAP_EXPORT', v1.routeId));
 
     // V2 validated later
     const v2 = routeManager.createProvisionalRoute('CAP_EXPORT', [], 0.90);
-    routeManager.promoteToActive('CAP_EXPORT', v2.routeId);
+    routeManager.promoteToActive('CAP_EXPORT', v2.routeId, createTestToken('CAP_EXPORT', v2.routeId));
 
     expect(graph.getActiveRoute('CAP_EXPORT')?.routeId).toBe(v2.routeId);
 
@@ -108,3 +120,4 @@ describe('CapabilityGraphEngine & RouteManager', () => {
     expect(graph.getActiveRoute('CAP_EXPORT')?.routeId).toBe(v1.routeId);
   });
 });
+

@@ -125,3 +125,4 @@ describe('Critical Ordering Constraint', () => {
     expect(result.rejectedCandidates[0]?.rejectionReason).toContain('Pre-existing negative evidence');
   });
 });
+

@@ -46,3 +46,4 @@ describe('FingerprintConstructor', () => {
     expect(fingerprint.riskMetadata.requiresConfirmation).toBe(true);
   });
 });
+

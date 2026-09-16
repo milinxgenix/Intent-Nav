@@ -22,14 +22,14 @@ export class RoutePromotionController {
   ) {}
 
   /**
-   * Promotes a provisional route ONLY IF transition verification succeeded
+   * Promotes a provisional route ONLY IF transition verification succeeded with a valid token
    */
   public evaluateAndPromote(
     capabilityId: string,
     routeId: string,
     verificationResult: CausalVerificationResult
   ): PromotionDecision {
-    if (!verificationResult.causallyVerified) {
+    if (!verificationResult.causallyVerified || !verificationResult.verificationToken) {
       // Quarantine the route on failed verification
       const quarantined = this.quarantineController.quarantineFailedRoute(
         capabilityId,
@@ -44,8 +44,12 @@ export class RoutePromotionController {
       };
     }
 
-    // Causally verified: promote to ACTIVE_VALIDATED
-    const activeRoute = this.routeManager.promoteToActive(capabilityId, routeId);
+    // Causally verified: promote to ACTIVE_VALIDATED using TransitionVerificationToken
+    const activeRoute = this.routeManager.promoteToActive(
+      capabilityId,
+      routeId,
+      verificationResult.verificationToken
+    );
     return {
       promoted: true,
       route: activeRoute,
@@ -77,4 +81,3 @@ export class RoutePromotionController {
     };
   }
 }
-

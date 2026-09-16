@@ -1,6 +1,10 @@
 /**
  * IntentNav-SCFR: Candidate Ranking Engine
- * Enforces: RebindScore is calculated ONLY for candidates that passed Invariant Closure!
+ *
+ * Phase 10 Implementation:
+ * Local semantic matching supporting token normalization, stemming, synonym mapping, and concept overlap.
+ * STRICT ORDERING MANDATE:
+ * RebindScore is calculated ONLY for candidates that passed Invariant Closure!
  * High semantic similarity can NEVER override a failed mandatory invariant.
  */
 
@@ -20,31 +24,49 @@ export class CandidateRankingEngine {
   ) {}
 
   /**
-   * Helper: token-based Jaccard similarity for transparent local-first semantic matching
+   * Simple morphological stemmer for common English web control suffixes
    */
-  private computeSemanticSimilarity(target: string, candidate: string): number {
-    const tokenize = (s: string) =>
-      s
-        .toLowerCase()
-        .replace(/[^a-z0-9\s]/g, ' ')
-        .split(/\s+/)
-        .filter(Boolean);
+  private static stemWord(word: string): string {
+    return word
+      .replace(/(ing|edly|ingly|ed|es|s|tion|ment|able|ible)$/i, '')
+      .replace(/(ies)$/i, 'y');
+  }
 
-    const tokensA = new Set(tokenize(target));
-    const tokensB = new Set(tokenize(candidate));
+  /**
+   * Tokenizes, normalizes, and stems an input phrase
+   */
+  private static tokenizeAndStem(phrase: string): string[] {
+    return phrase
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter(Boolean)
+      .map(this.stemWord);
+  }
 
-    if (tokensA.size === 0 && tokensB.size === 0) return 1.0;
-    if (tokensA.size === 0 || tokensB.size === 0) return 0.0;
+  /**
+   * Computes semantic similarity with stemming and token overlap
+   */
+  public computeSemanticSimilarity(target: string, candidate: string): number {
+    const tokensA = CandidateRankingEngine.tokenizeAndStem(target);
+    const tokensB = CandidateRankingEngine.tokenizeAndStem(candidate);
 
-    const intersection = new Set([...tokensA].filter((x) => tokensB.has(x)));
-    const union = new Set([...tokensA, ...tokensB]);
+    if (tokensA.length === 0 && tokensB.length === 0) return 1.0;
+    if (tokensA.length === 0 || tokensB.length === 0) return 0.0;
 
-    return intersection.size / union.size;
+    const setA = new Set(tokensA);
+    const setB = new Set(tokensB);
+
+    const intersection = new Set([...setA].filter((x) => setB.has(x)));
+    const union = new Set([...setA, ...setB]);
+
+    if (union.size === 0) return 0.0;
+    return Number((intersection.size / union.size).toFixed(3));
   }
 
   /**
    * Ranks an array of ELIGIBLE candidates.
-   * Notice: Non-eligible candidates should NEVER be passed here.
+   * Notice: Non-eligible candidates MUST NEVER be passed here.
    */
   public rankCandidates(
     targetFingerprint: FunctionalCapabilityFingerprint,
@@ -61,7 +83,7 @@ export class CandidateRankingEngine {
       const directSim = this.computeSemanticSimilarity(targetLabel, candidate.candidateLabel);
 
       let maxSynonymSim = directSim;
-      for (const syn of targetFingerprint.semanticEvidence.semanticSynonyms) {
+      for (const syn of targetFingerprint.semanticEvidence.semanticSynonyms || []) {
         const synSim = this.computeSemanticSimilarity(syn, candidate.candidateLabel);
         if (synSim > maxSynonymSim) maxSynonymSim = synSim;
       }
@@ -71,9 +93,9 @@ export class CandidateRankingEngine {
       let contextFit = 0.75;
       if (candidate.containerSemantics && candidate.containerSemantics.length > 0) {
         let contextOverlapCount = 0;
-        const targetContainers = targetFingerprint.contextEvidence.containerSemantics;
+        const targetContainers = targetFingerprint.contextEvidence.containerSemantics || [];
         for (const c of candidate.containerSemantics) {
-          if (targetContainers.some((tc) => tc.toLowerCase() === c.toLowerCase())) {
+          if (targetContainers.some((tc) => tc.toLowerCase().includes(c.toLowerCase()) || c.toLowerCase().includes(tc.toLowerCase()))) {
             contextOverlapCount++;
           }
         }
@@ -121,28 +143,19 @@ export class CandidateRankingEngine {
         stalenessPenalty,
         riskPenalty,
         pathCostPenalty,
-        totalScore: Number(totalScore.toFixed(3)),
+        totalScore: Number(Math.max(0.0, totalScore).toFixed(4)),
       };
 
       scoredList.push({
         candidateId: candidate.candidateId,
-        candidateLabel: candidate.candidateLabel,
-        isEligible: true,
+        bindingHandle: candidate.bindingHandle,
         scoreBreakdown: breakdown,
-        rank: 0,
-        weightsVersion: this.version,
+        rankingVersion: this.version,
+        rankingTimestamp: Date.now(),
       });
     }
 
     // Sort descending by totalScore
-    scoredList.sort((a, b) => b.scoreBreakdown.totalScore - a.scoreBreakdown.totalScore);
-
-    // Assign 1-indexed ranks
-    scoredList.forEach((item, idx) => {
-      item.rank = idx + 1;
-    });
-
-    return scoredList;
+    return scoredList.sort((a, b) => b.scoreBreakdown.totalScore - a.scoreBreakdown.totalScore);
   }
 }
-

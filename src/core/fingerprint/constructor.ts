@@ -1,6 +1,7 @@
 /**
  * IntentNav-SCFR: Functional Capability Fingerprint Constructor
  * Constructs strongly typed FunctionalCapabilityFingerprint using VolatileFeatureSuppressor
+ * Generates stable functional fingerprint hashes independent of volatile DOM presentation.
  */
 
 import {
@@ -32,6 +33,26 @@ export interface FingerprintConstructionOptions {
 }
 
 export class FingerprintConstructor {
+  /**
+   * Generates a deterministic hash from functional evidence only.
+   * Volatile presentation features (IDs, classes, coordinates) are strictly excluded.
+   */
+  public static computeFingerprintHash(fingerprint: {
+    canonicalFunction: string;
+    actionType: string;
+    targetEntity: string;
+    canonicalLabel: string;
+    role: string;
+  }): string {
+    const raw = `${fingerprint.canonicalFunction}|${fingerprint.actionType}|${fingerprint.targetEntity}|${fingerprint.role}|${fingerprint.canonicalLabel.toLowerCase().trim()}`;
+    let hash = 0;
+    for (let i = 0; i < raw.length; i++) {
+      hash = (hash << 5) - hash + raw.charCodeAt(i);
+      hash |= 0;
+    }
+    return `fph_${Math.abs(hash).toString(16)}`;
+  }
+
   /**
    * Constructs a FunctionalCapabilityFingerprint from a DOM Element and metadata
    */
@@ -90,11 +111,20 @@ export class FingerprintConstructor {
 
     const canonicalLabel = options.canonicalLabel || accessibleName || options.canonicalFunction;
 
+    const fpHash = this.computeFingerprintHash({
+      canonicalFunction: options.canonicalFunction,
+      actionType: options.actionType,
+      targetEntity: options.targetEntity,
+      canonicalLabel,
+      role,
+    });
+
     return {
       capabilityId: options.capabilityId,
       canonicalFunction: options.canonicalFunction,
       actionType: options.actionType,
       targetEntity: options.targetEntity,
+      fingerprintHash: fpHash,
 
       mandatoryPreStatePredicates: options.mandatoryPreStatePredicates || [],
       allowedStateDelta: options.allowedStateDelta || [],
@@ -169,4 +199,3 @@ export class FingerprintConstructor {
     };
   }
 }
-

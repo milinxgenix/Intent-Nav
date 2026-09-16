@@ -1,26 +1,38 @@
 /**
  * IntentNav-SCFR: Background Service Worker (Manifest V3)
  * Orchestrates the closed-loop navigation engine and maintains state across tabs
+ * Uses real ExecutionDispatcher for actual content-script browser activation and witness collection.
  */
 
-import { IntentNavMachine } from '../core/stateMachine/machine';
+import { IntentNavMachine, ExecutionDispatcher } from '../core/stateMachine/machine';
 import { ExtensionMessage } from '../types/messages';
 import { FunctionalCapabilityFingerprint } from '../types/capability';
+import { PersistentCapabilityStore } from '../core/storage/persistentStore';
+import { AuditLogger } from '../core/audit/logger';
 
-const machine = new IntentNavMachine();
+const store = new PersistentCapabilityStore();
+const auditLogger = new AuditLogger();
+const machine = new IntentNavMachine(auditLogger, store);
 
-// Pre-register benchmark capabilities
+// Pre-register canonical capabilities with complete authoritative invariant predicates
 const DEFAULT_CAPABILITIES: FunctionalCapabilityFingerprint[] = [
   {
     capabilityId: 'CAP_DISABLE_MARKETING',
     canonicalFunction: 'disable_marketing_communications',
-    actionType: 'MODIFY_PREFERENCE',
+    actionType: 'TOGGLE',
     targetEntity: 'MARKETING_NOTIFICATIONS',
-    mandatoryPreStatePredicates: [],
+    mandatoryPreStatePredicates: [
+      {
+        id: 'pred_marketing_interactive',
+        name: 'Control Interactive',
+        description: 'Control must not be disabled and ready for toggle',
+        evaluate: (ctx) => ctx['disabled'] !== true,
+      },
+    ],
     allowedStateDelta: [{ property: 'checked', expectedChange: 'ENABLED_TO_DISABLED' }],
     expectedPostState: [{ property: 'marketing_emails_enabled', expectedValue: false }],
     requiredContextPredicates: [{ target: 'container', pattern: 'notification', required: true }],
-    forbiddenContextPredicates: [],
+    forbiddenContextPredicates: [{ target: 'container', pattern: 'all notification', required: false }],
     semanticEvidence: {
       canonicalLabel: 'Disable marketing emails',
       semanticSynonyms: [
@@ -28,6 +40,8 @@ const DEFAULT_CAPABILITIES: FunctionalCapabilityFingerprint[] = [
         'stop marketing messages',
         'opt out of marketing notifications',
         'unsubscribe from marketing',
+        'stop promotional bulletins',
+        'turn off marketing notifications',
       ],
       accessibleName: 'Marketing email notifications toggle',
       role: 'switch',
@@ -37,11 +51,11 @@ const DEFAULT_CAPABILITIES: FunctionalCapabilityFingerprint[] = [
     },
     contextEvidence: {
       ancestorRelationships: ['section[Notifications]', 'main[Settings]'],
-      nearbyText: ['Receive promotional offers and discounts'],
+      nearbyText: ['Receive promotional offers and discounts', 'Promotional bulletins'],
       surroundingLabels: ['Marketing Communications'],
-      containerSemantics: ['notifications', 'settings'],
+      containerSemantics: ['notifications', 'settings', 'bulletins', 'preferences'],
       menuPanelRelationships: ['Notifications'],
-      relativeStructuralRelationships: ['div > section:nth-of-type(2) > button'],
+      relativeStructuralRelationships: ['main > section:nth-of-type(2) > div > button'],
       urlSemantics: '/settings/notifications',
     },
     transitionEvidence: {
@@ -73,7 +87,7 @@ const DEFAULT_CAPABILITIES: FunctionalCapabilityFingerprint[] = [
       routeConfidence: 0.90,
     },
     negativeEvidence: {
-      rejectedCandidateIdentities: [],
+      rejectedCandidateIdentities: ['ALL_NOTIFICATIONS'],
       contradictionPredicates: [],
       failedInvariantPredicates: [],
       failedTransitionWitnesses: [],
@@ -86,8 +100,15 @@ const DEFAULT_CAPABILITIES: FunctionalCapabilityFingerprint[] = [
     canonicalFunction: 'export_personal_data',
     actionType: 'EXPORT_DATA',
     targetEntity: 'PERSONAL_DATA_EXPORT',
-    mandatoryPreStatePredicates: [],
-    allowedStateDelta: [],
+    mandatoryPreStatePredicates: [
+      {
+        id: 'pred_export_interactive',
+        name: 'Export Enabled',
+        description: 'Export button must be interactive',
+        evaluate: (ctx) => ctx['disabled'] !== true,
+      },
+    ],
+    allowedStateDelta: [{ property: 'export_download_initiated', expectedChange: 'ADDED' }],
     expectedPostState: [{ property: 'export_download_initiated', expectedValue: true }],
     requiredContextPredicates: [{ target: 'container', pattern: 'privacy', required: true }],
     forbiddenContextPredicates: [],
@@ -98,30 +119,32 @@ const DEFAULT_CAPABILITIES: FunctionalCapabilityFingerprint[] = [
         'export my data',
         'download everything you have about me',
         'request data archive',
+        'download personal information',
+        'export my data archive',
       ],
       accessibleName: 'Export personal data button',
       role: 'button',
       visibleLabel: 'Download Your Data',
-      sectionMeaning: 'Privacy > Personal Data',
+      sectionMeaning: 'Privacy & Data Protection',
       actionDescription: 'Export personal data archive',
     },
     contextEvidence: {
       ancestorRelationships: ['section[Privacy]', 'main[Settings]'],
-      nearbyText: ['Download a copy of your personal data archive'],
-      surroundingLabels: ['Download Your Data'],
-      containerSemantics: ['privacy', 'settings'],
+      nearbyText: ['Download archive of all personal information and activity'],
+      surroundingLabels: ['Personal Data Archive'],
+      containerSemantics: ['privacy', 'settings', 'data-hub', 'data rights'],
       menuPanelRelationships: ['Privacy'],
-      relativeStructuralRelationships: ['div > section:nth-of-type(3) > button'],
+      relativeStructuralRelationships: ['main > section:nth-of-type(1) > div > button'],
       urlSemantics: '/settings/privacy',
     },
     transitionEvidence: {
-      preStateFingerprint: 'PRE_STATE_READY',
+      preStateFingerprint: 'PRE_STATE_EXPORT_IDLE',
       activationEventCharacteristics: { eventType: 'click', bubbles: true, cancelable: true },
       expectedDelta: { export_download_initiated: true },
-      postStateFingerprint: 'POST_STATE_DOWNLOADED',
+      postStateFingerprint: 'POST_STATE_EXPORT_INITIATED',
       historicalTransitionObservations: 8,
-      witnessClasses: ['DOM_MUTATION', 'ASYNC_ACKNOWLEDGEMENT'],
-      verificationWindowMs: 3000,
+      witnessClasses: ['DOM_MUTATION', 'APPLICATION_STATE_MUTATION'],
+      verificationWindowMs: 2000,
     },
     riskMetadata: {
       riskClass: 'SENSITIVE',
@@ -139,8 +162,8 @@ const DEFAULT_CAPABILITIES: FunctionalCapabilityFingerprint[] = [
       validationHistory: [],
     },
     confidence: {
-      capabilityConfidence: 0.90,
-      routeConfidence: 0.85,
+      capabilityConfidence: 0.92,
+      routeConfidence: 0.88,
     },
     negativeEvidence: {
       rejectedCandidateIdentities: [],
@@ -156,7 +179,14 @@ const DEFAULT_CAPABILITIES: FunctionalCapabilityFingerprint[] = [
     canonicalFunction: 'disable_two_factor_auth',
     actionType: 'REVOKE_ACCESS',
     targetEntity: 'TWO_FACTOR_AUTH',
-    mandatoryPreStatePredicates: [],
+    mandatoryPreStatePredicates: [
+      {
+        id: 'pred_2fa_interactive',
+        name: '2FA Button Enabled',
+        description: '2FA control must not be disabled',
+        evaluate: (ctx) => ctx['disabled'] !== true,
+      },
+    ],
     allowedStateDelta: [{ property: 'two_factor_enabled', expectedChange: 'ENABLED_TO_DISABLED' }],
     expectedPostState: [{ property: 'two_factor_enabled', expectedValue: false }],
     requiredContextPredicates: [{ target: 'container', pattern: 'security', required: true }],
@@ -167,6 +197,8 @@ const DEFAULT_CAPABILITIES: FunctionalCapabilityFingerprint[] = [
         'turn off 2fa',
         'remove two factor authentication',
         'disable mfa',
+        'turn off multi-factor auth',
+        'remove 2fa security',
       ],
       accessibleName: 'Disable two-factor authentication button',
       role: 'button',
@@ -178,9 +210,9 @@ const DEFAULT_CAPABILITIES: FunctionalCapabilityFingerprint[] = [
       ancestorRelationships: ['section[Security]', 'main[Settings]'],
       nearbyText: ['Two-factor authentication adds an extra layer of security'],
       surroundingLabels: ['Two-Factor Authentication'],
-      containerSemantics: ['security', 'settings'],
+      containerSemantics: ['security', 'settings', 'security-hub', 'authentication'],
       menuPanelRelationships: ['Security'],
-      relativeStructuralRelationships: ['div > section:nth-of-type(4) > button'],
+      relativeStructuralRelationships: ['main > section:nth-of-type(3) > div > button'],
       urlSemantics: '/settings/security',
     },
     transitionEvidence: {
@@ -189,7 +221,7 @@ const DEFAULT_CAPABILITIES: FunctionalCapabilityFingerprint[] = [
       expectedDelta: { two_factor_enabled: false },
       postStateFingerprint: 'POST_STATE_2FA_DISABLED',
       historicalTransitionObservations: 4,
-      witnessClasses: ['DOM_MUTATION', 'ACCESSIBILITY_STATE_MUTATION'],
+      witnessClasses: ['DOM_MUTATION', 'APPLICATION_STATE_MUTATION'],
       verificationWindowMs: 2500,
     },
     riskMetadata: {
@@ -198,7 +230,7 @@ const DEFAULT_CAPABILITIES: FunctionalCapabilityFingerprint[] = [
       financial: false,
       security: true,
       destructive: true,
-      requiresConfirmation: true, // MANDATORY CONFIRMATION
+      requiresConfirmation: true, // MANDATORY USER CONFIRMATION
     },
     provenance: {
       source: 'INITIAL_SPEC',
@@ -239,11 +271,13 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
             observedTargetEntity: 'UNKNOWN',
           };
           let availableCandidates: any[] = [];
+          let executionDispatcher: ExecutionDispatcher | undefined;
 
           try {
             const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
             if (tab && tab.id) {
-              const obsResp = await chrome.tabs.sendMessage(tab.id, {
+              const activeTabId = tab.id;
+              const obsResp = await chrome.tabs.sendMessage(activeTabId, {
                 type: 'OBSERVE_INTERFACE_REQUEST',
                 payload: {},
                 timestamp: Date.now(),
@@ -252,16 +286,45 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
               if (obsResp) {
                 availableCandidates = obsResp.candidates || [];
               }
+
+              // Phase 14 & 25: Real Content-Script Dispatcher
+              executionDispatcher = {
+                async dispatchActivation(activationEventId, candidate, capabilityId) {
+                  const resp = await chrome.tabs.sendMessage(activeTabId, {
+                    type: 'DISPATCH_ACTIVATION_EVENT',
+                    payload: {
+                      activationEventId,
+                      bindingHandle: candidate.bindingHandle,
+                      capabilityId,
+                    },
+                    timestamp: Date.now(),
+                    messageId: `act_${Date.now()}`,
+                  });
+                  return resp || { success: false, reason: 'No response from tab' };
+                },
+                async collectWitnesses() {
+                  // Allow asynchronous transition mutation events to settle
+                  await new Promise((r) => setTimeout(r, 150));
+                  const resp = await chrome.tabs.sendMessage(activeTabId, {
+                    type: 'COLLECT_WITNESSES',
+                    payload: {},
+                    timestamp: Date.now(),
+                    messageId: `wit_${Date.now()}`,
+                  });
+                  return resp?.witnesses || [];
+                },
+              };
             }
           } catch {
-            // Tab not responsive, fallback to registered mock candidates
+            // Tab not responsive or test environment
           }
 
           const resultContext = await machine.processIntent(
             payload.goal,
             observedFeatures,
             availableCandidates,
-            payload.userConfirmationGranted ?? false
+            payload.userConfirmationGranted ?? false,
+            executionDispatcher
           );
 
           sendResponse({ success: true, context: resultContext });

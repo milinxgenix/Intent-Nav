@@ -1,5 +1,7 @@
 /**
  * IntentNav-SCFR: Persistent Functional Capability Identity & Fingerprint Types
+ *
+ * Core Principle: Persistent Capability Identity != Current Interface Binding != Volatile DOM Handle
  */
 
 export type RiskClass =
@@ -136,6 +138,72 @@ export interface NegativeEvidenceRecord {
   rejectionReasons: string[];
 }
 
+/**
+ * Volatile Execution Binding Handle
+ * Used temporarily by content script for actual browser dispatch.
+ * BindingHandle != CapabilityIdentity.
+ */
+export interface BindingHandle {
+  handleId: string;
+  tagName: string;
+  role: string;
+  accessibleName: string;
+  domStructuralPath: string;
+  elementIndex: number;
+  xpath?: string;
+  relativeSiblingPath?: string;
+  volatileId?: string; // Retained ONLY as volatile execution metadata
+  volatileClasses?: string[]; // Retained ONLY as volatile execution metadata
+}
+
+/**
+ * Current Interface Binding (Versioned)
+ * A capability can maintain multiple versions of bindings:
+ * CAPABILITY_X
+ *   ├── binding/version 1
+ *   ├── binding/version 2
+ *   ├── binding/version 3
+ *   └── binding/version 4
+ */
+export interface CurrentInterfaceBinding {
+  bindingId: string;
+  capabilityId: string;
+  bindingVersion: number;
+  interfaceStateId: string;
+  bindingHandle: BindingHandle;
+  status: 'PROVISIONAL' | 'ACTIVE_VALIDATED' | 'DEMOTED' | 'QUARANTINED';
+  confidence: number;
+  creationTimestamp: number;
+  lastValidatedTimestamp?: number;
+}
+
+/**
+ * Persistent Functional Capability Identity
+ * Must be independent of DOM id, CSS class, CSS selector, coordinates, URL, menu position.
+ */
+export interface PersistentCapabilityIdentity {
+  capabilityId: string;
+  canonicalFunction: string;
+  actionType: ActionType;
+  targetEntity: TargetEntity;
+  domainScope?: string;
+  fingerprintHash: string;
+}
+
+export interface CapabilityEvidence {
+  semantic: SemanticEvidence;
+  context: ContextEvidence;
+  transition: TransitionEvidence;
+  risk: RiskMetadata;
+  provenance: Provenance;
+  confidence: ConfidenceRecord;
+  negative: NegativeEvidenceRecord;
+}
+
+/**
+ * Functional Capability Fingerprint
+ * Authoritative functional identity encoding mandatory invariants.
+ */
 export interface FunctionalCapabilityFingerprint {
   capabilityId: string;
   canonicalFunction: string;
@@ -157,5 +225,17 @@ export interface FunctionalCapabilityFingerprint {
   provenance: Provenance;
   confidence: ConfidenceRecord;
   negativeEvidence: NegativeEvidenceRecord;
+
+  // Fingerprint Hash
+  fingerprintHash?: string;
 }
 
+/**
+ * First-class FunctionalCapability entity
+ */
+export interface FunctionalCapability {
+  identity: PersistentCapabilityIdentity;
+  fingerprint: FunctionalCapabilityFingerprint;
+  bindings: Record<string, CurrentInterfaceBinding>; // bindingId -> CurrentInterfaceBinding
+  activeBindingId?: string | null;
+}

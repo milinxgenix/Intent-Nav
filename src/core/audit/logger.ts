@@ -56,3 +56,4 @@ export class AuditLogger {
     this.records = [];
   }
 }
+

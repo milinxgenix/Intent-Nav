@@ -81,3 +81,4 @@ describe('IntentNormalizer & CapabilityIntentResolver', () => {
     // Verified: Resolution yields capabilityId, not selector or URL!
   });
 });
+

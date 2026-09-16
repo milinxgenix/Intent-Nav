@@ -3,6 +3,9 @@
  * Enforces: CAPABILITY NODES != INTERFACE-STATE NODES
  */
 
+import { BindingHandle } from './capability';
+import { TransitionSignature } from './transition';
+
 export type InterfaceStateType =
   | 'PAGE'
   | 'DIALOG'
@@ -20,9 +23,12 @@ export interface InterfaceStateNode {
   semanticLandmarks: string[];
   activeModalsOrDialogs: string[];
   activeTabs: string[];
-  exposedCapabilityIds: string[];
+  exposedCandidateHandles?: BindingHandle[];
   timestamp: number;
 }
+
+// Alias for first-class InterfaceState entity
+export type InterfaceState = InterfaceStateNode;
 
 export type EdgeType =
   | 'NAVIGATE'
@@ -46,7 +52,8 @@ export interface RouteStep {
   actionDescription: string;
   targetRole?: string;
   targetAccessibleName?: string;
-  relativeSelector?: string;
+  bindingHandle?: BindingHandle;
+  transitionSignature?: TransitionSignature;
   expectedTransitionDelta?: Record<string, unknown>;
 }
 
@@ -75,6 +82,9 @@ export interface RouteVersion {
   pathCost: number;
 }
 
+// Alias for first-class CapabilityRoute entity
+export type CapabilityRoute = RouteVersion;
+
 export interface CapabilityNode {
   capabilityId: string;
   canonicalFunction: string;
@@ -86,4 +96,3 @@ export interface CapabilityNode {
   creationTimestamp: number;
   lastUsedTimestamp?: number;
 }
-

@@ -142,3 +142,4 @@ describe('CausalTransitionVerifier & WitnessCollector', () => {
     expect(result.status).toBe('FAILED_INSUFFICIENT_WITNESS_CLASSES');
   });
 });
+

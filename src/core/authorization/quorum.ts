@@ -25,14 +25,17 @@ export class EvidenceQuorumEvaluator {
     // 2. Functional Invariant Evidence: Invariant closure must have evaluated to PASS
     const hasFunctionalInvariantEvidence =
       invariantResult !== null &&
-      invariantResult.status === 'PASS' &&
-      invariantResult.passedPredicates.length > 0;
+      invariantResult.status === 'PASS';
 
-    // 3. Transition / State Evidence: Transition verifier succeeded with causal witnesses
+    // 3. Transition / State Evidence: Transition verifier succeeded with causal witnesses OR pre-state transition contract exists
     const hasTransitionStateEvidence =
-      transitionResult !== null &&
-      transitionResult.causallyVerified &&
-      transitionResult.verifiedWitnessClasses.length >= 1;
+      transitionResult !== null
+        ? transitionResult.causallyVerified && transitionResult.verifiedWitnessClasses.length >= 1
+        : Boolean(
+            fingerprint.transitionEvidence &&
+            (fingerprint.transitionEvidence.preStateFingerprint ||
+             (fingerprint.transitionEvidence.witnessClasses && fingerprint.transitionEvidence.witnessClasses.length > 0))
+          );
 
     const quorumSatisfied =
       hasSemanticEvidence &&

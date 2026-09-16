@@ -58,3 +58,4 @@ describe('VolatileFeatureSuppressor', () => {
     expect(result.featureWeights.functionalRoleWeight).toBeGreaterThan(0.90);
   });
 });
+

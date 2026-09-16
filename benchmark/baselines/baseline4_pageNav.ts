@@ -12,6 +12,10 @@ export class Baseline4PageNavigation {
     privacy: '/settings/privacy',
     two_factor: '/settings/security',
     account: '/settings/account',
+    sessions: '/settings/security',
+    appearance: '/settings/appearance',
+    billing: '/settings/billing',
+    audit: '/settings/security',
   };
 
   public execute(query: string): { success: boolean; navigatedUrl?: string } {
@@ -27,6 +31,18 @@ export class Baseline4PageNavigation {
     }
     if (/account|pause|deactivate/i.test(q)) {
       return { success: true, navigatedUrl: this.pageRoutes.account };
+    }
+    if (/session|device|logout|sign out/i.test(q)) {
+      return { success: true, navigatedUrl: this.pageRoutes.sessions };
+    }
+    if (/dark|night|theme|appearance/i.test(q)) {
+      return { success: true, navigatedUrl: this.pageRoutes.appearance };
+    }
+    if (/invoice|receipt|statement|billing/i.test(q)) {
+      return { success: true, navigatedUrl: this.pageRoutes.billing };
+    }
+    if (/audit|trail|history|access log/i.test(q)) {
+      return { success: true, navigatedUrl: this.pageRoutes.audit };
     }
     return { success: false };
   }

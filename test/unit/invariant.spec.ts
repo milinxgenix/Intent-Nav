@@ -111,3 +111,4 @@ describe('InvariantClosureEngine', () => {
     expect(result.isEligibleForRanking).toBe(false);
   });
 });
+

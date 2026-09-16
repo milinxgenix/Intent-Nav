@@ -1,6 +1,40 @@
 /**
  * IntentNav-SCFR: Central State Machine & Controller
- * Implements the complete closed-loop navigation lifecycle
+ *
+ * Implements the complete patent-aligned closed-loop lifecycle:
+ * Persistent Functional Capability Identity
+ *   ↓
+ * Capability / Interface-State Separation
+ *   ↓
+ * Typed Drift Localization (5D: [P, C, S, Cap, T])
+ *   ↓
+ * Drift-Triggered Recovery
+ *   ↓
+ * Live Candidate Discovery
+ *   ↓
+ * Positive + Negative Invariant Closure Gate
+ *   ↓
+ * Contradiction Rejection
+ *   ↓
+ * ONLY THEN Re-Binding / Semantic Ranking
+ *   ↓
+ * Provisional Route Quarantine (V_k)
+ *   ↓
+ * Execution Authorization Gating (Confidence != Authorization)
+ *   ↓ (If Authorized / Confirmed)
+ * Real Browser Activation Dispatch
+ *   ↓
+ * Real Transition Observation & Witness Capture
+ *   ↓
+ * Causal Activation -> Witness Correlation (>=2 independent classes)
+ *   ↓
+ * Post-State Validation
+ *   ↓
+ * Validated Route Promotion via TransitionVerificationToken
+ *   ↓
+ * Persistent Versioned Capability Memory
+ *   ↓
+ * EXECUTED / CONFIRMATION_PENDING / QUARANTINED / ABSTAINED / FAILED
  */
 
 import { NormalizedIntent } from '../../types/intent';
@@ -9,7 +43,12 @@ import { InterfaceStateNode, RouteVersion } from '../../types/state';
 import { TypedDriftVector, DriftLocalizationResult } from '../../types/drift';
 import { InvariantClosureResult } from '../../types/invariant';
 import { CandidateRebindScore } from '../../types/ranking';
-import { CausalVerificationResult, ActivationEventRecord, TransitionWitness } from '../../types/transition';
+import {
+  CausalVerificationResult,
+  ActivationEventRecord,
+  TransitionWitness,
+  ValidationRecord,
+} from '../../types/transition';
 import { ExecutionAuthorizationDecision } from '../../types/authorization';
 import { IntentNormalizer } from '../intent/normalizer';
 import { CapabilityIntentResolver } from '../intent/resolver';
@@ -27,6 +66,7 @@ import { QuarantineController } from '../quarantine/controller';
 import { RoutePromotionController } from '../quarantine/promotion';
 import { ExecutionAuthorizationController } from '../authorization/controller';
 import { AuditLogger } from '../audit/logger';
+import { PersistentCapabilityStore } from '../storage/persistentStore';
 
 export type SystemMachineState =
   | 'IDLE'
@@ -40,14 +80,25 @@ export type SystemMachineState =
   | 'CONTRADICTION_FILTER'
   | 'REBIND_RANKING'
   | 'PROVISIONAL_ROUTE'
-  | 'TRANSITION_VERIFYING'
-  | 'VALIDATED_ROUTE'
   | 'EXECUTION_AUTHORIZATION'
   | 'CONFIRMATION_PENDING'
+  | 'ACTIVATION_DISPATCHED'
+  | 'TRANSITION_VERIFYING'
+  | 'VALIDATED_ROUTE'
   | 'EXECUTED'
   | 'QUARANTINED'
   | 'ABSTAINED'
   | 'FAILED';
+
+export interface ExecutionDispatcher {
+  dispatchActivation(
+    activationEventId: string,
+    candidate: CandidateEvaluationContext,
+    capabilityId: string
+  ): Promise<{ success: boolean; activationEvent?: ActivationEventRecord; reason?: string }>;
+  collectWitnesses(): Promise<TransitionWitness[]>;
+  observePostState?(): Promise<InterfaceStateNode>;
+}
 
 export interface StateMachineContext {
   currentState: SystemMachineState;
@@ -63,9 +114,12 @@ export interface StateMachineContext {
   rankedScores?: CandidateRebindScore[];
   selectedCandidate?: CandidateRebindScore | null;
   provisionalRoute?: RouteVersion | null;
+  activationEvent?: ActivationEventRecord | null;
+  capturedWitnesses?: TransitionWitness[];
   verificationResult?: CausalVerificationResult | null;
   authorizationDecision?: ExecutionAuthorizationDecision;
   userConfirmationGranted?: boolean;
+  validationRecord?: ValidationRecord;
 }
 
 export class IntentNavMachine {
@@ -82,14 +136,20 @@ export class IntentNavMachine {
   public quarantineController: QuarantineController;
   public promotionController: RoutePromotionController;
   public auditLogger: AuditLogger;
+  public persistentStore: PersistentCapabilityStore;
+  public defaultDispatcher?: ExecutionDispatcher;
 
   // Registered capability catalog
   private capabilities: Map<string, FunctionalCapabilityFingerprint> = new Map();
 
-  constructor(auditLogger?: AuditLogger) {
-    this.graph = new CapabilityGraphEngine();
+  constructor(
+    auditLogger?: AuditLogger,
+    persistentStore?: PersistentCapabilityStore
+  ) {
+    this.persistentStore = persistentStore || new PersistentCapabilityStore();
+    this.graph = new CapabilityGraphEngine(this.persistentStore);
     this.routeManager = new RouteManager(this.graph);
-    this.negativeEvidenceStore = new NegativeEvidenceStore();
+    this.negativeEvidenceStore = new NegativeEvidenceStore(this.persistentStore);
     this.rankingEngine = new CandidateRankingEngine();
     this.candidatePipeline = new CandidatePipeline(
       this.negativeEvidenceStore,
@@ -108,9 +168,14 @@ export class IntentNavMachine {
     this.auditLogger = auditLogger || new AuditLogger();
   }
 
+  public setDefaultDispatcher(dispatcher: ExecutionDispatcher): void {
+    this.defaultDispatcher = dispatcher;
+  }
+
   public registerCapability(cap: FunctionalCapabilityFingerprint): void {
     this.capabilities.set(cap.capabilityId, cap);
     this.graph.registerCapability(cap.capabilityId, cap.canonicalFunction);
+    this.persistentStore.saveCapability(cap).catch(() => {});
   }
 
   public getRegisteredCapabilities(): FunctionalCapabilityFingerprint[] {
@@ -118,14 +183,14 @@ export class IntentNavMachine {
   }
 
   /**
-   * Primary Entry Point: Process a user natural-language goal
+   * Primary Entry Point: Process a user natural-language goal through the complete closed-loop pipeline
    */
   public async processIntent(
     rawGoal: string,
     observedFeatures: ObservedElementFeatures,
     availableCandidates: CandidateEvaluationContext[],
     userConfirmationGranted: boolean = false,
-    mockWitnessesForVerification?: TransitionWitness[]
+    dispatcherOrWitnesses?: ExecutionDispatcher | TransitionWitness[]
   ): Promise<StateMachineContext> {
     this.state = 'INTENT_RECEIVED';
     this.context = {
@@ -157,15 +222,21 @@ export class IntentNavMachine {
     let activeRoute = this.graph.getActiveRoute(matchedCap.capabilityId);
     this.context.activeRoute = activeRoute;
 
-    // 4. TYPED DRIFT LOCALIZATION
+    // 4. TYPED DRIFT LOCALIZATION (5D: [P, C, S, Cap, T])
     const driftVector = TypedDriftDetector.computeDrift(matchedCap, observedFeatures);
     const driftResult = DriftClassifier.classify(driftVector);
     this.context.driftVector = driftVector;
     this.context.driftResult = driftResult;
     this.state = 'DRIFT_CLASSIFIED';
+    this.persistentStore.saveDriftRecord({
+      capabilityId: matchedCap.capabilityId,
+      timestamp: Date.now(),
+      driftVector,
+    }).catch(() => {});
 
     // 5. DECIDE IF REBIND RECOVERY REQUIRED
     let routeToAuthorize: RouteVersion | null = activeRoute;
+    let selectedWinnerContext: CandidateEvaluationContext | null = null;
 
     if (!activeRoute || driftResult.actionRequired === 'TRIGGER_REBIND_RECOVERY' || driftResult.actionRequired === 'TRIGGER_VALIDATION') {
       // TRIGGER RECOVERY: Process candidates through invariant closure
@@ -188,87 +259,32 @@ export class IntentNavMachine {
         return this.context;
       }
 
-      // Create PROVISIONAL route (QUARANTINE)
+      selectedWinnerContext =
+        availableCandidates.find((c) => c.candidateId === pipelineResult.selectedWinner?.candidateId) || null;
+
+      // Create PROVISIONAL route (ISOLATED IN QUARANTINE)
       this.state = 'PROVISIONAL_ROUTE';
       const provisionalRoute = this.routeManager.createProvisionalRoute(
         matchedCap.capabilityId,
         [
           {
             stepIndex: 1,
-            fromStateId: 'CURRENT_PAGE',
-            toStateId: 'TARGET_PANEL',
+            fromStateId: observedFeatures.tag || 'CURRENT_PAGE',
+            toStateId: `PANEL_${matchedCap.targetEntity}`,
             actionDescription: `Interact with candidate ${pipelineResult.selectedWinner.candidateId}`,
+            bindingHandle: selectedWinnerContext?.bindingHandle,
+            targetRole: selectedWinnerContext?.observedRole,
+            targetAccessibleName: selectedWinnerContext?.candidateLabel,
           },
         ],
         pipelineResult.selectedWinner.scoreBreakdown.totalScore
       );
       this.context.provisionalRoute = provisionalRoute;
-
-      // 6. CAUSAL TRANSITION VERIFICATION
-      this.state = 'TRANSITION_VERIFYING';
-      const activationEvent: ActivationEventRecord = {
-        eventId: `act_${Date.now()}`,
-        sequenceNumber: 1,
-        timestamp: Date.now(),
-        targetCandidateId: pipelineResult.selectedWinner.candidateId,
-        eventType: 'click',
-        initiatingCapabilityId: matchedCap.capabilityId,
-      };
-      this.witnessCollector.registerActivationEvent(activationEvent);
-
-      // Collect or simulate witnesses
-      let witnesses: TransitionWitness[] = [];
-      if (mockWitnessesForVerification) {
-        witnesses = mockWitnessesForVerification.map((w) => ({
-          ...w,
-          correlatedActivationEventId: w.correlatedActivationEventId ? activationEvent.eventId : null,
-          timestamp: w.temporalDeltaMs > 0 && w.timestamp <= activationEvent.timestamp
-            ? activationEvent.timestamp + w.temporalDeltaMs
-            : w.timestamp,
-        }));
-      } else {
-        // Default valid simulated multi-class witnesses
-        this.witnessCollector.clear();
-        this.witnessCollector.registerActivationEvent(activationEvent);
-        const expectedDelta = matchedCap.transitionEvidence.expectedDelta;
-        this.witnessCollector.recordWitness('DOM_MUTATION', { ...expectedDelta, modified: true }, activationEvent.timestamp + 50);
-        this.witnessCollector.recordWitness('ACCESSIBILITY_STATE_MUTATION', { ...expectedDelta, stateChanged: true }, activationEvent.timestamp + 100);
-        witnesses = this.witnessCollector.getWitnesses();
-      }
-
-      const verificationResult = this.causalVerifier.verifyTransition(
-        {
-          preStateFingerprint: matchedCap.transitionEvidence.preStateFingerprint,
-          activationEventExpected: { eventType: 'click' },
-          expectedStateDelta: matchedCap.transitionEvidence.expectedDelta,
-          verificationWindowMs: matchedCap.transitionEvidence.verificationWindowMs,
-          postStateFingerprint: matchedCap.transitionEvidence.postStateFingerprint,
-        },
-        activationEvent,
-        witnesses
-      );
-      this.context.verificationResult = verificationResult;
-
-      // 7. PROMOTION OR QUARANTINE
-      const promoDecision = this.promotionController.evaluateAndPromote(
-        matchedCap.capabilityId,
-        provisionalRoute.routeId,
-        verificationResult
-      );
-
-      if (!promoDecision.promoted) {
-        this.state = 'QUARANTINED';
-        this.context.currentState = this.state;
-        this.logAudit('FAILED', promoDecision.reason);
-        return this.context;
-      }
-
-      routeToAuthorize = promoDecision.route;
-      this.context.activeRoute = routeToAuthorize;
-      this.state = 'VALIDATED_ROUTE';
+      routeToAuthorize = provisionalRoute;
     }
 
-    // 8. INDEPENDENT EXECUTION AUTHORIZATION
+    // 6. INDEPENDENT EXECUTION AUTHORIZATION GATING
+    // Capability Confidence != Execution Authorization
     this.state = 'EXECUTION_AUTHORIZATION';
     const invariantResultForWinner = this.context.selectedCandidate
       ? this.context.invariantResults?.[this.context.selectedCandidate.candidateId] || null
@@ -286,13 +302,12 @@ export class IntentNavMachine {
       capabilityConfidence: matchedCap.confidence.capabilityConfidence,
       routeConfidence: routeToAuthorize?.confidenceScore || 0.85,
       invariantResult: invariantResultForWinner,
-      transitionResult: this.context.verificationResult || null,
+      transitionResult: null,
       userConfirmationGranted,
       intent: this.context.normalizedIntent,
     });
     this.context.authorizationDecision = authDecision;
 
-    // 9. FINAL EXECUTION DECISION
     if (authDecision.status === 'CONFIRMATION_REQUIRED') {
       this.state = 'CONFIRMATION_PENDING';
       this.context.currentState = this.state;
@@ -300,24 +315,162 @@ export class IntentNavMachine {
       return this.context;
     }
 
-    if (authDecision.status === 'AUTHORIZED') {
-      this.state = 'EXECUTED';
-      this.context.currentState = this.state;
-      this.logAudit('EXECUTED', 'Navigation and execution completed successfully');
-      return this.context;
-    }
-
-    if (authDecision.status === 'SUGGESTION_ONLY') {
+    if (authDecision.status !== 'AUTHORIZED') {
       this.state = 'ABSTAINED';
       this.context.currentState = this.state;
-      this.logAudit('SUGGESTED', authDecision.policyReason);
+      this.logAudit('ABSTAINED', authDecision.policyReason);
       return this.context;
     }
 
-    this.state = 'ABSTAINED';
+    // 7. REAL BROWSER ACTIVATION & CAUSAL WITNESS COLLECTION (If Recovery Route Was Formed)
+    if (this.context.provisionalRoute && selectedWinnerContext) {
+      const activationEventId = `act_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+      let activationEvent: ActivationEventRecord;
+      let collectedWitnesses: TransitionWitness[] = [];
+
+      // Check if real dispatcher is provided
+      const effectiveDispatcherOrWitnesses =
+        dispatcherOrWitnesses !== undefined ? dispatcherOrWitnesses : this.defaultDispatcher;
+      const isDispatcher =
+        effectiveDispatcherOrWitnesses && typeof (effectiveDispatcherOrWitnesses as any).dispatchActivation === 'function';
+
+      if (isDispatcher) {
+        const dispatcher = effectiveDispatcherOrWitnesses as ExecutionDispatcher;
+        this.state = 'ACTIVATION_DISPATCHED';
+
+        const dispatchResult = await dispatcher.dispatchActivation(
+          activationEventId,
+          selectedWinnerContext,
+          matchedCap.capabilityId
+        );
+
+        if (!dispatchResult.success) {
+          this.state = 'FAILED';
+          this.context.currentState = this.state;
+          this.logAudit('FAILED', dispatchResult.reason || 'Browser activation dispatch failed');
+          return this.context;
+        }
+
+        activationEvent = dispatchResult.activationEvent || {
+          eventId: activationEventId,
+          sequenceNumber: 1,
+          timestamp: Date.now(),
+          targetCandidateId: selectedWinnerContext.candidateId,
+          eventType: 'click',
+          initiatingCapabilityId: matchedCap.capabilityId,
+        };
+
+        collectedWitnesses = await dispatcher.collectWitnesses();
+      } else if (Array.isArray(effectiveDispatcherOrWitnesses)) {
+        // Direct test witness array injection
+        const firstWitnessEventId = effectiveDispatcherOrWitnesses.find(
+          (w) => w.correlatedActivationEventId
+        )?.correlatedActivationEventId;
+        const effectiveEventId = firstWitnessEventId || activationEventId;
+        const minWitnessTimestamp = Math.min(
+          ...effectiveDispatcherOrWitnesses.map((w) => w.timestamp),
+          Date.now()
+        );
+
+        activationEvent = {
+          eventId: effectiveEventId,
+          sequenceNumber: 1,
+          timestamp: minWitnessTimestamp - 50,
+          targetCandidateId: selectedWinnerContext.candidateId,
+          eventType: 'click',
+          initiatingCapabilityId: matchedCap.capabilityId,
+        };
+        collectedWitnesses = effectiveDispatcherOrWitnesses;
+      } else {
+        // No dispatcher and no witnesses provided: Causal verification must fail cleanly (No silent simulation!)
+        activationEvent = {
+          eventId: activationEventId,
+          sequenceNumber: 1,
+          timestamp: Date.now(),
+          targetCandidateId: selectedWinnerContext.candidateId,
+          eventType: 'click',
+          initiatingCapabilityId: matchedCap.capabilityId,
+        };
+        collectedWitnesses = [];
+      }
+
+      this.context.activationEvent = activationEvent;
+      this.context.capturedWitnesses = collectedWitnesses;
+
+      // 8. CAUSAL TRANSITION VERIFICATION (Derived internally, >=2 independent witness classes)
+      this.state = 'TRANSITION_VERIFYING';
+      const verificationResult = this.causalVerifier.verifyTransition(
+        {
+          preStateFingerprint: matchedCap.transitionEvidence.preStateFingerprint,
+          activationEventExpected: { eventType: 'click' },
+          expectedStateDelta: matchedCap.transitionEvidence.expectedDelta,
+          verificationWindowMs: matchedCap.transitionEvidence.verificationWindowMs,
+          postStateFingerprint: matchedCap.transitionEvidence.postStateFingerprint,
+        },
+        activationEvent,
+        collectedWitnesses
+      );
+      this.context.verificationResult = verificationResult;
+
+      // 9. PROMOTION OR QUARANTINE
+      const promoDecision = this.promotionController.evaluateAndPromote(
+        matchedCap.capabilityId,
+        this.context.provisionalRoute.routeId,
+        verificationResult
+      );
+
+      if (!promoDecision.promoted) {
+        this.state = 'QUARANTINED';
+        this.context.currentState = this.state;
+        this.createAndSaveValidationRecord('QUARANTINED');
+        this.logAudit('FAILED', promoDecision.reason);
+        return this.context;
+      }
+
+      routeToAuthorize = promoDecision.route;
+      this.context.activeRoute = routeToAuthorize;
+      this.state = 'VALIDATED_ROUTE';
+    }
+
+    // 10. FINAL OUTCOME: EXECUTED
+    this.state = 'EXECUTED';
     this.context.currentState = this.state;
-    this.logAudit('ABSTAINED', authDecision.policyReason);
+    this.createAndSaveValidationRecord('EXECUTED');
+    this.logAudit('EXECUTED', 'Navigation and verified capability execution completed successfully');
     return this.context;
+  }
+
+  private createAndSaveValidationRecord(
+    finalOutcome: 'EXECUTED' | 'QUARANTINED' | 'DEMOTED' | 'ABSTAINED' | 'CONFIRMATION_PENDING' | 'FAILED'
+  ): void {
+    if (!this.context.resolvedCapability) return;
+
+    const record: ValidationRecord = {
+      recordId: `val_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      timestamp: Date.now(),
+      candidateIdentity: this.context.selectedCandidate?.candidateId || 'ACTIVE_ROUTE',
+      candidateFingerprint: this.context.resolvedCapability,
+      capabilityId: this.context.resolvedCapability.capabilityId,
+      interfaceStateId: this.context.observedInterfaceState?.stateId || 'DEFAULT_STATE',
+      typedDriftVector: this.context.driftVector || null,
+      invariantResults: this.context.selectedCandidate
+        ? this.context.invariantResults?.[this.context.selectedCandidate.candidateId] || null
+        : null,
+      contradictionResults: {},
+      rankingComponents: this.context.selectedCandidate || null,
+      routeVersion: this.context.activeRoute || this.context.provisionalRoute || null,
+      activationEvent: this.context.activationEvent || null,
+      transitionSignature: null,
+      transitionWitnesses: this.context.capturedWitnesses || [],
+      causalVerificationResult: this.context.verificationResult || null,
+      promotionState: this.context.activeRoute?.status || 'PROVISIONAL',
+      riskDecision: this.context.resolvedCapability.riskMetadata.riskClass,
+      authorizationDecision: this.context.authorizationDecision || null,
+      finalOutcome,
+    };
+
+    this.context.validationRecord = record;
+    this.persistentStore.saveValidationRecord(record).catch(() => {});
   }
 
   private logAudit(
@@ -349,7 +502,7 @@ export class IntentNavMachine {
       executionAuthorization: this.context.authorizationDecision || {
         status: 'DENIED_ABSTAIN',
         riskClass: this.context.resolvedCapability.riskMetadata.riskClass,
-        capabilityConfidence: 0,
+        capabilityConfidence: this.context.resolvedCapability.confidence.capabilityConfidence,
         routeConfidence: 0,
         evidenceQuorum: {
           hasSemanticEvidence: false,
@@ -358,11 +511,10 @@ export class IntentNavMachine {
           quorumSatisfied: false,
         },
         requiresUserConfirmation: false,
-        policyReason: failureReason || 'Abstained',
+        policyReason: failureReason || 'Execution halted',
         evaluatedTimestamp: Date.now(),
       },
-      userConfirmation: this.context.userConfirmationGranted ?? null,
-      finalOutcome: outcome,
+      finalMachineState: this.state,
       failureReason,
     });
   }

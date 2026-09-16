@@ -1,10 +1,12 @@
 /**
  * IntentNav-SCFR: Browser-Side Interface Observer
  * Extracts normalized interface states, accessible properties, semantic landmarks, and debounced mutations
+ * Strips data-capability-id dependency completely.
  */
 
 import { InterfaceStateNode } from '../../types/state';
 import { VolatileFeatureSuppressor } from '../../core/fingerprint/suppressor';
+import { BindingHandle } from '../../types/capability';
 
 export class InterfaceObserver {
   private mutationObserver: MutationObserver | null = null;
@@ -20,7 +22,9 @@ export class InterfaceObserver {
 
     // Extract active dialogs/modals
     const activeModalsOrDialogs: string[] = [];
-    const dialogs = document.querySelectorAll('dialog[open], [role="dialog"], [role="alertdialog"], .modal.is-active, .modal.show');
+    const dialogs = document.querySelectorAll(
+      'dialog[open], [role="dialog"], [role="alertdialog"], .modal.is-active, .modal.show'
+    );
     dialogs.forEach((d) => {
       const label = d.getAttribute('aria-label') || d.getAttribute('title') || 'modal_dialog';
       activeModalsOrDialogs.push(label);
@@ -36,7 +40,9 @@ export class InterfaceObserver {
 
     // Extract semantic landmarks
     const semanticLandmarks: string[] = [];
-    const landmarks = document.querySelectorAll('main, nav, header, footer, aside, section, form, [role="main"], [role="navigation"]');
+    const landmarks = document.querySelectorAll(
+      'main, nav, header, footer, aside, section, form, [role="main"], [role="navigation"]'
+    );
     landmarks.forEach((l) => {
       const role = l.getAttribute('role') || l.tagName.toLowerCase();
       const label = l.getAttribute('aria-label') || '';
@@ -48,11 +54,31 @@ export class InterfaceObserver {
     const tagHierarchy = bodyChildren.map((c) => VolatileFeatureSuppressor.computeRelativePath(c)).join('|');
     const domStructuralHash = `hash_${this.simpleHash(tagHierarchy)}`;
 
-    // Exposed capability IDs
-    const exposedCapabilityIds: string[] = [];
-    document.querySelectorAll('[data-capability-id]').forEach((el) => {
-      const id = el.getAttribute('data-capability-id');
-      if (id) exposedCapabilityIds.push(id);
+    // Collect exposed candidate handles without data-capability-id
+    const exposedCandidateHandles: BindingHandle[] = [];
+    const interactiveElements = document.querySelectorAll(
+      'button, a, input, select, [role="button"], [role="link"], [role="switch"], [role="menuitem"], [role="tab"]'
+    );
+    interactiveElements.forEach((el, index) => {
+      const suppression = VolatileFeatureSuppressor.suppressVolatileFeatures(el);
+      const label =
+        el.getAttribute('aria-label') ||
+        el.getAttribute('title') ||
+        suppression.cleanedText ||
+        el.getAttribute('name') ||
+        `element_${index}`;
+      const role = el.getAttribute('role') || el.tagName.toLowerCase();
+
+      exposedCandidateHandles.push({
+        handleId: `handle_${index}`,
+        tagName: el.tagName.toLowerCase(),
+        role,
+        accessibleName: label,
+        domStructuralPath: suppression.relativeStructuralPath,
+        elementIndex: index,
+        volatileId: el.id || undefined,
+        volatileClasses: el.className && typeof el.className === 'string' ? el.className.split(/\s+/).filter(Boolean) : undefined,
+      });
     });
 
     const node: InterfaceStateNode = {
@@ -63,7 +89,7 @@ export class InterfaceObserver {
       semanticLandmarks,
       activeModalsOrDialogs,
       activeTabs,
-      exposedCapabilityIds,
+      exposedCandidateHandles,
       timestamp: Date.now(),
     };
 
@@ -72,17 +98,25 @@ export class InterfaceObserver {
   }
 
   /**
-   * Starts observing DOM mutations with debouncing
+   * Starts observing DOM mutations with debouncing and detailed mutation tracking
    */
-  public observeMutations(onMutationDebounced: () => void, debounceMs: number = 200): void {
+  public observeMutations(
+    onMutation: (mutations?: MutationRecord[]) => void,
+    debounceMs: number = 100
+  ): void {
     if (typeof MutationObserver === 'undefined') return;
 
-    this.mutationObserver = new MutationObserver(() => {
+    let accumulatedMutations: MutationRecord[] = [];
+
+    this.mutationObserver = new MutationObserver((mutations) => {
+      accumulatedMutations.push(...mutations);
       if (this.mutationDebounceTimer !== null) {
         clearTimeout(this.mutationDebounceTimer);
       }
       this.mutationDebounceTimer = window.setTimeout(() => {
-        onMutationDebounced();
+        const batch = [...accumulatedMutations];
+        accumulatedMutations = [];
+        onMutation(batch);
       }, debounceMs);
     });
 
@@ -91,6 +125,7 @@ export class InterfaceObserver {
       subtree: true,
       attributes: true,
       attributeFilter: ['class', 'style', 'aria-expanded', 'aria-checked', 'disabled', 'open'],
+      characterData: true,
     });
   }
 

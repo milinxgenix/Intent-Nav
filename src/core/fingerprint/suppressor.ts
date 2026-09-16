@@ -40,6 +40,9 @@ const VOLATILE_CLASS_PATTERNS = [
   /^jsx-[0-9]+/i, // styled-jsx
   /^_[a-z0-9]{5,}$/i, // CSS modules random hash
   /^(p|m|px|py|pt|pb|pl|pr|w|h|text|bg|border|flex|grid|col|row|gap)-/i, // Tailwind / utility CSS
+  /^(items|justify|content|self)-/i, // Flex alignment utilities
+  /^(flex|grid|block|inline|hidden|relative|absolute|fixed)$/i, // Layout utilities
+  /^[a-z]-\d+/i, // Atomic shorthand: x-19, y-20
   /^(hover:|focus:|active:|disabled:|dark:)/i, // Pseudo-class utilities
   /^(is-|has-)/i, // State toggles
 ];

@@ -4,9 +4,9 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { IntentNavMachine } from '../../src/core/stateMachine/machine';
+import { IntentNavMachine, ExecutionDispatcher } from '../../src/core/stateMachine/machine';
 import { FunctionalCapabilityFingerprint } from '../../src/types/capability';
-import { TransitionWitness } from '../../src/types/transition';
+import { TransitionWitness, TransitionVerificationToken } from '../../src/types/transition';
 
 describe('Adversarial Test Matrix (A through Z)', () => {
   let machine: IntentNavMachine;
@@ -83,8 +83,68 @@ describe('Adversarial Test Matrix (A through Z)', () => {
     },
   };
 
+  const createTestToken = (capabilityId: string, routeId: string): TransitionVerificationToken => ({
+    tokenId: `tok_${routeId}`,
+    routeId,
+    capabilityId,
+    activationEventId: 'act_test',
+    verifiedWitnessClasses: ['DOM_MUTATION', 'ACCESSIBILITY_STATE_MUTATION'],
+    issuedTimestamp: Date.now(),
+    verifiedStatus: 'VERIFIED',
+    signatureHash: 'hash_test',
+  });
+
+  let lastActivationEventId = 'act_1';
+  let lastActivationTimestamp = Date.now();
+
+  const defaultMarketingDispatcher: ExecutionDispatcher = {
+    async dispatchActivation(activationEventId, candidate, capabilityId) {
+      lastActivationEventId = activationEventId;
+      lastActivationTimestamp = Date.now();
+      return {
+        success: true,
+        activationEvent: {
+          eventId: activationEventId,
+          sequenceNumber: 1,
+          timestamp: lastActivationTimestamp,
+          targetCandidateId: candidate.candidateId,
+          eventType: 'click',
+          initiatingCapabilityId: capabilityId,
+        },
+      };
+    },
+    async collectWitnesses() {
+      const now = lastActivationTimestamp + 10;
+      return [
+        {
+          witnessId: `wit_dom_${now}`,
+          witnessClass: 'DOM_MUTATION',
+          sequenceNumber: 1,
+          timestamp: now + 20,
+          observedDelta: { marketing_emails_enabled: false },
+          correlatedActivationEventId: lastActivationEventId,
+          temporalDeltaMs: 20,
+          isCausallyCorrelated: true,
+          correlationExplanation: 'DOM state mutated',
+        },
+        {
+          witnessId: `wit_a11y_${now}`,
+          witnessClass: 'ACCESSIBILITY_STATE_MUTATION',
+          sequenceNumber: 2,
+          timestamp: now + 50,
+          observedDelta: { ariaChecked: 'false' },
+          correlatedActivationEventId: lastActivationEventId,
+          temporalDeltaMs: 50,
+          isCausallyCorrelated: true,
+          correlationExplanation: 'Accessibility ariaChecked mutated to false',
+        },
+      ];
+    },
+  };
+
   beforeEach(() => {
     machine = new IntentNavMachine();
+    machine.setDefaultDispatcher(defaultMarketingDispatcher);
     machine.registerCapability(marketingCap);
     machine.registerCapability(security2FACap);
   });
@@ -562,10 +622,10 @@ describe('Adversarial Test Matrix (A through Z)', () => {
   // V. Route version rollback
   it('Scenario V: Route version rollback after demotion', () => {
     const v1 = machine.routeManager.createProvisionalRoute('CAP_DISABLE_MARKETING', [], 0.85);
-    machine.routeManager.promoteToActive('CAP_DISABLE_MARKETING', v1.routeId);
+    machine.routeManager.promoteToActive('CAP_DISABLE_MARKETING', v1.routeId, createTestToken('CAP_DISABLE_MARKETING', v1.routeId));
 
     const v2 = machine.routeManager.createProvisionalRoute('CAP_DISABLE_MARKETING', [], 0.95);
-    machine.routeManager.promoteToActive('CAP_DISABLE_MARKETING', v2.routeId);
+    machine.routeManager.promoteToActive('CAP_DISABLE_MARKETING', v2.routeId, createTestToken('CAP_DISABLE_MARKETING', v2.routeId));
 
     const { rollbackRoute } = machine.routeManager.demoteActiveRoute('CAP_DISABLE_MARKETING', v2.routeId, 'Broken route');
     expect(rollbackRoute?.routeId).toBe(v1.routeId);
@@ -624,7 +684,7 @@ describe('Adversarial Test Matrix (A through Z)', () => {
   it('Scenario Z: Presentation-only drift preserves route without requiring re-binding', async () => {
     // Setup active route first
     const v1 = machine.routeManager.createProvisionalRoute('CAP_DISABLE_MARKETING', [], 0.90);
-    machine.routeManager.promoteToActive('CAP_DISABLE_MARKETING', v1.routeId);
+    machine.routeManager.promoteToActive('CAP_DISABLE_MARKETING', v1.routeId, createTestToken('CAP_DISABLE_MARKETING', v1.routeId));
 
     // Provide observation with ONLY presentation change (different classes and IDs)
     const ctx = await machine.processIntent(

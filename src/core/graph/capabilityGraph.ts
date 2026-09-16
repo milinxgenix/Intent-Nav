@@ -1,14 +1,33 @@
 /**
  * IntentNav-SCFR: Capability-State Graph Engine
  * Fundamental Invariant: CAPABILITY NODES != INTERFACE-STATE NODES
+ * Integrated with PersistentCapabilityStore
  */
 
 import { CapabilityNode, InterfaceStateNode, GraphEdge, RouteVersion } from '../../types/state';
+import { PersistentCapabilityStore } from '../storage/persistentStore';
 
 export class CapabilityGraphEngine {
   private capabilityNodes: Map<string, CapabilityNode> = new Map();
   private interfaceStateNodes: Map<string, InterfaceStateNode> = new Map();
   private edges: GraphEdge[] = [];
+
+  constructor(private store?: PersistentCapabilityStore) {}
+
+  /**
+   * Hydrates the in-memory graph from persistent storage
+   */
+  public async loadFromStore(): Promise<void> {
+    if (!this.store) return;
+    const nodes = await this.store.getAllCapabilityNodes();
+    for (const [id, node] of Object.entries(nodes)) {
+      this.capabilityNodes.set(id, node);
+    }
+    const states = await this.store.getAllInterfaceStates();
+    for (const state of states) {
+      this.interfaceStateNodes.set(state.stateId, state);
+    }
+  }
 
   /**
    * Registers or updates a Capability Node
@@ -27,6 +46,9 @@ export class CapabilityGraphEngine {
         creationTimestamp: Date.now(),
       };
       this.capabilityNodes.set(capabilityId, node);
+      if (this.store) {
+        this.store.saveCapabilityNode(node).catch(() => {});
+      }
     }
     return node;
   }
@@ -36,6 +58,9 @@ export class CapabilityGraphEngine {
    */
   public registerInterfaceState(state: InterfaceStateNode): InterfaceStateNode {
     this.interfaceStateNodes.set(state.stateId, state);
+    if (this.store) {
+      this.store.saveInterfaceState(state).catch(() => {});
+    }
     return state;
   }
 
@@ -71,6 +96,11 @@ export class CapabilityGraphEngine {
       if (!node.demotedRouteIds.includes(route.routeId)) {
         node.demotedRouteIds.push(route.routeId);
       }
+    }
+
+    if (this.store) {
+      this.store.saveRouteVersion(route).catch(() => {});
+      this.store.saveCapabilityNode(node).catch(() => {});
     }
   }
 
@@ -113,4 +143,3 @@ export class CapabilityGraphEngine {
     return active && active.status === 'ACTIVE_VALIDATED' ? active : null;
   }
 }
-
