@@ -1,0 +1,36 @@
+graph TD
+    subgraph PersistentCapabilities["Persistent Functional Capability Layer"]
+        C1["Capability C1: Disable Marketing Communications"]
+        C2["Capability C2: Export Personal Data Archive"]
+        C3["Capability C3: Disable Two-Factor Authentication"]
+    end
+
+    subgraph VersionedRoutes["Route Version Evolution"]
+        R1_V1["Route V1: Settings > Notifications > Switch"]
+        R1_V2["Route V2: Preferences Hub > Bulletins > Switch"]
+        R1_V3["Route V3: App Settings (Site C) > Modal Flow"]
+    end
+
+    subgraph InterfaceStates["Interface-State Nodes (Pages, Dialogs, Modals)"]
+        S_Home["State: Dashboard Page"]
+        S_Settings["State: General Settings"]
+        S_Notif["State: Notifications Panel"]
+        S_Hub["State: Preferences Hub"]
+        S_Modal["State: 2FA Intermediate Confirmation Dialog"]
+    end
+
+    C1 --> R1_V1
+    C1 --> R1_V2
+    C1 --> R1_V3
+
+    R1_V1 --> S_Home
+    S_Home -- "nav" --> S_Settings
+    S_Settings -- "interact" --> S_Notif
+    S_Notif -- "exposes" --> C1
+
+    R1_V2 --> S_Home
+    S_Home -- "nav" --> S_Hub
+    S_Hub -- "exposes" --> C1
+
+    C3 --> S_Modal
+    S_Modal -- "exposes" --> C3
