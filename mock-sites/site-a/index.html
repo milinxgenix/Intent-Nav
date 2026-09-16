@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mock Site A - Standard Portal</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; background: #fafafa; color: #333; }
+    nav { background: #fff; padding: 10px; border-bottom: 2px solid #ddd; margin-bottom: 20px; }
+    nav a { margin-right: 15px; text-decoration: none; color: #0066cc; font-weight: bold; }
+    section { background: #fff; padding: 15px; margin-bottom: 15px; border-radius: 4px; border: 1px solid #ddd; }
+    .control-row { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; }
+    button { padding: 6px 12px; cursor: pointer; }
+    .status-badge { font-size: 12px; padding: 2px 6px; border-radius: 3px; background: #e0e0e0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>User Account Settings Portal (Site A)</h1>
+  </header>
+  <nav role="navigation" aria-label="Main Navigation">
+    <a href="#settings">Settings</a>
+    <a href="#privacy">Privacy</a>
+    <a href="#security">Security</a>
+    <a href="#notifications">Notifications</a>
+    <a href="#account">Account</a>
+  </nav>
+
+  <main role="main">
+    <!-- 1. Privacy Settings -->
+    <section id="privacy" role="region" aria-label="Privacy Settings">
+      <h2>Privacy Preferences</h2>
+      <div class="control-row">
+        <span>Allow Analytical Data Tracking</span>
+        <button id="btn-toggle-tracking" data-capability-id="CAP_TOGGLE_TRACKING" role="switch" aria-checked="true">
+          Disable Tracking
+        </button>
+      </div>
+      <div class="control-row">
+        <span>Personal Data Archive</span>
+        <button id="btn-export-data" data-capability-id="CAP_EXPORT_DATA" role="button">
+          Export Personal Data
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. Notifications -->
+    <section id="notifications" role="region" aria-label="Notification Preferences">
+      <h2>Notification Settings</h2>
+      <div class="control-row">
+        <div>
+          <strong>Marketing Communications</strong>
+          <p style="font-size: 12px; color: #666;">Receive promotional offers, discounts, and product bulletins</p>
+        </div>
+        <button id="btn-disable-marketing" data-capability-id="CAP_DISABLE_MARKETING" role="switch" aria-checked="true">
+          Disable Marketing Emails
+        </button>
+      </div>
+      <div class="control-row">
+        <div>
+          <strong>Account Security Alerts</strong>
+          <p style="font-size: 12px; color: #666;">Essential alerts for login attempts and password resets</p>
+        </div>
+        <button id="btn-security-alerts" role="switch" aria-checked="true" disabled>
+          Security Alerts (Mandatory)
+        </button>
+      </div>
+    </section>
+
+    <!-- 3. Security -->
+    <section id="security" role="region" aria-label="Security Settings">
+      <h2>Security & Authentication</h2>
+      <div class="control-row">
+        <div>
+          <strong>Two-Factor Authentication (2FA)</strong>
+          <p style="font-size: 12px; color: #666;">Extra security requiring authenticator app confirmation</p>
+        </div>
+        <button id="btn-disable-2fa" data-capability-id="CAP_DISABLE_2FA" role="button">
+          Disable Two-Factor Authentication
+        </button>
+      </div>
+    </section>
+
+    <!-- 4. Account -->
+    <section id="account" role="region" aria-label="Account Management">
+      <h2>Account Status</h2>
+      <div class="control-row">
+        <div>
+          <strong>Pause or Deactivate Account</strong>
+          <p style="font-size: 12px; color: #666;">Temporarily pause your account membership</p>
+        </div>
+        <button id="btn-deactivate-account" data-capability-id="CAP_DEACTIVATE_ACCOUNT" role="button">
+          Deactivate Account
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <div id="live-feedback" style="padding: 10px; background: #e8f4fd; margin-top: 20px; font-size: 12px;">
+    Observer Status: Ready.
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

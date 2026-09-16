@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mock Site D - Adversarial Semantic Decoys</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; background: #fdf2f8; color: #831843; }
+    .container { background: #fff; padding: 20px; border-radius: 8px; border: 2px solid #fbcfe8; max-width: 650px; margin: auto; }
+    .decoy-card { border: 1px solid #f472b6; border-radius: 6px; padding: 14px; margin-bottom: 14px; background: #fff1f2; }
+    .row { display: flex; justify-content: space-between; align-items: center; }
+    button { padding: 8px 14px; border-radius: 6px; cursor: pointer; border: 1px solid #be185d; }
+    .genuine-btn { background: #f43f5e; color: #fff; }
+    .decoy-btn { background: #fda4af; color: #881337; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Adversarial Decoy Portal (Site D)</h1>
+      <p style="font-size: 13px; color: #9d174d;">Contains high-similarity semantic traps designed to test invariant closure and contradiction rejection.</p>
+    </header>
+
+    <main role="main">
+      <!-- Scenario: Goal = "Disable marketing emails" -->
+      <!-- Trap 1: Decoy button with high semantic similarity, but WRONG TARGET ENTITY (ALL_NOTIFICATIONS instead of MARKETING_NOTIFICATIONS) -->
+      <section class="decoy-card" role="region" aria-label="Global Notification Alerts">
+        <div class="row">
+          <div>
+            <strong>Decoy 1 (High Semantic Overlap, Wrong Target):</strong>
+            <p style="font-size: 12px; color: #9f1239;">Disable all notifications across the entire platform</p>
+          </div>
+          <button id="decoy-disable-all-notifications" data-capability-id="DECOY_ALL_NOTIFICATIONS" role="button">
+            Disable All Account Notifications
+          </button>
+        </div>
+      </section>
+
+      <!-- Trap 2: Decoy button with high semantic similarity, but DESTRUCTIVE ACTION (DELETE instead of MODIFY_PREFERENCE) -->
+      <section class="decoy-card" role="region" aria-label="Communication History">
+        <div class="row">
+          <div>
+            <strong>Decoy 2 (High Semantic Overlap, Destructive Action):</strong>
+            <p style="font-size: 12px; color: #9f1239;">Permanently purge promotional marketing history</p>
+          </div>
+          <button id="decoy-delete-marketing-history" data-capability-id="DECOY_DELETE_HISTORY" role="button">
+            Delete Marketing Notification History
+          </button>
+        </div>
+      </section>
+
+      <!-- Genuine Target: Exact invariant match -->
+      <section class="decoy-card" style="background:#f0fdf4; border-color:#86efac;" role="region" aria-label="Commercial Email Delivery">
+        <div class="row">
+          <div>
+            <strong style="color:#166534;">Genuine Target Candidate:</strong>
+            <p style="font-size: 12px; color: #15803d;">Turn off promotional product and discount emails</p>
+          </div>
+          <button id="genuine-disable-marketing" data-capability-id="CAP_DISABLE_MARKETING" class="genuine-btn" role="switch" aria-checked="true">
+            Disable Marketing Emails
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <div id="feedback-d" style="margin-top: 15px; font-size: 12px; padding: 8px; background: #fee2e2;">
+      Site D Loaded. Awaiting interaction.
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

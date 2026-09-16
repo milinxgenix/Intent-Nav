@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mock Site B - Drifted Labels & Hierarchy</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 24px; background: #f3f4f6; color: #1f2937; }
+    .hub-container { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .nav-bar { display: flex; gap: 15px; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 20px; }
+    .nav-bar a { text-decoration: none; color: #4b5563; font-weight: 600; }
+    .section-card { border: 1px solid #e5e7eb; border-radius: 6px; padding: 16px; margin-bottom: 16px; }
+    .item-row { display: flex; justify-content: space-between; align-items: center; margin: 12px 0; }
+    button { padding: 8px 14px; border-radius: 6px; border: 1px solid #d1d5db; background: #fff; cursor: pointer; }
+    button:hover { background: #f9fafb; }
+  </style>
+</head>
+<body>
+  <div class="hub-container">
+    <header>
+      <h1>Member Preferences Hub (Site B)</h1>
+    </header>
+
+    <!-- Changed Navigation Order: Security first, then Alerts, then Data Privacy -->
+    <nav class="nav-bar" role="navigation" aria-label="Preferences Menu">
+      <a href="#security-hub">MFA & Authentication</a>
+      <a href="#bulletins">Communication Preferences</a>
+      <a href="#data-hub">Data Rights & Privacy</a>
+      <a href="#membership">Membership Status</a>
+    </nav>
+
+    <main role="main">
+      <!-- 1. Reordered & Renamed: MFA & Security -->
+      <section id="security-hub" class="section-card" role="region" aria-label="MFA & Authentication">
+        <h2>Multi-Factor Authentication (MFA) Protection</h2>
+        <div class="item-row">
+          <div>
+            <strong>MFA Verification Shield</strong>
+            <p style="font-size: 12px; color: #6b7280;">Secure code required at sign in</p>
+          </div>
+          <button id="btn-mfa-protection" data-capability-id="CAP_DISABLE_2FA" role="button">
+            Turn Off Multi-Factor Auth
+          </button>
+        </div>
+      </section>
+
+      <!-- 2. Renamed Labels: Communication Bulletins -->
+      <section id="bulletins" class="section-card" role="region" aria-label="Communication Preferences">
+        <h2>Promotional Bulletins & Messages</h2>
+        <div class="item-row">
+          <div>
+            <strong>Promotional & Commercial Bulletins</strong>
+            <p style="font-size: 12px; color: #6b7280;">Opt in or out of marketing mailings, offers and campaigns</p>
+          </div>
+          <button id="btn-promotions-switch" data-capability-id="CAP_DISABLE_MARKETING" role="switch" aria-checked="true">
+            Stop Promotional Bulletins
+          </button>
+        </div>
+      </section>
+
+      <!-- 3. Renamed: Data Rights -->
+      <section id="data-hub" class="section-card" role="region" aria-label="Data Rights & Privacy">
+        <h2>Your Data & Privacy Rights</h2>
+        <div class="item-row">
+          <div>
+            <strong>Personal Records Download</strong>
+            <p style="font-size: 12px; color: #6b7280;">Obtain an export archive of your registered account information</p>
+          </div>
+          <button id="btn-download-records" data-capability-id="CAP_EXPORT_DATA" role="button">
+            Download Personal Information
+          </button>
+        </div>
+      </section>
+
+      <!-- 4. Renamed: Membership Status -->
+      <section id="membership" class="section-card" role="region" aria-label="Membership Status">
+        <h2>Membership Inactivity & Closure</h2>
+        <div class="item-row">
+          <div>
+            <strong>Take a Break / Deactivate</strong>
+            <p style="font-size: 12px; color: #6b7280;">Temporarily suspend or deactivate your profile</p>
+          </div>
+          <button id="btn-pause-profile" data-capability-id="CAP_DEACTIVATE_ACCOUNT" role="button">
+            Take a Break From This Account
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <div id="feedback-b" style="padding: 10px; background: #f0fdf4; border: 1px solid #bbf7d0; margin-top: 15px; font-size: 12px;">
+      Site B Ready.
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

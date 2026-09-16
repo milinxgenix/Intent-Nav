@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mock Site C - Volatile IDs, Scrambled Classes & Modals</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; padding: 20px; background: #eef2f6; }
+    .css-19zpn93 { background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); max-width: 600px; margin: auto; }
+    .css-sc92h1 { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid #e2e8f0; }
+    .sc-btn-primary { background: #4f46e5; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+    .modal-backdrop.open { display: flex; }
+    .modal-content { background: #fff; padding: 20px; border-radius: 8px; max-width: 400px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="css-19zpn93" id=":r1:">
+    <header>
+      <h1>Application Settings (Site C)</h1>
+    </header>
+
+    <main role="main">
+      <!-- Row with scrambled ID and CSS classes -->
+      <div class="css-sc92h1" id="dyn-id-829103">
+        <div>
+          <strong id=":r2:">Commercial Marketing Emails</strong>
+          <p style="font-size: 12px; color: #64748b;">Manage promotional delivery channels</p>
+        </div>
+        <button id=":r3:" data-capability-id="CAP_DISABLE_MARKETING" class="sc-btn-primary" role="switch" aria-checked="true">
+          Turn Off Marketing Notifications
+        </button>
+      </div>
+
+      <!-- Row for Personal Data Export -->
+      <div class="css-sc92h1" id="uuid-b8f9e012-7c3a-4f51-9e2d-3c8a7f1a9e5b">
+        <div>
+          <strong id=":r4:">Personal Data Archive</strong>
+          <p style="font-size: 12px; color: #64748b;">Obtain complete GDPR data export</p>
+        </div>
+        <button id="ember992" data-capability-id="CAP_EXPORT_DATA" class="sc-btn-primary" role="button">
+          Export My Data Archive
+        </button>
+      </div>
+
+      <!-- Row for 2FA requiring intermediate modal -->
+      <div class="css-sc92h1" id="_ngcontent-c41">
+        <div>
+          <strong id=":r5:">Two-Factor Authentication</strong>
+          <p style="font-size: 12px; color: #64748b;">Authenticator app protection</p>
+        </div>
+        <button id="btn-open-2fa-modal" data-capability-id="CAP_DISABLE_2FA" class="sc-btn-primary" role="button">
+          Remove 2FA Security
+        </button>
+      </div>
+    </main>
+
+    <div id="feedback-c" style="margin-top: 15px; font-size: 12px; color: #4338ca;">
+      Site C Initialized.
+    </div>
+  </div>
+
+  <!-- Intermediate Modal -->
+  <div id="modal-confirm-dialog" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-content">
+      <h3 id="modal-title">Confirm 2FA Removal</h3>
+      <p style="font-size: 13px; color: #4b5563; margin: 10px 0;">Are you sure you want to disable two-factor authentication?</p>
+      <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+        <button id="btn-modal-confirm" class="sc-btn-primary" style="background:#dc2626;">Yes, Disable 2FA</button>
+        <button id="btn-modal-cancel" class="sc-btn-primary" style="background:#6b7280;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
