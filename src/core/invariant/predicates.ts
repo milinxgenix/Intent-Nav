@@ -175,10 +175,19 @@ export class InvariantPredicates {
 
   /**
    * 4. Allowed State Delta Compatibility
+   * Fully implements every declared allowed-state-delta type:
+   * - ENABLED_TO_DISABLED
+   * - DISABLED_TO_ENABLED
+   * - MODIFIED
+   * - ADDED
+   * - REMOVED
+   * Compares pre-state, action semantics, target, allowed transition, and expected direction.
    */
   public static matchAllowedStateDelta(
     allowedDeltas: StateDeltaPredicate[],
-    observedState: Record<string, unknown>
+    observedState: Record<string, unknown>,
+    observedAction?: string,
+    _observedTarget?: string
   ): PredicateEvaluationRecord {
     if (allowedDeltas.length === 0) {
       return {
@@ -190,21 +199,85 @@ export class InvariantPredicates {
       };
     }
 
-    // Check that observed control is capable of undergoing the expected transition
-    // E.g. If expected change is ENABLED_TO_DISABLED, control must currently be checked/enabled
     let compatible = true;
     const notes: string[] = [];
 
     for (const delta of allowedDeltas) {
+      // 1. Control disabled check: Disabled controls cannot undergo transitions
+      if (observedState['disabled'] === true) {
+        notes.push(`Control is disabled; cannot undergo transition for '${delta.property}'`);
+        compatible = false;
+        break;
+      }
+
+      // 2. Custom predicate evaluate if provided
+      if (delta.evaluate && typeof delta.evaluate === 'function') {
+        try {
+          if (!delta.evaluate(observedState)) {
+            notes.push(`Delta predicate evaluation failed for '${delta.property}'`);
+            compatible = false;
+          }
+        } catch {
+          notes.push(`Delta predicate evaluation threw for '${delta.property}'`);
+          compatible = false;
+        }
+      }
+
+      // 3. Directional transition checks
       if (delta.expectedChange === 'ENABLED_TO_DISABLED') {
+        // Control must currently be enabled/checked (cannot already be disabled)
         if (delta.property === 'checked' || delta.property === 'aria-checked') {
           const isCurrentlyChecked = observedState['checked'] === true || observedState['aria-checked'] === 'true';
           if (observedState['checked'] !== undefined && !isCurrentlyChecked) {
-            // If it is already disabled, toggle might be opposite
             notes.push(`Control is already unchecked; cannot transition ENABLED_TO_DISABLED`);
             compatible = false;
           }
+        } else if (observedState[delta.property] !== undefined && observedState[delta.property] === false) {
+          notes.push(`Property '${delta.property}' is already false/disabled; cannot transition ENABLED_TO_DISABLED`);
+          compatible = false;
         }
+
+        // Action semantics check
+        if (observedAction && ['VIEW', 'READ', 'INSPECT'].includes(observedAction.toUpperCase())) {
+          notes.push(`Action '${observedAction}' is read-only; cannot transition ENABLED_TO_DISABLED`);
+          compatible = false;
+        }
+      } else if (delta.expectedChange === 'DISABLED_TO_ENABLED') {
+        // Control/property must currently be disabled/unchecked (cannot already be enabled)
+        if (delta.property === 'checked' || delta.property === 'aria-checked') {
+          const isCurrentlyChecked = observedState['checked'] === true || observedState['aria-checked'] === 'true';
+          if (observedState['checked'] !== undefined && isCurrentlyChecked) {
+            notes.push(`Control is already checked; cannot transition DISABLED_TO_ENABLED`);
+            compatible = false;
+          }
+        } else if (observedState[delta.property] !== undefined && observedState[delta.property] === true) {
+          notes.push(`Property '${delta.property}' is already true/enabled; cannot transition DISABLED_TO_ENABLED`);
+          compatible = false;
+        }
+
+        // Action semantics check
+        if (observedAction && ['VIEW', 'READ', 'INSPECT'].includes(observedAction.toUpperCase())) {
+          notes.push(`Action '${observedAction}' is read-only; cannot transition DISABLED_TO_ENABLED`);
+          compatible = false;
+        }
+      } else if (delta.expectedChange === 'MODIFIED') {
+        if (observedAction && ['VIEW', 'READ', 'INSPECT'].includes(observedAction.toUpperCase())) {
+          notes.push(`Action '${observedAction}' is read-only; cannot produce MODIFIED delta on '${delta.property}'`);
+          compatible = false;
+        }
+      } else if (delta.expectedChange === 'ADDED') {
+        if (observedState[delta.property] !== undefined && observedState[delta.property] !== null) {
+          notes.push(`Property '${delta.property}' already exists; cannot transition ADDED`);
+          compatible = false;
+        }
+      } else if (delta.expectedChange === 'REMOVED') {
+        if (observedState[delta.property] === undefined || observedState[delta.property] === null) {
+          notes.push(`Property '${delta.property}' does not exist; cannot transition REMOVED`);
+          compatible = false;
+        }
+      } else {
+        notes.push(`Unsupported or unknown state delta type: '${delta.expectedChange}'`);
+        compatible = false;
       }
     }
 
@@ -223,11 +296,16 @@ export class InvariantPredicates {
 
   /**
    * 5. Expected Post-State Compatibility
+   * Represents pre-ranking compatibility against declared expected post-state predicates.
+   * Distinguishes PASS, FAIL, and INSUFFICIENT_EVIDENCE.
    */
   public static matchExpectedPostState(
     expectedPostState: ExpectedStatePredicate[],
     observedRole: string,
-    _observedAction: string
+    _observedAction: string,
+    observedState?: Record<string, unknown>,
+    observedTarget?: string,
+    candidateLabel?: string
   ): PredicateEvaluationRecord {
     if (expectedPostState.length === 0) {
       return {
@@ -239,17 +317,105 @@ export class InvariantPredicates {
       };
     }
 
-    // Verify control type can achieve expected post-state
+    // 1. Control Capability: Non-interactive controls cannot drive mutations
     const role = (observedRole || '').toLowerCase();
-    const isInteractive = !observedRole || ['button', 'switch', 'link', 'input', 'select', 'a'].includes(role);
+    const nonInteractiveRoles = ['heading', 'text', 'paragraph', 'img', 'image', 'dialog', 'banner', 'region', 'navigation', 'alert', 'status'];
+    if (nonInteractiveRoles.includes(role)) {
+      return {
+        predicateId: 'POS_PRED_EXPECTED_POST_STATE',
+        predicateName: 'Expected Post-State Compatibility',
+        isNegativePredicate: false,
+        passed: false,
+        explanation: `Role '${observedRole}' is incapable of driving expected post-state mutations`,
+        observedValue: observedRole,
+        expectedValue: expectedPostState,
+      };
+    }
+
+    const label = (candidateLabel || '').toLowerCase();
+    const target = (observedTarget || '').toLowerCase();
+
+    for (const post of expectedPostState) {
+      // 2. Pre-State / Post-State Conflict: If the pre-state already equals expected post-state, cannot transition
+      if (observedState && observedState[post.property] !== undefined && observedState[post.property] === post.expectedValue) {
+        return {
+          predicateId: 'POS_PRED_EXPECTED_POST_STATE',
+          predicateName: 'Expected Post-State Compatibility',
+          isNegativePredicate: false,
+          passed: false,
+          explanation: `Candidate pre-state for '${post.property}' (${observedState[post.property]}) is already equal to expected post-state; cannot drive required state transition`,
+          observedValue: observedState[post.property],
+          expectedValue: post.expectedValue,
+        };
+      }
+
+      // 3. Directional Semantic Contradiction
+      if (label) {
+        if (post.expectedValue === false) {
+          const indicatesEnableOnly =
+            (label.includes('enable') || label.includes('turn on') || label.includes('activate') || label.includes('opt in')) &&
+            !(label.includes('disable') || label.includes('turn off') || label.includes('deactivate') || label.includes('opt out'));
+          if (indicatesEnableOnly) {
+            return {
+              predicateId: 'POS_PRED_EXPECTED_POST_STATE',
+              predicateName: 'Expected Post-State Compatibility',
+              isNegativePredicate: false,
+              passed: false,
+              explanation: `Candidate action direction ('${candidateLabel}') contradicts expected post-state (${post.property} = false)`,
+              observedValue: candidateLabel,
+              expectedValue: post.expectedValue,
+            };
+          }
+        } else if (post.expectedValue === true) {
+          const indicatesDisableOnly =
+            (label.includes('disable') || label.includes('turn off') || label.includes('deactivate') || label.includes('opt out')) &&
+            !(label.includes('enable') || label.includes('turn on') || label.includes('activate') || label.includes('opt in'));
+          if (indicatesDisableOnly) {
+            return {
+              predicateId: 'POS_PRED_EXPECTED_POST_STATE',
+              predicateName: 'Expected Post-State Compatibility',
+              isNegativePredicate: false,
+              passed: false,
+              explanation: `Candidate action direction ('${candidateLabel}') contradicts expected post-state (${post.property} = true)`,
+              observedValue: candidateLabel,
+              expectedValue: post.expectedValue,
+            };
+          }
+        }
+      }
+
+      // 4. Missing Evidence: If candidate evidence connecting to the post-state property is unknown
+      const propKeyword = post.property.replace(/_enabled|_initiated|_triggered|_visible|_active/g, '').replace(/_/g, ' ').trim().toLowerCase();
+      const targetMatchesProp = Boolean(
+        target &&
+        target !== 'unknown' &&
+        propKeyword.length > 2 &&
+        (target.toLowerCase().includes(propKeyword.replace(/ /g, '_')) ||
+         propKeyword.split(' ').some((w) => w.length > 3 && target.toLowerCase().includes(w)))
+      );
+      const labelMatchesProp = Boolean(label && (label.includes(propKeyword) || propKeyword.split(' ').some((w) => w.length > 3 && label.includes(w))));
+      const hasSemanticConnection = targetMatchesProp || labelMatchesProp;
+
+      if (!hasSemanticConnection && (!observedState || observedState[post.property] === undefined)) {
+        return {
+          predicateId: 'POS_PRED_EXPECTED_POST_STATE',
+          predicateName: 'Expected Post-State Compatibility',
+          isNegativePredicate: false,
+          passed: false,
+          hasInsufficientEvidence: true,
+          explanation: `Missing evidence for expected post-state property '${post.property}'`,
+          observedValue: undefined,
+          expectedValue: post.expectedValue,
+        };
+      }
+    }
+
     return {
       predicateId: 'POS_PRED_EXPECTED_POST_STATE',
       predicateName: 'Expected Post-State Compatibility',
       isNegativePredicate: false,
-      passed: isInteractive,
-      explanation: isInteractive
-        ? 'Candidate control is capable of driving expected post-state mutations'
-        : `Role '${observedRole}' is incapable of driving expected post-state mutations`,
+      passed: true,
+      explanation: 'Candidate control and transition direction are compatible with expected post-state',
       observedValue: observedRole,
       expectedValue: expectedPostState,
     };

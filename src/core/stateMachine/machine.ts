@@ -56,7 +56,7 @@ import { CapabilityGraphEngine } from '../graph/capabilityGraph';
 import { RouteManager } from '../graph/routeManager';
 import { TypedDriftDetector, ObservedElementFeatures } from '../drift/detector';
 import { DriftClassifier } from '../drift/classifier';
-import { CandidateEvaluationContext } from '../invariant/engine';
+import { CandidateEvaluationContext, InvariantClosureEngine } from '../invariant/engine';
 import { NegativeEvidenceStore } from '../contradiction/store';
 import { CandidatePipeline } from '../candidate/pipeline';
 import { CandidateRankingEngine } from '../ranking/engine';
@@ -366,6 +366,95 @@ export class IntentNavMachine {
         this.context.provisionalRoute = provisionalRoute;
         routeToAuthorize = provisionalRoute;
       }
+    } else {
+      // ACTIVE ROUTE REVALIDATION: MUST NOT BYPASS CURRENT INVARIANT EVALUATION
+      // Stored route provides prior validation history, but current execution must
+      // satisfy current hard invariant closure on live candidate and interface state.
+      this.state = 'CANDIDATE_DISCOVERY';
+      this.context.candidateList = availableCandidates;
+
+      const targetStep = activeRoute.steps?.[0];
+      let activeCandidate: CandidateEvaluationContext | null = null;
+
+      if (availableCandidates.length > 0) {
+        activeCandidate =
+          availableCandidates.find((c) => {
+            if (targetStep?.bindingHandle?.handleId && c.bindingHandle?.handleId === targetStep.bindingHandle.handleId) return true;
+            if (targetStep?.bindingHandle?.volatileId && c.candidateId === targetStep.bindingHandle.volatileId) return true;
+            if (targetStep?.bindingHandle?.domStructuralPath && c.domStructuralPath === targetStep.bindingHandle.domStructuralPath) return true;
+            if (targetStep?.targetAccessibleName && c.candidateLabel.trim().toLowerCase() === targetStep.targetAccessibleName.trim().toLowerCase()) return true;
+            return false;
+          }) || null;
+
+        if (!activeCandidate && availableCandidates.length === 1) {
+          activeCandidate = availableCandidates[0]!;
+        }
+      }
+
+      if (!activeCandidate) {
+        const handle = targetStep?.bindingHandle || {
+          handleId: observedFeatures.id || targetStep?.targetAccessibleName || 'active_step_cand',
+          tagName: observedFeatures.tag || 'button',
+          role: observedFeatures.role || targetStep?.targetRole || matchedCap.semanticEvidence?.role || 'button',
+          accessibleName: targetStep?.targetAccessibleName || matchedCap.semanticEvidence?.accessibleName || 'Active control',
+          domStructuralPath: observedFeatures.tag || 'button',
+          elementIndex: 0,
+          volatileId: observedFeatures.id,
+        };
+
+        activeCandidate = {
+          candidateId: handle.handleId,
+          candidateLabel: targetStep?.targetAccessibleName || handle.accessibleName || matchedCap.semanticEvidence?.accessibleName || 'Active control',
+          observedActionType: observedFeatures.observedActionType || matchedCap.actionType,
+          observedTargetEntity: observedFeatures.observedTargetEntity || matchedCap.targetEntity,
+          observedRole: observedFeatures.role || targetStep?.targetRole || handle.role,
+          bindingHandle: handle,
+          observedState: observedFeatures.observedPreState || { disabled: false },
+          containerSemantics: observedFeatures.containerSemantics || (matchedCap.contextEvidence?.containerSemantics ? [...matchedCap.contextEvidence.containerSemantics] : []),
+          ancestors: observedFeatures.ancestors || (matchedCap.contextEvidence?.ancestorRelationships ? [...matchedCap.contextEvidence.ancestorRelationships] : []),
+          nearbyText: observedFeatures.nearbyText || (matchedCap.contextEvidence?.nearbyText ? [...matchedCap.contextEvidence.nearbyText] : []),
+        };
+      }
+
+      if (this.context.candidateList.length === 0 && activeCandidate) {
+        this.context.candidateList = [activeCandidate];
+      }
+
+      // Recompute invariant closure against current live candidate and interface state
+      const liveInvariantResult = InvariantClosureEngine.evaluateCandidate(matchedCap, activeCandidate);
+      this.context.invariantResults = { [activeCandidate.candidateId]: liveInvariantResult };
+
+      if (liveInvariantResult.status !== 'PASS') {
+        this.state = 'ABSTAINED';
+        this.context.currentState = this.state;
+        this.logAudit(
+          'ABSTAINED',
+          `Active route failed current invariant evaluation: ${liveInvariantResult.rejectionReason || liveInvariantResult.status}`
+        );
+        return this.context;
+      }
+
+      selectedWinnerContext = activeCandidate;
+      this.context.selectedCandidate = {
+        candidateId: activeCandidate.candidateId,
+        candidateLabel: activeCandidate.candidateLabel,
+        isEligible: true,
+        rank: 1,
+        weightsVersion: 'v1.0.0',
+        scoreBreakdown: {
+          invariantFit: 1.0,
+          semanticFit: 1.0,
+          contextFit: 1.0,
+          transitionFit: 1.0,
+          validationHistory: 1.0,
+          contradictionPenalty: 0.0,
+          stalenessPenalty: 0.0,
+          riskPenalty: 0.0,
+          pathCostPenalty: 0.0,
+          totalScore: activeRoute.confidenceScore || 1.0,
+        },
+      };
+      routeToAuthorize = activeRoute;
     }
 
     // 6. INDEPENDENT EXECUTION AUTHORIZATION GATING
@@ -373,14 +462,7 @@ export class IntentNavMachine {
     this.state = 'EXECUTION_AUTHORIZATION';
     const invariantResultForWinner = this.context.selectedCandidate
       ? this.context.invariantResults?.[this.context.selectedCandidate.candidateId] || null
-      : {
-          candidateId: 'ACTIVE',
-          status: 'PASS' as const,
-          isEligibleForRanking: true,
-          passedPredicates: [],
-          failedPredicates: [],
-          evaluatedTimestamp: Date.now(),
-        };
+      : null;
 
     const authDecision = ExecutionAuthorizationController.authorize({
       fingerprint: matchedCap,

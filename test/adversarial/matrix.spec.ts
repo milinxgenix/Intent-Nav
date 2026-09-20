@@ -67,6 +67,8 @@ describe('Adversarial Test Matrix (A through Z)', () => {
     canonicalFunction: 'disable_two_factor_auth',
     actionType: 'REVOKE_ACCESS',
     targetEntity: 'TWO_FACTOR_AUTH',
+    allowedStateDelta: [{ property: 'two_factor_enabled', expectedChange: 'ENABLED_TO_DISABLED' }],
+    expectedPostState: [{ property: 'two_factor_enabled', expectedValue: false }],
     semanticEvidence: {
       ...marketingCap.semanticEvidence,
       canonicalLabel: 'Disable two-factor authentication',

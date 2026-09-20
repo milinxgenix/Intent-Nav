@@ -19,6 +19,7 @@ export interface PredicateEvaluationRecord {
   explanation: string;
   observedValue?: unknown;
   expectedValue?: unknown;
+  hasInsufficientEvidence?: boolean;
 }
 
 export interface InvariantClosureResult {

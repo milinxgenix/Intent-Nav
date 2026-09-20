@@ -124,7 +124,9 @@ export class InvariantClosureEngine {
     // 4. Allowed State Delta Compatibility
     const deltaCheck = InvariantPredicates.matchAllowedStateDelta(
       targetFingerprint.allowedStateDelta || [],
-      observedState
+      observedState,
+      candidate.observedActionType,
+      candidate.observedTargetEntity
     );
     if (deltaCheck.passed) passedPredicates.push(deltaCheck);
     else failedPredicates.push(deltaCheck);
@@ -133,10 +135,20 @@ export class InvariantClosureEngine {
     const postStateCheck = InvariantPredicates.matchExpectedPostState(
       targetFingerprint.expectedPostState || [],
       candidate.observedRole,
-      candidate.observedActionType
+      candidate.observedActionType,
+      observedState,
+      candidate.observedTargetEntity,
+      candidate.candidateLabel
     );
-    if (postStateCheck.passed) passedPredicates.push(postStateCheck);
-    else failedPredicates.push(postStateCheck);
+    if (postStateCheck.hasInsufficientEvidence) {
+      hasInsufficientEvidence = true;
+      insufficientReason = postStateCheck.explanation;
+      failedPredicates.push(postStateCheck);
+    } else if (postStateCheck.passed) {
+      passedPredicates.push(postStateCheck);
+    } else {
+      failedPredicates.push(postStateCheck);
+    }
 
     // 6. Required Context Predicates
     const reqContextCheck = InvariantPredicates.matchRequiredContext(
