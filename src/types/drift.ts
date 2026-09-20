@@ -3,20 +3,30 @@
  * Enforces 5-dimensional typed drift vector with localized explanation
  */
 
+export interface TransitionEvidenceStatus {
+  preState: 'EVALUATED' | 'UNKNOWN';
+  allowedDelta: 'EVALUATED' | 'UNKNOWN';
+  postState: 'EVALUATED' | 'UNKNOWN';
+  activationEventType: 'EVALUATED' | 'UNKNOWN';
+  witnessClasses: 'EVALUATED' | 'UNKNOWN';
+}
+
 export interface TypedDriftVector {
   presentation: number; // 0.0 (identical) to 1.0 (completely changed: IDs, classes, styles)
   context: number;      // 0.0 to 1.0 (surrounding labels, containers, headings)
   structure: number;    // 0.0 to 1.0 (DOM hierarchy depth, sibling ordering, nesting)
   capability: number;   // 0.0 to 1.0 (functional target, control type, accessible role)
   transition: number;   // 0.0 to 1.0 (pre/post state delta mismatch, activation behavior)
+  transitionStatus?: TransitionEvidenceStatus;
 }
 
 export interface DriftThresholds {
-  presentationRecoveryThreshold: number; // typically high (e.g. 0.95) - presentation alone rarely triggers rebind
+  presentationRecoveryThreshold: number; // typically high (e.g. 0.90) - presentation alone rarely triggers rebind
   contextValidationThreshold: number;    // moderate (e.g. 0.40) - triggers validation/reassessment
   structureValidationThreshold: number;  // moderate (e.g. 0.45) - triggers validation/reassessment
   capabilityRebindThreshold: number;     // low (e.g. 0.20) - capability drift requires re-binding
   transitionRebindThreshold: number;     // low (e.g. 0.25) - transition drift requires re-binding
+  extremeDriftQuarantineThreshold: number; // high (e.g. 0.90) - concurrent extreme drift triggers immediate quarantine
 }
 
 export type DriftActionRequired =
@@ -25,10 +35,17 @@ export type DriftActionRequired =
   | 'TRIGGER_REBIND_RECOVERY'       // Capability or transition drift -> discover & rebind candidates
   | 'QUARANTINE_IMMEDIATELY';       // Contradictory drift -> immediately quarantine
 
+export type DriftDimension =
+  | 'presentation'
+  | 'context'
+  | 'structure'
+  | 'capability'
+  | 'transition';
+
 export interface DriftLocalizationResult {
   driftVector: TypedDriftVector;
   actionRequired: DriftActionRequired;
-  dominantDriftDimension: keyof TypedDriftVector;
+  dominantDriftDimension: DriftDimension;
   explanation: string;
   triggerFactors: string[];
   assessedTimestamp: number;

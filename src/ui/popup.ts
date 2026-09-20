@@ -4,7 +4,7 @@
  */
 
 import { StateMachineContext } from '../core/stateMachine/machine';
-import { TypedDriftVector } from '../types/drift';
+import { TypedDriftVector, DriftDimension } from '../types/drift';
 
 document.addEventListener('DOMContentLoaded', () => {
   const intentInput = document.getElementById('intentInput') as HTMLInputElement;
@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderDriftBars(v: TypedDriftVector) {
-    const dimensions: Array<{ key: keyof TypedDriftVector; label: string }> = [
+    const dimensions: Array<{ key: DriftDimension; label: string }> = [
       { key: 'presentation', label: 'Presentation' },
       { key: 'context', label: 'Context' },
       { key: 'structure', label: 'Structure' },

@@ -8,6 +8,7 @@ import {
   DriftThresholds,
   DriftLocalizationResult,
   DriftActionRequired,
+  DriftDimension,
 } from '../../types/drift';
 
 export const DEFAULT_DRIFT_THRESHOLDS: DriftThresholds = {
@@ -16,6 +17,7 @@ export const DEFAULT_DRIFT_THRESHOLDS: DriftThresholds = {
   structureValidationThreshold: 0.45,
   capabilityRebindThreshold: 0.20,
   transitionRebindThreshold: 0.25,
+  extremeDriftQuarantineThreshold: 0.90,
 };
 
 export class DriftClassifier {
@@ -27,7 +29,10 @@ export class DriftClassifier {
     let actionRequired: DriftActionRequired = 'MAINTAIN_ACTIVE';
 
     // 1. Check capability drift first (highest priority)
-    if (vector.capability >= 0.90 && vector.transition >= 0.90) {
+    if (
+      vector.capability >= thresholds.extremeDriftQuarantineThreshold &&
+      vector.transition >= thresholds.extremeDriftQuarantineThreshold
+    ) {
       actionRequired = 'QUARANTINE_IMMEDIATELY';
       triggerFactors.push('Extreme concurrent capability and transition drift detected; immediate quarantine required');
     } else if (vector.capability >= thresholds.capabilityRebindThreshold) {
@@ -39,7 +44,7 @@ export class DriftClassifier {
 
     // 2. Check transition drift (route validation required if capability is unchanged)
     if (vector.transition >= thresholds.transitionRebindThreshold) {
-      if (actionRequired !== 'TRIGGER_REBIND_RECOVERY') {
+      if (actionRequired !== 'TRIGGER_REBIND_RECOVERY' && actionRequired !== 'QUARANTINE_IMMEDIATELY') {
         actionRequired = 'TRIGGER_VALIDATION';
       }
       triggerFactors.push(
@@ -47,8 +52,8 @@ export class DriftClassifier {
       );
     }
 
-    // 3. Check structural & contextual drift (trigger validation if not already recovering)
-    if (actionRequired !== 'TRIGGER_REBIND_RECOVERY') {
+    // 3. Check structural & contextual drift (trigger validation if not already recovering or quarantined)
+    if (actionRequired !== 'TRIGGER_REBIND_RECOVERY' && actionRequired !== 'QUARANTINE_IMMEDIATELY') {
       if (vector.structure >= thresholds.structureValidationThreshold) {
         actionRequired = 'TRIGGER_VALIDATION';
         triggerFactors.push(
@@ -73,18 +78,19 @@ export class DriftClassifier {
     }
 
     // Determine dominant dimension
-    const dimensions: Array<keyof TypedDriftVector> = [
+    const dimensions: DriftDimension[] = [
       'capability',
       'transition',
       'structure',
       'context',
       'presentation',
     ];
-    let dominantDriftDimension: keyof TypedDriftVector = 'presentation';
+    let dominantDriftDimension: DriftDimension = 'presentation';
     let maxVal = -1;
     for (const dim of dimensions) {
-      if (vector[dim] > maxVal) {
-        maxVal = vector[dim];
+      const val = vector[dim];
+      if (typeof val === 'number' && val > maxVal) {
+        maxVal = val;
         dominantDriftDimension = dim;
       }
     }
