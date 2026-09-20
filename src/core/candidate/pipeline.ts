@@ -10,7 +10,7 @@ import { InvariantClosureResult } from '../../types/invariant';
 import { CandidateRebindScore } from '../../types/ranking';
 import { InvariantClosureEngine, CandidateEvaluationContext } from '../invariant/engine';
 import { NegativeEvidenceStore } from '../contradiction/store';
-import { CandidateRankingEngine } from '../ranking/engine';
+import { CandidateRankingEngine, RankingOptions } from '../ranking/engine';
 
 export interface CandidatePipelineResult {
   allCandidates: CandidateEvaluationContext[];
@@ -36,7 +36,8 @@ export class CandidatePipeline {
    */
   public processCandidates(
     targetFingerprint: FunctionalCapabilityFingerprint,
-    candidates: CandidateEvaluationContext[]
+    candidates: CandidateEvaluationContext[],
+    options?: RankingOptions
   ): CandidatePipelineResult {
     const invariantResults: Record<string, InvariantClosureResult> = {};
     const eligibleCandidates: CandidateEvaluationContext[] = [];
@@ -111,10 +112,10 @@ export class CandidatePipeline {
 
     // STEP 2: ONLY ELIGIBLE CANDIDATES ARE PASSED TO RANKING ENGINE
     // Non-eligible candidates are NEVER passed to ranking!
-    const rankedScores = this.rankingEngine.rankCandidates(
-      targetFingerprint,
-      eligibleCandidates
-    );
+    const rankedScores =
+      options !== undefined
+        ? this.rankingEngine.rankCandidates(targetFingerprint, eligibleCandidates, options)
+        : this.rankingEngine.rankCandidates(targetFingerprint, eligibleCandidates);
 
     const selectedWinner = rankedScores.length > 0 && rankedScores[0] ? rankedScores[0] : null;
 

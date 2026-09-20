@@ -311,7 +311,11 @@ export class IntentNavMachine {
 
       const pipelineResult = this.candidatePipeline.processCandidates(
         matchedCap,
-        availableCandidates
+        availableCandidates,
+        {
+          currentTime: Date.now(),
+          intent: this.context.normalizedIntent?.rawGoal || this.context.rawGoal,
+        }
       );
 
       this.context.invariantResults = pipelineResult.invariantResults;
