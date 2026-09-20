@@ -27,8 +27,12 @@ export class CandidateGenerator {
 
   /**
    * Generates candidate evaluation contexts from DOM elements purely based on observable semantics.
+   * Does NOT inject synthetic or default application state.
    */
-  public static generateFromDOM(container: Document | Element): CandidateEvaluationContext[] {
+  public static generateFromDOM(
+    container: Document | Element,
+    observedAppState?: Record<string, unknown>
+  ): CandidateEvaluationContext[] {
     const candidates: CandidateEvaluationContext[] = [];
 
     // Query interactive controls: buttons, links, inputs, selects, switches, etc.
@@ -196,22 +200,51 @@ export class CandidateGenerator {
         role,
       });
 
-      const docView = (container as Document).defaultView || container.ownerDocument?.defaultView || (typeof window !== 'undefined' ? window : null);
-      const appState = (docView as any)?.IntentNavMockState || {};
-      const defaultAppState = {
-        marketing_notifications_enabled: true,
-        marketing_emails_enabled: true,
-        two_factor_enabled: true,
-        export_download_initiated: false,
-        account_deactivated: false,
-        account_active: true,
-        analytics_tracking_enabled: true,
-        active_session_count: 3,
-        dark_mode_enabled: false,
-        invoice_available: true,
-        invoice_download_triggered: false,
-        audit_logs_available: true,
-        audit_logs_visible: false,
+      // Extract genuinely observed application state without synthetic fabrication
+      let appState: Record<string, unknown> = {};
+      if (observedAppState) {
+        appState = { ...observedAppState };
+      } else {
+        const doc = (container as Document).defaultView ? (container as Document) : container.ownerDocument;
+        const stateEl =
+          doc?.getElementById('app-state') ||
+          doc?.getElementById('neg-app-state') ||
+          (container as Element)?.querySelector?.('[data-application-state], [data-state]');
+        if (stateEl) {
+          const rawJson = stateEl.getAttribute('data-application-state') || stateEl.getAttribute('data-state');
+          if (rawJson) {
+            try {
+              appState = JSON.parse(rawJson);
+            } catch {}
+          }
+        }
+        if (Object.keys(appState).length === 0) {
+          const docView = (container as Document).defaultView || container.ownerDocument?.defaultView || (typeof window !== 'undefined' ? window : null);
+          if ((docView as any)?.IntentNavMockState) {
+            appState = { ...(docView as any).IntentNavMockState };
+          }
+        }
+      }
+
+      const hasAriaChecked = el.getAttribute('aria-checked') !== null;
+      const isInputCheckable =
+        el.tagName === 'INPUT' &&
+        ((el as HTMLInputElement).type === 'checkbox' || (el as HTMLInputElement).type === 'radio');
+      const hasAriaExpanded = el.getAttribute('aria-expanded') !== null;
+      const hasAriaSelected = el.getAttribute('aria-selected') !== null;
+
+      const observedState: Record<string, unknown> = {
+        ...appState,
+        disabled:
+          (el as HTMLButtonElement).disabled ??
+          (el.hasAttribute('disabled') || el.getAttribute('aria-disabled') === 'true'),
+        ...(hasAriaChecked
+          ? { checked: el.getAttribute('aria-checked') === 'true' }
+          : isInputCheckable
+          ? { checked: (el as HTMLInputElement).checked }
+          : {}),
+        ...(hasAriaExpanded ? { expanded: el.getAttribute('aria-expanded') === 'true' } : {}),
+        ...(hasAriaSelected ? { selected: el.getAttribute('aria-selected') === 'true' } : {}),
       };
 
       candidates.push({
@@ -223,16 +256,7 @@ export class CandidateGenerator {
         containerSemantics,
         ancestors: ancestorDescriptions,
         nearbyText: nearbyTexts,
-        observedState: {
-          ...defaultAppState,
-          ...appState,
-          disabled: (el as HTMLButtonElement).disabled ?? false,
-          checked:
-            el.getAttribute('aria-checked') !== null
-              ? el.getAttribute('aria-checked') === 'true'
-              : (el as HTMLInputElement).checked ?? false,
-          expanded: el.getAttribute('aria-expanded') === 'true',
-        },
+        observedState,
         bindingHandle,
         candidateFingerprintHash,
       });

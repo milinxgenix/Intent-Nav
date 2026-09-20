@@ -188,7 +188,7 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
       switch (message.type) {
         case 'OBSERVE_INTERFACE_REQUEST': {
           const stateNode = observer.captureInterfaceState();
-          const candidates = CandidateGenerator.generateFromDOM(document);
+          const candidates = CandidateGenerator.generateFromDOM(document, stateNode.observedApplicationState);
           sendResponse({
             stateNode,
             candidates,

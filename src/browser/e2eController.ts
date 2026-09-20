@@ -289,7 +289,7 @@ export class IntentNavBrowserController {
     const preState = { ...((window as any).IntentNavMockState || {}) };
 
     // 1. Live DOM interface observation & candidate discovery
-    const candidates = CandidateGenerator.generateFromDOM(document);
+    const candidates = CandidateGenerator.generateFromDOM(document, preState);
     const observedFeatures = {
       tag: 'body',
       observedActionType: 'VIEW',

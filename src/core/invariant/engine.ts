@@ -78,6 +78,26 @@ export class InvariantClosureEngine {
         insufficientReason = 'Candidate observedState is missing for mandatory pre-state verification';
       } else {
         for (const pred of targetFingerprint.mandatoryPreStatePredicates) {
+          const propName = pred.declarative?.property;
+          const isPropObserved = propName
+            ? propName in candidate.observedState && candidate.observedState[propName] !== undefined
+            : true;
+
+          if (propName && !isPropObserved && pred.declarative?.operator !== 'EXISTS') {
+            hasInsufficientEvidence = true;
+            insufficientReason = `Mandatory pre-state property '${propName}' is unobserved; cannot verify invariant closure without evidence`;
+            failedPredicates.push({
+              predicateId: pred.id,
+              predicateName: pred.name,
+              isNegativePredicate: false,
+              passed: false,
+              explanation: `Pre-state evidence missing for '${propName}' required by predicate '${pred.name}'`,
+              observedValue: undefined,
+              expectedValue: pred.declarative?.expectedValue ?? pred.declarative?.expectedValues,
+            });
+            continue;
+          }
+
           let passed = false;
           try {
             passed = pred.evaluate(candidate.observedState);
@@ -92,7 +112,8 @@ export class InvariantClosureEngine {
             explanation: passed
               ? `Pre-state predicate '${pred.name}' satisfied`
               : `Pre-state predicate '${pred.name}' failed: ${pred.description}`,
-            observedValue: candidate.observedState,
+            observedValue: propName ? candidate.observedState[propName] : candidate.observedState,
+            expectedValue: pred.declarative?.expectedValue ?? pred.declarative?.expectedValues,
           };
           if (passed) passedPredicates.push(record);
           else failedPredicates.push(record);

@@ -4,6 +4,7 @@
   "description": "IntentNav-SCFR: Self-Adaptive Functional Capability Identity, Drift-Localized Invariant Re-Binding, Causal Transition Verification, and Risk-Gated Navigation System",
   "type": "module",
   "scripts": {
+    "typecheck": "tsc --noEmit",
     "build": "vite build && npx esbuild src/browser/contentScript.ts --bundle --format=iife --outfile=dist/contentScript.js && cp manifest.json dist/ && cp dist/src/ui/popup.html dist/popup.html",
     "test": "vitest run test/",
     "test:unit": "vitest run test/unit",

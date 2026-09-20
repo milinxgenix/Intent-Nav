@@ -451,8 +451,9 @@
     }
     /**
      * Generates candidate evaluation contexts from DOM elements purely based on observable semantics.
+     * Does NOT inject synthetic or default application state.
      */
-    static generateFromDOM(container) {
+    static generateFromDOM(container, observedAppState) {
       const candidates = [];
       const selector = 'button, a, input, select, [role="button"], [role="link"], [role="switch"], [role="menuitem"], [role="tab"]';
       const elements = Array.from(container.querySelectorAll(selector));
@@ -578,22 +579,38 @@
           targetEntity: observedTargetEntity,
           role
         });
-        const docView = container.defaultView || container.ownerDocument?.defaultView || (typeof window !== "undefined" ? window : null);
-        const appState = docView?.IntentNavMockState || {};
-        const defaultAppState = {
-          marketing_notifications_enabled: true,
-          marketing_emails_enabled: true,
-          two_factor_enabled: true,
-          export_download_initiated: false,
-          account_deactivated: false,
-          account_active: true,
-          analytics_tracking_enabled: true,
-          active_session_count: 3,
-          dark_mode_enabled: false,
-          invoice_available: true,
-          invoice_download_triggered: false,
-          audit_logs_available: true,
-          audit_logs_visible: false
+        let appState = {};
+        if (observedAppState) {
+          appState = { ...observedAppState };
+        } else {
+          const doc = container.defaultView ? container : container.ownerDocument;
+          const stateEl = doc?.getElementById("app-state") || doc?.getElementById("neg-app-state") || container?.querySelector?.("[data-application-state], [data-state]");
+          if (stateEl) {
+            const rawJson = stateEl.getAttribute("data-application-state") || stateEl.getAttribute("data-state");
+            if (rawJson) {
+              try {
+                appState = JSON.parse(rawJson);
+              } catch {
+              }
+            }
+          }
+          if (Object.keys(appState).length === 0) {
+            const docView = container.defaultView || container.ownerDocument?.defaultView || (typeof window !== "undefined" ? window : null);
+            if (docView?.IntentNavMockState) {
+              appState = { ...docView.IntentNavMockState };
+            }
+          }
+        }
+        const hasAriaChecked = el.getAttribute("aria-checked") !== null;
+        const isInputCheckable = el.tagName === "INPUT" && (el.type === "checkbox" || el.type === "radio");
+        const hasAriaExpanded = el.getAttribute("aria-expanded") !== null;
+        const hasAriaSelected = el.getAttribute("aria-selected") !== null;
+        const observedState = {
+          ...appState,
+          disabled: el.disabled ?? (el.hasAttribute("disabled") || el.getAttribute("aria-disabled") === "true"),
+          ...hasAriaChecked ? { checked: el.getAttribute("aria-checked") === "true" } : isInputCheckable ? { checked: el.checked } : {},
+          ...hasAriaExpanded ? { expanded: el.getAttribute("aria-expanded") === "true" } : {},
+          ...hasAriaSelected ? { selected: el.getAttribute("aria-selected") === "true" } : {}
         };
         candidates.push({
           candidateId,
@@ -604,13 +621,7 @@
           containerSemantics,
           ancestors: ancestorDescriptions,
           nearbyText: nearbyTexts,
-          observedState: {
-            ...defaultAppState,
-            ...appState,
-            disabled: el.disabled ?? false,
-            checked: el.getAttribute("aria-checked") !== null ? el.getAttribute("aria-checked") === "true" : el.checked ?? false,
-            expanded: el.getAttribute("aria-expanded") === "true"
-          },
+          observedState,
           bindingHandle,
           candidateFingerprintHash
         });
@@ -752,7 +763,7 @@
         switch (message.type) {
           case "OBSERVE_INTERFACE_REQUEST": {
             const stateNode = observer.captureInterfaceState();
-            const candidates = CandidateGenerator.generateFromDOM(document);
+            const candidates = CandidateGenerator.generateFromDOM(document, stateNode.observedApplicationState);
             sendResponse({
               stateNode,
               candidates,

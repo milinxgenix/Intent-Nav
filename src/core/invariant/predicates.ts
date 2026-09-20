@@ -27,6 +27,11 @@ export class DeclarativePredicateEvaluator {
     }
     const rawVal = context[pred.property];
 
+    // UNKNOWN / missing state evidence must never silently evaluate to PASS.
+    if ((!(pred.property in context) || rawVal === undefined) && pred.operator !== 'EXISTS') {
+      return false;
+    }
+
     switch (pred.operator) {
       case 'EQUALS':
         return rawVal === pred.expectedValue;
