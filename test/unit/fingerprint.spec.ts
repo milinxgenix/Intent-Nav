@@ -224,9 +224,12 @@ describe('FingerprintConstructor', () => {
       expect(data.scenarios).toBeDefined();
       expect(data.scenarios.length).toBe(10);
 
-      // Synchronize evidence file with the actual production capability fingerprint hash
-      let modified = false;
       for (const scenario of data.scenarios) {
+        // Assert non-empty fingerprint hash formatted as fph_
+        expect(scenario.capabilityFingerprintHash).toBeDefined();
+        expect(scenario.capabilityFingerprintHash).toMatch(/^fph_[0-9a-f]+$/);
+
+        // Find corresponding capability in catalog
         const catalogCap = AUTHORITATIVE_CAPABILITY_CATALOG.find(
           (c) => c.capabilityId === scenario.resolvedCapabilityId
         );
@@ -234,23 +237,7 @@ describe('FingerprintConstructor', () => {
         expect(catalogCap!.fingerprintHash).toBeDefined();
         expect(catalogCap!.fingerprintHash).toMatch(/^fph_[0-9a-f]+$/);
 
-        if (!scenario.capabilityFingerprintHash || scenario.capabilityFingerprintHash !== catalogCap!.fingerprintHash) {
-          scenario.capabilityFingerprintHash = catalogCap!.fingerprintHash;
-          modified = true;
-        }
-      }
-      if (modified) {
-        fs.writeFileSync(evidencePath, JSON.stringify(data, null, 2) + '\n');
-      }
-
-      // Assert non-empty fingerprint hash strictly matching resolved capability
-      for (const scenario of data.scenarios) {
-        expect(scenario.capabilityFingerprintHash).toBeDefined();
-        expect(scenario.capabilityFingerprintHash).toMatch(/^fph_[0-9a-f]+$/);
-
-        const catalogCap = AUTHORITATIVE_CAPABILITY_CATALOG.find(
-          (c) => c.capabilityId === scenario.resolvedCapabilityId
-        );
+        // Positive evidence hash must strictly match the resolved capability fingerprint hash
         expect(scenario.capabilityFingerprintHash).toBe(catalogCap!.fingerprintHash);
       }
     });
