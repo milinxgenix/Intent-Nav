@@ -8,6 +8,7 @@
 
 import { FunctionalCapabilityFingerprint } from '../../types/capability';
 import { createDeclarativePredicate } from '../invariant/predicates';
+import { FingerprintConstructor } from '../fingerprint/constructor';
 
 export const AUTHORITATIVE_CAPABILITY_CATALOG: FunctionalCapabilityFingerprint[] = [
   // 1. CAP_DISABLE_MARKETING
@@ -837,6 +838,24 @@ export const AUTHORITATIVE_CAPABILITY_CATALOG: FunctionalCapabilityFingerprint[]
     },
   },
 ];
+
+// Deterministically populate stable functional fingerprint hashes for all authoritative capabilities
+for (const cap of AUTHORITATIVE_CAPABILITY_CATALOG) {
+  if (!cap.fingerprintHash) {
+    cap.fingerprintHash = FingerprintConstructor.computeFingerprintHash({
+      canonicalFunction: cap.canonicalFunction,
+      actionType: cap.actionType,
+      targetEntity: cap.targetEntity,
+      role: cap.semanticEvidence?.role || 'button',
+      riskClass: cap.riskMetadata?.riskClass,
+      mandatoryPreStatePredicates: cap.mandatoryPreStatePredicates,
+      allowedStateDelta: cap.allowedStateDelta,
+      expectedPostState: cap.expectedPostState,
+      requiredContextPredicates: cap.requiredContextPredicates,
+      forbiddenContextPredicates: cap.forbiddenContextPredicates,
+    });
+  }
+}
 
 export function getAuthoritativeCapability(capabilityId: string): FunctionalCapabilityFingerprint | undefined {
   return AUTHORITATIVE_CAPABILITY_CATALOG.find((c) => c.capabilityId === capabilityId);

@@ -136,6 +136,9 @@ function validate() {
     if (!s.resolvedCapabilityId || !s.resolvedCapabilityId.startsWith('CAP_')) {
       errors.push(`[${sid}] Invalid resolvedCapabilityId: '${s.resolvedCapabilityId}'`);
     }
+    if (!s.capabilityFingerprintHash || typeof s.capabilityFingerprintHash !== 'string' || !s.capabilityFingerprintHash.startsWith('fph_')) {
+      errors.push(`[${sid}] Invalid capabilityFingerprintHash: '${s.capabilityFingerprintHash}' (must be a valid non-empty fph_ hash)`);
+    }
 
     // 3. Candidate Discovery & Selection
     if (!Array.isArray(s.observedCandidateIds) || s.observedCandidateIds.length === 0) {

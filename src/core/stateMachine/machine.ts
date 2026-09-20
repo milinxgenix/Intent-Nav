@@ -67,6 +67,7 @@ import { RoutePromotionController } from '../quarantine/promotion';
 import { ExecutionAuthorizationController } from '../authorization/controller';
 import { AuditLogger } from '../audit/logger';
 import { PersistentCapabilityStore } from '../storage/persistentStore';
+import { FingerprintConstructor } from '../fingerprint/constructor';
 
 export type SystemMachineState =
   | 'IDLE'
@@ -202,6 +203,20 @@ export class IntentNavMachine {
   }
 
   public registerCapability(cap: FunctionalCapabilityFingerprint): void {
+    if (!cap.fingerprintHash) {
+      cap.fingerprintHash = FingerprintConstructor.computeFingerprintHash({
+        canonicalFunction: cap.canonicalFunction,
+        actionType: cap.actionType,
+        targetEntity: cap.targetEntity,
+        role: cap.semanticEvidence?.role || 'button',
+        riskClass: cap.riskMetadata?.riskClass,
+        mandatoryPreStatePredicates: cap.mandatoryPreStatePredicates,
+        allowedStateDelta: cap.allowedStateDelta,
+        expectedPostState: cap.expectedPostState,
+        requiredContextPredicates: cap.requiredContextPredicates,
+        forbiddenContextPredicates: cap.forbiddenContextPredicates,
+      });
+    }
     this.capabilities.set(cap.capabilityId, cap);
     this.graph.registerCapability(cap.capabilityId, cap.canonicalFunction);
     this.persistentStore.saveCapability(cap).catch(() => {});

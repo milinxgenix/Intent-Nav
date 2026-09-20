@@ -275,10 +275,49 @@
   var FingerprintConstructor = class {
     /**
      * Generates a deterministic hash from functional evidence only.
-     * Volatile presentation features (IDs, classes, coordinates) are strictly excluded.
+     * Volatile presentation features (labels, IDs, classes, coordinates) are strictly excluded.
      */
     static computeFingerprintHash(fingerprint) {
-      const raw = `${fingerprint.canonicalFunction}|${fingerprint.actionType}|${fingerprint.targetEntity}|${fingerprint.role}|${fingerprint.canonicalLabel.toLowerCase().trim()}`;
+      const parts = [
+        fingerprint.canonicalFunction.trim().toLowerCase(),
+        fingerprint.actionType.trim().toUpperCase(),
+        fingerprint.targetEntity.trim().toUpperCase(),
+        fingerprint.role.trim().toLowerCase()
+      ];
+      if (fingerprint.riskClass) {
+        parts.push(`risk:${fingerprint.riskClass.trim().toUpperCase()}`);
+      }
+      if (fingerprint.mandatoryPreStatePredicates && fingerprint.mandatoryPreStatePredicates.length > 0) {
+        const preds = fingerprint.mandatoryPreStatePredicates.map((p) => (p.id || p.name || "").trim()).filter(Boolean).sort();
+        if (preds.length > 0) {
+          parts.push(`pre:${preds.join(",")}`);
+        }
+      }
+      if (fingerprint.allowedStateDelta && fingerprint.allowedStateDelta.length > 0) {
+        const deltas = fingerprint.allowedStateDelta.map((d) => `${d.property}:${d.expectedChange || ""}`.trim()).sort();
+        if (deltas.length > 0) {
+          parts.push(`delta:${deltas.join(",")}`);
+        }
+      }
+      if (fingerprint.expectedPostState && fingerprint.expectedPostState.length > 0) {
+        const post = fingerprint.expectedPostState.map((p) => `${p.property}:${String(p.expectedValue)}`.trim()).sort();
+        if (post.length > 0) {
+          parts.push(`post:${post.join(",")}`);
+        }
+      }
+      if (fingerprint.requiredContextPredicates && fingerprint.requiredContextPredicates.length > 0) {
+        const reqCtx = fingerprint.requiredContextPredicates.map((c) => `${c.target || ""}:${c.pattern || ""}`.trim()).sort();
+        if (reqCtx.length > 0) {
+          parts.push(`reqCtx:${reqCtx.join(",")}`);
+        }
+      }
+      if (fingerprint.forbiddenContextPredicates && fingerprint.forbiddenContextPredicates.length > 0) {
+        const forbCtx = fingerprint.forbiddenContextPredicates.map((c) => `${c.target || ""}:${c.pattern || ""}`.trim()).sort();
+        if (forbCtx.length > 0) {
+          parts.push(`forbCtx:${forbCtx.join(",")}`);
+        }
+      }
+      const raw = parts.join("|");
       let hash = 0;
       for (let i = 0; i < raw.length; i++) {
         hash = (hash << 5) - hash + raw.charCodeAt(i);
@@ -319,8 +358,13 @@
         canonicalFunction: options.canonicalFunction,
         actionType: options.actionType,
         targetEntity: options.targetEntity,
-        canonicalLabel,
-        role
+        role,
+        riskClass,
+        mandatoryPreStatePredicates: options.mandatoryPreStatePredicates,
+        allowedStateDelta: options.allowedStateDelta,
+        expectedPostState: options.expectedPostState,
+        requiredContextPredicates: options.requiredContextPredicates,
+        forbiddenContextPredicates: options.forbiddenContextPredicates
       });
       return {
         capabilityId: options.capabilityId,
@@ -532,7 +576,6 @@
           canonicalFunction: `func_${observedActionType.toLowerCase()}_${observedTargetEntity.toLowerCase()}`,
           actionType: observedActionType,
           targetEntity: observedTargetEntity,
-          canonicalLabel: accessibleName,
           role
         });
         const docView = container.defaultView || container.ownerDocument?.defaultView || (typeof window !== "undefined" ? window : null);

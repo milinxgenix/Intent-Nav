@@ -386,7 +386,7 @@ async function run() {
         intent: scenario.intent,
         normalizedIntent: context?.normalizedIntent?.canonicalText || scenario.intent.toLowerCase().trim(),
         resolvedCapabilityId: context?.resolvedCapability?.capabilityId || '',
-        capabilityFingerprintHash: context?.resolvedCapability?.capabilityFingerprintHash || '',
+        capabilityFingerprintHash: context?.resolvedCapability?.fingerprintHash || '',
         observedCandidateIds: (context?.candidateList || []).map((c) => c.candidateId),
         selectedCandidateId: context?.selectedCandidate?.candidateId || '',
         bindingHandle: context?.selectedCandidate?.bindingHandle || context?.activationEvent?.bindingHandle || null,

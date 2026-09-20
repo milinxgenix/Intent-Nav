@@ -13,7 +13,7 @@
       "intent": "Stop commercial bulletins",
       "normalizedIntent": "stop commercial bulletins",
       "resolvedCapabilityId": "CAP_DISABLE_MARKETING",
-      "capabilityFingerprintHash": "",
+      "capabilityFingerprintHash": "fph_71553e85",
       "observedCandidateIds": [
         "cand_0_l62n4i",
         "cand_1_5306cv",
@@ -2910,7 +2910,7 @@
       "intent": "Download personal information",
       "normalizedIntent": "download personal information",
       "resolvedCapabilityId": "CAP_EXPORT_DATA",
-      "capabilityFingerprintHash": "",
+      "capabilityFingerprintHash": "fph_567ee808",
       "observedCandidateIds": [
         "cand_0_l62n4i",
         "cand_1_5306cv",
@@ -5680,7 +5680,7 @@
       "intent": "Turn off marketing emails",
       "normalizedIntent": "turn off marketing emails",
       "resolvedCapabilityId": "CAP_DISABLE_MARKETING",
-      "capabilityFingerprintHash": "",
+      "capabilityFingerprintHash": "fph_71553e85",
       "observedCandidateIds": [
         "cand_0_dmi9wj",
         "cand_1_8lz0ll",
@@ -8891,7 +8891,7 @@
       "intent": "Turn off multi-factor auth",
       "normalizedIntent": "turn off multi-factor auth",
       "resolvedCapabilityId": "CAP_DISABLE_2FA",
-      "capabilityFingerprintHash": "",
+      "capabilityFingerprintHash": "fph_4a86e70f",
       "observedCandidateIds": [
         "cand_0_l62n4i",
         "cand_1_5306cv",
@@ -11750,7 +11750,7 @@
       "intent": "Turn off marketing notifications",
       "normalizedIntent": "turn off marketing notifications",
       "resolvedCapabilityId": "CAP_DISABLE_MARKETING",
-      "capabilityFingerprintHash": "",
+      "capabilityFingerprintHash": "fph_71553e85",
       "observedCandidateIds": [
         "cand_0_cwqhay",
         "cand_1_ejoc2p",
@@ -14031,7 +14031,7 @@
       "intent": "Toggle dark display styling",
       "normalizedIntent": "toggle dark display styling",
       "resolvedCapabilityId": "CAP_TOGGLE_DARK_MODE",
-      "capabilityFingerprintHash": "",
+      "capabilityFingerprintHash": "fph_62dd573a",
       "observedCandidateIds": [
         "cand_0_cwqhay",
         "cand_1_ejoc2p",
@@ -16194,7 +16194,7 @@
       "intent": "Turn off 2FA",
       "normalizedIntent": "turn off 2fa",
       "resolvedCapabilityId": "CAP_DISABLE_2FA",
-      "capabilityFingerprintHash": "",
+      "capabilityFingerprintHash": "fph_4a86e70f",
       "observedCandidateIds": [
         "cand_0_cwqhay",
         "cand_1_ejoc2p",
@@ -18485,7 +18485,7 @@
       "intent": "Disable tracking",
       "normalizedIntent": "disable tracking",
       "resolvedCapabilityId": "CAP_TOGGLE_TRACKING",
-      "capabilityFingerprintHash": "",
+      "capabilityFingerprintHash": "fph_5f952da8",
       "observedCandidateIds": [
         "cand_0_dmi9wj",
         "cand_1_8lz0ll",
@@ -21614,7 +21614,7 @@
       "intent": "Revoke active login sessions",
       "normalizedIntent": "revoke active login sessions",
       "resolvedCapabilityId": "CAP_REVOKE_SESSIONS",
-      "capabilityFingerprintHash": "",
+      "capabilityFingerprintHash": "fph_358e7c27",
       "observedCandidateIds": [
         "cand_0_dmi9wj",
         "cand_1_8lz0ll",
@@ -24698,7 +24698,7 @@
       "intent": "Turn off marketing emails",
       "normalizedIntent": "turn off marketing emails",
       "resolvedCapabilityId": "CAP_DISABLE_MARKETING",
-      "capabilityFingerprintHash": "",
+      "capabilityFingerprintHash": "fph_71553e85",
       "observedCandidateIds": [
         "cand_0_motft5",
         "cand_1_yru1oo",

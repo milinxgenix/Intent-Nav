@@ -193,7 +193,6 @@ export class CandidateGenerator {
         canonicalFunction: `func_${observedActionType.toLowerCase()}_${observedTargetEntity.toLowerCase()}`,
         actionType: observedActionType,
         targetEntity: observedTargetEntity,
-        canonicalLabel: accessibleName,
         role,
       });
 
