@@ -8,7 +8,7 @@ import { RouteManager } from '../../src/core/graph/routeManager';
 import { QuarantineController } from '../../src/core/quarantine/controller';
 import { RoutePromotionController } from '../../src/core/quarantine/promotion';
 import { NegativeEvidenceStore } from '../../src/core/contradiction/store';
-import { CausalVerificationResult } from '../../src/types/transition';
+import { CausalVerificationResult, WitnessClass, TransitionVerificationToken } from '../../src/types/transition';
 
 describe('QuarantineController & RoutePromotionController', () => {
   it('strictly quarantines provisional routes and denies active status without verified transition', () => {
@@ -77,6 +77,45 @@ describe('QuarantineController & RoutePromotionController', () => {
     expect(promoResult.promoted).toBe(true);
     expect(promoResult.route.status).toBe('ACTIVE_VALIDATED');
     expect(graph.getActiveRoute('CAP_DISABLE_MARKETING')?.routeId).toBe(route.routeId);
+  });
+
+  it('adversarially rejects route promotion when token routeId or capabilityId does not match the target route', () => {
+    const graph = new CapabilityGraphEngine();
+    const routeManager = new RouteManager(graph);
+
+    const routeA = routeManager.createProvisionalRoute('CAP_DISABLE_MARKETING', [], 0.90);
+    const routeB = routeManager.createProvisionalRoute('CAP_DISABLE_MARKETING', [], 0.88);
+
+    // Token minted for Route A
+    const tokenRouteA: TransitionVerificationToken = {
+      tokenId: 'tok_route_a',
+      routeId: routeA.routeId,
+      capabilityId: 'CAP_DISABLE_MARKETING',
+      activationEventId: 'act_123',
+      verifiedWitnessClasses: ['DOM_MUTATION', 'ACCESSIBILITY_STATE_MUTATION'] as WitnessClass[],
+      issuedTimestamp: Date.now(),
+      verifiedStatus: 'VERIFIED',
+      signatureHash: 'hash_a',
+    };
+
+    // Adversarial attack 1: Try to promote Route B using Token A
+    expect(() => {
+      routeManager.promoteToActive('CAP_DISABLE_MARKETING', routeB.routeId, tokenRouteA);
+    }).toThrow(/INVARIANT VIOLATION: Token routeId '.*' does not match target routeId/);
+
+    // Adversarial attack 2: Try to promote Route A for CAP_EXPORT_DATA using Token for CAP_DISABLE_MARKETING
+    expect(() => {
+      routeManager.promoteToActive('CAP_EXPORT_DATA', routeA.routeId, tokenRouteA);
+    }).toThrow(/INVARIANT VIOLATION: Token capabilityId '.*' does not match route capabilityId/);
+
+    // Adversarial attack 3: Token with <2 witness classes
+    const singleClassToken: TransitionVerificationToken = {
+      ...tokenRouteA,
+      verifiedWitnessClasses: ['DOM_MUTATION'] as WitnessClass[],
+    };
+    expect(() => {
+      routeManager.promoteToActive('CAP_DISABLE_MARKETING', routeA.routeId, singleClassToken);
+    }).toThrow(/INVARIANT VIOLATION: Token does not demonstrate the required quorum/);
   });
 });
 

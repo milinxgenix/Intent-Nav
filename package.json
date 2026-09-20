@@ -4,14 +4,18 @@
   "description": "IntentNav-SCFR: Self-Adaptive Functional Capability Identity, Drift-Localized Invariant Re-Binding, Causal Transition Verification, and Risk-Gated Navigation System",
   "type": "module",
   "scripts": {
-    "build": "vite build && cp manifest.json dist/ && cp dist/src/ui/popup.html dist/popup.html",
-    "test": "vitest run",
+    "build": "vite build && npx esbuild src/browser/contentScript.ts --bundle --format=iife --outfile=dist/contentScript.js && cp manifest.json dist/ && cp dist/src/ui/popup.html dist/popup.html",
+    "test": "vitest run test/",
     "test:unit": "vitest run test/unit",
     "test:adversarial": "vitest run test/adversarial",
     "test:properties": "vitest run test/properties",
     "benchmark": "vitest run benchmark/runner.spec.ts",
-    "benchmark:run": "node --loader ts-node/esm --no-warnings benchmark/cli.ts",
-    "serve:mocks": "node scripts/serveMocks.js"
+    "benchmark:run": "vitest run benchmark/runner.spec.ts",
+    "serve:mocks": "node scripts/serveMocks.js",
+    "test:e2e:chromium": "node scripts/runChromiumE2E.js",
+    "test:e2e:chromium:neg": "node scripts/runNegativeChromiumE2E.js",
+    "validate:evidence": "node scripts/validateChromiumEvidence.js",
+    "validate:evidence:neg": "node scripts/validateNegativeEvidence.js"
   },
   "keywords": [
     "browser-extension",
@@ -30,7 +34,9 @@
     "jsdom": "^25.0.0",
     "typescript": "^5.6.2",
     "vite": "^5.4.6",
-    "vitest": "^2.1.1"
+    "vitest": "^2.1.1",
+    "ws": "^8.18.0",
+    "@types/ws": "^8.5.12"
   }
 }
 

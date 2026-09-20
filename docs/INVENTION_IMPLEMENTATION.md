@@ -113,3 +113,4 @@ $$\text{CapabilityConfidence} \neq \text{ExecutionAuthorization}$$
   Authorized automatically if capability confidence $\ge 0.80$ and route confidence $\ge 0.50$.
 - **Low-Risk Actions** (`READ_ONLY`):
   Authorized automatically for direct navigation.
+

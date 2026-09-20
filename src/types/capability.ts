@@ -38,27 +38,76 @@ export type TargetEntity =
   | 'BILLING_PREFERENCES'
   | string;
 
+export type DeclarativePredicateOperator =
+  | 'EQUALS'
+  | 'NOT_EQUALS'
+  | 'CONTAINS'
+  | 'NOT_CONTAINS'
+  | 'IN'
+  | 'NOT_IN'
+  | 'GREATER_THAN'
+  | 'LESS_THAN'
+  | 'TRUTHY'
+  | 'FALSY'
+  | 'EXISTS'
+  | 'MATCHES_REGEX';
+
+export type DeclarativePredicateSource =
+  | 'PRE_STATE'
+  | 'POST_STATE'
+  | 'CONTEXT'
+  | 'ACTION'
+  | 'TARGET'
+  | 'ELEMENT_ATTRIBUTE';
+
+export interface DeclarativeInvariantPredicate {
+  id: string;
+  name: string;
+  description: string;
+  source: DeclarativePredicateSource;
+  property: string;
+  operator: DeclarativePredicateOperator;
+  expectedValue?: unknown;
+  expectedValues?: unknown[];
+}
+
 export interface InvariantPredicate {
   id: string;
   name: string;
   description: string;
+  declarative?: DeclarativeInvariantPredicate;
   evaluate: (context: Record<string, unknown>) => boolean;
 }
 
 export interface StateDeltaPredicate {
   property: string;
   expectedChange: 'ENABLED_TO_DISABLED' | 'DISABLED_TO_ENABLED' | 'MODIFIED' | 'ADDED' | 'REMOVED' | string;
+  id?: string;
+  name?: string;
+  description?: string;
+  declarative?: DeclarativeInvariantPredicate;
+  evaluate?: (context: Record<string, unknown>) => boolean;
 }
 
 export interface ExpectedStatePredicate {
   property: string;
-  expectedValue: unknown;
+  expectedValue?: unknown;
+  id?: string;
+  name?: string;
+  description?: string;
+  declarative?: DeclarativeInvariantPredicate;
+  evaluate?: (context: Record<string, unknown>) => boolean;
 }
 
 export interface ContextPredicate {
   target: 'ancestor' | 'container' | 'sibling' | 'url' | 'page_title';
   pattern: string;
   required: boolean;
+  id?: string;
+  name?: string;
+  description?: string;
+  declarative?: DeclarativeInvariantPredicate;
+  evaluate?: (context: Record<string, unknown>) => boolean;
 }
 
 export interface ActivationEventCharacteristics {
@@ -131,8 +180,8 @@ export interface ConfidenceRecord {
 
 export interface NegativeEvidenceRecord {
   rejectedCandidateIdentities: string[];
-  contradictionPredicates: string[];
-  failedInvariantPredicates: string[];
+  contradictionPredicates: (string | InvariantPredicate)[];
+  failedInvariantPredicates: (string | InvariantPredicate)[];
   failedTransitionWitnesses: string[];
   decoyRelationships: string[];
   rejectionReasons: string[];

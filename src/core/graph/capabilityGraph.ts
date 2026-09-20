@@ -27,6 +27,17 @@ export class CapabilityGraphEngine {
     for (const state of states) {
       this.interfaceStateNodes.set(state.stateId, state);
     }
+    const routes = await this.store.getAllRouteVersions();
+    for (const route of routes) {
+      const node = this.capabilityNodes.get(route.capabilityId);
+      if (node) {
+        node.routeVersions[route.routeId] = route;
+        if (route.status === 'ACTIVE_VALIDATED') {
+          node.activeRouteId = route.routeId;
+          node.provisionalRouteIds = node.provisionalRouteIds.filter((rId) => rId !== route.routeId);
+        }
+      }
+    }
   }
 
   /**

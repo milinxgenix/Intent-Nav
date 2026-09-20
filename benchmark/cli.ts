@@ -7,6 +7,7 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { BenchmarkRunner } from './runner.js';
 import { BenchmarkReporter } from './reporter.js';
+import { MetricValidator } from './metricValidator.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,6 +22,11 @@ async function main() {
   const elapsed = ((Date.now() - t0) / 1000).toFixed(2);
 
   console.log(`Executed ${records.length} total benchmark runs in ${elapsed}s.`);
+
+  // Validate mathematical bounds, reconciliation, and IntentNav-SCFR safety invariants
+  console.log('Asserting mathematical and safety invariants via MetricValidator...');
+  const validation = MetricValidator.validate(metrics, records, true);
+  console.log(`✓ MetricValidator passed (${validation.totalRecordsChecked} records, ${validation.totalSystemsChecked} systems verified).`);
 
   // Write outputs
   const resultsDir = path.resolve(__dirname, 'results');
@@ -64,6 +70,26 @@ async function main() {
 
   // 5. Evidence packages in /evidence/
   const projectRoot = path.resolve(__dirname, '..');
+  const experimentRunDir = path.join(projectRoot, 'evidence', 'experiment-run');
+  if (!fs.existsSync(experimentRunDir)) {
+    fs.mkdirSync(experimentRunDir, { recursive: true });
+  }
+  fs.writeFileSync(
+    path.join(experimentRunDir, 'metrics.json'),
+    JSON.stringify({ timestamp: Date.now(), totalRuns: records.length, metrics }, null, 2),
+    'utf8'
+  );
+  fs.writeFileSync(
+    path.join(experimentRunDir, 'raw_runs.json'),
+    JSON.stringify(records, null, 2),
+    'utf8'
+  );
+  fs.writeFileSync(
+    path.join(experimentRunDir, 'run_summary.md'),
+    mdReport,
+    'utf8'
+  );
+
   const sampleRuns = records.slice(0, 10);
   for (const sample of sampleRuns) {
     BenchmarkReporter.exportEvidencePackage(projectRoot, sample.experimentId, {
@@ -94,3 +120,4 @@ main().catch((err) => {
   console.error('Benchmark execution error:', err);
   process.exit(1);
 });
+

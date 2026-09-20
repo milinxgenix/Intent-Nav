@@ -1,1 +1,782 @@
-var U=Object.defineProperty;var V=(o,a,e)=>a in o?U(o,a,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[a]=e;var w=(o,a,e)=>V(o,typeof a!="symbol"?a+"":a,e);import{V as v}from"./assets/suppressor-BVEWRPay.js";class B{constructor(){w(this,"mutationObserver",null);w(this,"mutationDebounceTimer",null);w(this,"lastObservedState",null)}captureInterfaceState(){const a=`state_${Date.now()}`,e=typeof window<"u"?window.location.pathname:"/",t=[];document.querySelectorAll('dialog[open], [role="dialog"], [role="alertdialog"], .modal.is-active, .modal.show').forEach(i=>{const c=i.getAttribute("aria-label")||i.getAttribute("title")||"modal_dialog";t.push(c)});const r=[];document.querySelectorAll('[role="tab"][aria-selected="true"], .tab.active, .tab.is-active').forEach(i=>{const c=i.getAttribute("aria-label")||(i.textContent||"").trim();r.push(c)});const g=[];document.querySelectorAll('main, nav, header, footer, aside, section, form, [role="main"], [role="navigation"]').forEach(i=>{const c=i.getAttribute("role")||i.tagName.toLowerCase(),h=i.getAttribute("aria-label")||"";g.push(`${c}${h?`[${h}]`:""}`)});const l=Array.from(document.body.children).map(i=>v.computeRelativePath(i)).join("|"),b=`hash_${this.simpleHash(l)}`,A=[];document.querySelectorAll('button, a, input, select, [role="button"], [role="link"], [role="switch"], [role="menuitem"], [role="tab"]').forEach((i,c)=>{const h=v.suppressVolatileFeatures(i),m=i.getAttribute("aria-label")||i.getAttribute("title")||h.cleanedText||i.getAttribute("name")||`element_${c}`,u=i.getAttribute("role")||i.tagName.toLowerCase();A.push({handleId:`handle_${c}`,tagName:i.tagName.toLowerCase(),role:u,accessibleName:m,domStructuralPath:h.relativeStructuralPath,elementIndex:c,volatileId:i.id||void 0,volatileClasses:i.className&&typeof i.className=="string"?i.className.split(/\s+/).filter(Boolean):void 0})});const d={stateId:a,stateType:t.length>0?"MODAL":"PAGE",urlPattern:e,domStructuralHash:b,semanticLandmarks:g,activeModalsOrDialogs:t,activeTabs:r,exposedCandidateHandles:A,timestamp:Date.now()};return this.lastObservedState=d,d}observeMutations(a,e=100){if(typeof MutationObserver>"u")return;let t=[];this.mutationObserver=new MutationObserver(s=>{t.push(...s),this.mutationDebounceTimer!==null&&clearTimeout(this.mutationDebounceTimer),this.mutationDebounceTimer=window.setTimeout(()=>{const r=[...t];t=[],a(r)},e)}),this.mutationObserver.observe(document.body,{childList:!0,subtree:!0,attributes:!0,attributeFilter:["class","style","aria-expanded","aria-checked","disabled","open"],characterData:!0})}disconnect(){this.mutationObserver&&(this.mutationObserver.disconnect(),this.mutationObserver=null),this.mutationDebounceTimer!==null&&(clearTimeout(this.mutationDebounceTimer),this.mutationDebounceTimer=null)}getLastObservedState(){return this.lastObservedState}simpleHash(a){let e=0;for(let t=0;t<a.length;t++)e=(e<<5)-e+a.charCodeAt(t),e|=0;return Math.abs(e).toString(36)}}class Y{static computeFingerprintHash(a){const e=`${a.canonicalFunction}|${a.actionType}|${a.targetEntity}|${a.role}|${a.canonicalLabel.toLowerCase().trim()}`;let t=0;for(let s=0;s<e.length;s++)t=(t<<5)-t+e.charCodeAt(s),t|=0;return`fph_${Math.abs(t).toString(16)}`}static fromElement(a,e){const t=v.suppressVolatileFeatures(a),s=[],r=[];let n=a.parentElement,g=0;for(;n&&g<4;){const h=n.getAttribute("role")||n.tagName.toLowerCase(),m=n.getAttribute("aria-label")||"";s.push(`${h}${m?`[${m}]`:""}`),(["section","nav","main","form","dialog","aside"].includes(n.tagName.toLowerCase())||h)&&r.push(h),n=n.parentElement,g++}const T=[],S=a.previousElementSibling;S&&S.textContent&&T.push(S.textContent.trim().slice(0,100));const l=a.nextElementSibling;l&&l.textContent&&T.push(l.textContent.trim().slice(0,100));const b=a.getAttribute("aria-label")||a.getAttribute("aria-labelledby")||a.getAttribute("title")||a.getAttribute("placeholder")||t.cleanedText||"",A=t.cleanedText,I=a.getAttribute("role")||a.tagName.toLowerCase(),d=e.riskClass||(e.actionType==="DELETE"||e.actionType==="DEACTIVATE_ACCOUNT"?"DESTRUCTIVE":e.actionType==="REVOKE_ACCESS"||e.actionType==="AUTHENTICATE"?"SECURITY_SENSITIVE":e.actionType==="MODIFY_PREFERENCE"||e.actionType==="TOGGLE"?"REVERSIBLE":"READ_ONLY"),i=e.canonicalLabel||b||e.canonicalFunction,c=this.computeFingerprintHash({canonicalFunction:e.canonicalFunction,actionType:e.actionType,targetEntity:e.targetEntity,canonicalLabel:i,role:I});return{capabilityId:e.capabilityId,canonicalFunction:e.canonicalFunction,actionType:e.actionType,targetEntity:e.targetEntity,fingerprintHash:c,mandatoryPreStatePredicates:e.mandatoryPreStatePredicates||[],allowedStateDelta:e.allowedStateDelta||[],expectedPostState:e.expectedPostState||[],requiredContextPredicates:e.requiredContextPredicates||[],forbiddenContextPredicates:e.forbiddenContextPredicates||[],semanticEvidence:{canonicalLabel:i,semanticSynonyms:e.semanticSynonyms||[],accessibleName:b,role:I,visibleLabel:A,sectionMeaning:r.join(" > "),actionDescription:`${e.actionType} on ${e.targetEntity}`},contextEvidence:{ancestorRelationships:s,nearbyText:T,surroundingLabels:T,containerSemantics:r,menuPanelRelationships:r,relativeStructuralRelationships:[t.relativeStructuralPath],urlSemantics:e.urlSemantics||(typeof window<"u"?window.location.pathname:"")},transitionEvidence:{preStateFingerprint:"STATE_PRE_INITIAL",activationEventCharacteristics:{eventType:"click",bubbles:!0,cancelable:!0},expectedDelta:{},postStateFingerprint:"STATE_POST_EXPECTED",historicalTransitionObservations:0,witnessClasses:["DOM_MUTATION","ACCESSIBILITY_STATE_MUTATION"],verificationWindowMs:1500},riskMetadata:{riskClass:d,reversible:d==="READ_ONLY"||d==="REVERSIBLE",financial:d==="FINANCIAL",security:d==="SECURITY_SENSITIVE",destructive:d==="DESTRUCTIVE"||d==="IRREVERSIBLE",requiresConfirmation:["SECURITY_SENSITIVE","DESTRUCTIVE","FINANCIAL","IRREVERSIBLE"].includes(d)},provenance:{source:"DISCOVERED",creationTimestamp:Date.now(),validationTimestamp:0,routeVersion:"v1.0.0",validationHistory:[]},confidence:{capabilityConfidence:.85,routeConfidence:.7},negativeEvidence:{rejectedCandidateIdentities:[],contradictionPredicates:[],failedInvariantPredicates:[],failedTransitionWitnesses:[],decoyRelationships:[],rejectionReasons:[]}}}}class q{static simpleHash(a){let e=0;for(let t=0;t<a.length;t++)e=(e<<5)-e+a.charCodeAt(t),e|=0;return Math.abs(e).toString(36)}static generateFromDOM(a){const e=[],s=Array.from(a.querySelectorAll('button, a, input, select, [role="button"], [role="link"], [role="switch"], [role="menuitem"], [role="tab"]'));for(let r=0;r<s.length;r++){const n=s[r],g=(n.getAttribute("type")||"").toLowerCase(),T=(n.getAttribute("autocomplete")||"").toLowerCase();if(g==="password"||T.includes("password")||T.includes("cc-")||T.includes("credit-card")||T.includes("one-time-code"))continue;const S=v.suppressVolatileFeatures(n),l=n.getAttribute("aria-label")||n.getAttribute("title")||S.cleanedText||n.getAttribute("name")||n.placeholder||`element_${r}`,b=n.getAttribute("role")||n.tagName.toLowerCase(),A=[],I=n.parentElement;I&&I.querySelectorAll("p, span, strong, label, h1, h2, h3, h4").forEach(C=>{if(C!==n){const f=(C.textContent||"").trim().replace(/\s+/g," ");f.length>0&&f.length<150&&A.push(f)}});const d=[],i=[];let c=n.parentElement,h=0;for(;c&&c.tagName.toLowerCase()!=="body"&&h<6;){const N=c.tagName.toLowerCase(),C=c.getAttribute("role")||N,f=c.getAttribute("aria-label")||"",O=c.querySelector("h1, h2, h3, h4"),D=O?(O.textContent||"").trim():"";(["section","nav","main","form","dialog","aside","header"].includes(N)||c.getAttribute("role"))&&(d.push(C),f&&d.push(f.toLowerCase()),D&&d.push(D.toLowerCase())),i.push(`${C}${f?`[${f}]`:""}`),c=c.parentElement,h++}const m=`${l} ${A.join(" ")} ${d.join(" ")}`.toLowerCase();let u="VIEW";const M=b==="switch"||n.getAttribute("type")==="checkbox",P=b==="button"||n.tagName.toLowerCase()==="button",$=b==="link"||n.tagName.toLowerCase()==="a";M?u="TOGGLE":P?/delete|remove|erase|purge|destroy/i.test(l)?u="DELETE":/export|download|archive/i.test(l)?u="EXPORT_DATA":/pause|deactivate|suspend|close account|break/i.test(l)?u="DEACTIVATE_ACCOUNT":/turn off 2fa|disable 2fa|remove 2fa|disable mfa|revoke/i.test(l)?u="REVOKE_ACCESS":/turn on 2fa|enable 2fa|setup 2fa|enroll/i.test(l)?u="AUTHENTICATE":/submit|save|update|confirm/i.test(l)?u="SUBMIT":u="MODIFY_PREFERENCE":$&&(u="NAVIGATE");let p="UNKNOWN";/all notification|global alert|every alert|indiscriminately|entire platform|all account notification/i.test(m)?p="ALL_NOTIFICATIONS":/marketing|promot|newsletter|campaign|bulletin/i.test(m)?p="MARKETING_NOTIFICATIONS":/export|download|my data|gdpr|personal record|data archive/i.test(m)?p="PERSONAL_DATA_EXPORT":/2fa|two-factor|two step|mfa|authenticat|security code/i.test(m)?p="TWO_FACTOR_AUTH":/security|password|credential/i.test(m)?p="SECURITY_SETTINGS":/tracking|cookie|telemetry|analytics|behavioral/i.test(m)?p="PRIVACY_SETTINGS":/deactivate|pause account|suspend profile|close account|membership hiatus/i.test(m)?p="ACCOUNT_STATUS":/billing|payment|credit card|invoice/i.test(m)&&(p="BILLING_PREFERENCES");const L=v.computeRelativePath(n),k={handleId:`handle_${r}_${Date.now()}`,tagName:n.tagName.toLowerCase(),role:b,accessibleName:l,domStructuralPath:L,elementIndex:r,volatileId:n.id?n.id:void 0,volatileClasses:n.className&&typeof n.className=="string"?n.className.split(/\s+/).filter(Boolean):void 0},F=`cand_${r}_${this.simpleHash(l+"_"+b+"_"+L)}`,H=Y.computeFingerprintHash({canonicalFunction:`func_${u.toLowerCase()}_${p.toLowerCase()}`,actionType:u,targetEntity:p,canonicalLabel:l,role:b});e.push({candidateId:F,candidateLabel:l,observedActionType:u,observedTargetEntity:p,observedRole:b,containerSemantics:d,ancestors:i,observedState:{disabled:n.disabled??!1,checked:n.getAttribute("aria-checked")!==null?n.getAttribute("aria-checked")==="true":n.checked??!1,expanded:n.getAttribute("aria-expanded")==="true"},bindingHandle:k,candidateFingerprintHash:H})}return e}}const R=new B;let _=0;const y=[];let x=null;function E(o,a){_++,y.push({witnessId:`wit_${Date.now()}_${_}`,witnessClass:o,sequenceNumber:_,timestamp:Date.now(),observedDelta:a,correlatedActivationEventId:x,temporalDeltaMs:0,isCausallyCorrelated:!1,correlationExplanation:`Observed ${o} at ${Date.now()}`})}if(typeof window<"u"&&window.history){const o=window.history.pushState;window.history.pushState=function(...e){const t=o.apply(this,e);return E("HISTORY_STATE_MUTATION",{path:window.location.pathname,state:e[0]}),t};const a=window.history.replaceState;window.history.replaceState=function(...e){const t=a.apply(this,e);return E("HISTORY_STATE_MUTATION",{path:window.location.pathname,state:e[0]}),t},window.addEventListener("popstate",e=>{E("HISTORY_STATE_MUTATION",{path:window.location.pathname,state:e.state})}),window.addEventListener("intentnav:mock-state-change",e=>{var r;const t=e,s=((r=t.detail)==null?void 0:r.fullState)||t.detail||{};E("APPLICATION_STATE_MUTATION",s)})}typeof window<"u"&&R.observeMutations(o=>{if(!o||o.length===0){E("DOM_MUTATION",{url:window.location.pathname,title:document.title});return}o.forEach(a=>{var e;if(a.type==="attributes"){const t=a.target,s=a.attributeName||"",r=t.getAttribute(s),n={attribute:s,value:r,targetTag:t.tagName.toLowerCase()};s==="aria-checked"?(n.checked=r==="true",n.marketing_emails_enabled=r!=="true",E("ACCESSIBILITY_STATE_MUTATION",n)):s==="aria-expanded"?(n.expanded=r==="true",E("ACCESSIBILITY_STATE_MUTATION",n)):s==="disabled"?(n.disabled=t.hasAttribute("disabled"),E("ACCESSIBILITY_STATE_MUTATION",n)):E("DOM_MUTATION",n)}else a.type==="childList"&&E("DOM_MUTATION",{addedNodes:a.addedNodes.length,removedNodes:a.removedNodes.length,targetTag:((e=a.target.tagName)==null?void 0:e.toLowerCase())||"unknown"})})},50);function G(o){if(o.domStructuralPath)try{const t=document.querySelector(o.domStructuralPath);if(t)return t}catch{}const a=`[role="${o.role}"], ${o.tagName}`,e=Array.from(document.querySelectorAll(a));for(const t of e)if((t.getAttribute("aria-label")||t.getAttribute("title")||(t.textContent||"").trim()).toLowerCase().includes(o.accessibleName.toLowerCase()))return t;if(o.volatileId){const t=document.getElementById(o.volatileId);if(t)return t}return null}typeof chrome<"u"&&chrome.runtime&&chrome.runtime.onMessage&&chrome.runtime.onMessage.addListener((o,a,e)=>{switch(o.type){case"OBSERVE_INTERFACE_REQUEST":{const t=R.captureInterfaceState(),s=q.generateFromDOM(document);e({stateNode:t,candidates:s,capturedWitnesses:[...y]});break}case"DISPATCH_ACTIVATION_EVENT":{const t=o.payload;x=t.activationEventId;const s=G(t.bindingHandle);if(!s){e({success:!1,reason:`Target element could not be resolved from BindingHandle '${t.bindingHandle.accessibleName}'`});break}const r=t.eventType||"click",n={eventId:t.activationEventId,sequenceNumber:1,timestamp:Date.now(),targetCandidateId:t.bindingHandle.handleId,eventType:r,bindingHandle:t.bindingHandle,initiatingCapabilityId:t.capabilityId},g=new MouseEvent("click",{bubbles:!0,cancelable:!0,view:window});s.dispatchEvent(g),e({success:!0,activationEvent:n,timestamp:Date.now()});break}case"COLLECT_WITNESSES":{e({witnesses:[...y]}),y.length=0;break}default:e({unhandled:!0});break}return!0});
+"use strict";
+(() => {
+  // src/core/fingerprint/suppressor.ts
+  var VOLATILE_ID_PATTERNS = [
+    /^react-aria-/,
+    /^ember\d+/,
+    /^_ngcontent-/,
+    /^vue-/,
+    /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i,
+    // UUID
+    /^[a-f0-9]{16,}$/i,
+    // Long hex hashes
+    /^gen_\d+/,
+    /^dyn-id-/,
+    /:r[0-9a-z]+:/i,
+    // React 18 useId format: :r1:, :r2:
+    /-\d{5,}$/
+    // Ending in random numbers
+  ];
+  var VOLATILE_CLASS_PATTERNS = [
+    /^css-[a-z0-9]+/i,
+    // Emotion / styled
+    /^sc-[a-zA-Z0-9]+/i,
+    // styled-components
+    /^jsx-[0-9]+/i,
+    // styled-jsx
+    /^_[a-z0-9]{5,}$/i,
+    // CSS modules random hash
+    /^(p|m|px|py|pt|pb|pl|pr|w|h|text|bg|border|flex|grid|col|row|gap)-/i,
+    // Tailwind / utility CSS
+    /^(items|justify|content|self)-/i,
+    // Flex alignment utilities
+    /^(flex|grid|block|inline|hidden|relative|absolute|fixed)$/i,
+    // Layout utilities
+    /^[a-z]-\d+/i,
+    // Atomic shorthand: x-19, y-20
+    /^(hover:|focus:|active:|disabled:|dark:)/i,
+    // Pseudo-class utilities
+    /^(is-|has-)/i
+    // State toggles
+  ];
+  var VolatileFeatureSuppressor = class {
+    /**
+     * Checks if a DOM ID is volatile/transient
+     */
+    static isVolatileId(id) {
+      if (!id || typeof id !== "string") return true;
+      const trimmed = id.trim();
+      if (trimmed.length === 0) return true;
+      return VOLATILE_ID_PATTERNS.some((pattern) => pattern.test(trimmed));
+    }
+    /**
+     * Cleans CSS class string, removing styling and transient utility classes
+     */
+    static sanitizeClasses(classString) {
+      if (!classString || typeof classString !== "string") return [];
+      const classes = classString.split(/\s+/).filter(Boolean);
+      return classes.filter((cls) => {
+        return !VOLATILE_CLASS_PATTERNS.some((pattern) => pattern.test(cls));
+      });
+    }
+    /**
+     * Computes a stable relative structural path rather than absolute coordinates
+     */
+    static computeRelativePath(element) {
+      const segments = [];
+      let curr = element;
+      let depth = 0;
+      while (curr && curr.tagName.toLowerCase() !== "body" && depth < 6) {
+        const tag = curr.tagName.toLowerCase();
+        const role = curr.getAttribute("role");
+        const ariaLabel = curr.getAttribute("aria-label");
+        const testId = curr.getAttribute("data-testid") || curr.getAttribute("data-capability");
+        let descriptor = tag;
+        if (testId) {
+          descriptor += `[data-key="${testId}"]`;
+        } else if (role) {
+          descriptor += `[role="${role}"]`;
+        } else if (ariaLabel) {
+          descriptor += `[aria-label="${ariaLabel.slice(0, 20)}"]`;
+        }
+        let siblingIndex = 1;
+        let prev = curr.previousElementSibling;
+        while (prev) {
+          if (prev.tagName.toLowerCase() === tag) {
+            siblingIndex++;
+          }
+          prev = prev.previousElementSibling;
+        }
+        descriptor += `:nth-of-type(${siblingIndex})`;
+        segments.unshift(descriptor);
+        curr = curr.parentElement;
+        depth++;
+      }
+      return segments.join(" > ");
+    }
+    /**
+     * Evaluates and suppresses an element's features, returning normalized invariant properties
+     */
+    static suppressVolatileFeatures(element) {
+      const rawId = element.getAttribute("id") || "";
+      const rawClass = element.getAttribute("class") || "";
+      const role = element.getAttribute("role") || element.tagName.toLowerCase();
+      const visibleText = (element.textContent || "").trim().replace(/\s+/g, " ");
+      const isSuppressedId = this.isVolatileId(rawId);
+      const sanitizedClasses = this.sanitizeClasses(rawClass);
+      const relativePath = this.computeRelativePath(element);
+      const sanitizedAttributes = {};
+      if (!isSuppressedId && rawId.length > 0) {
+        sanitizedAttributes["id"] = rawId;
+      }
+      if (sanitizedClasses.length > 0) {
+        sanitizedAttributes["semantic-class"] = sanitizedClasses.join(" ");
+      }
+      const ariaRole = element.getAttribute("role");
+      if (ariaRole) sanitizedAttributes["role"] = ariaRole;
+      const ariaLabel = element.getAttribute("aria-label");
+      if (ariaLabel) sanitizedAttributes["aria-label"] = ariaLabel;
+      const ariaExpanded = element.getAttribute("aria-expanded");
+      if (ariaExpanded !== null) sanitizedAttributes["aria-expanded"] = ariaExpanded;
+      const ariaChecked = element.getAttribute("aria-checked");
+      if (ariaChecked !== null) sanitizedAttributes["aria-checked"] = ariaChecked;
+      return {
+        cleanedText: visibleText,
+        cleanedRole: role,
+        sanitizedAttributes,
+        isSuppressedId,
+        isSuppressedClass: sanitizedClasses.length === 0 && rawClass.length > 0,
+        relativeStructuralPath: relativePath,
+        featureWeights: {
+          functionalRoleWeight: 0.95,
+          canonicalSemanticWeight: 0.9,
+          relativeHierarchyWeight: 0.7,
+          attributeWeight: 0.4,
+          presentationWeight: 0.02
+          // Extremely low weight for presentation / IDs / CSS
+        }
+      };
+    }
+  };
+
+  // src/browser/observer/interfaceObserver.ts
+  var InterfaceObserver = class {
+    mutationObserver = null;
+    mutationDebounceTimer = null;
+    lastObservedState = null;
+    /**
+     * Captures the current interface state snapshot from the active DOM document
+     */
+    captureInterfaceState() {
+      const stateId = `state_${Date.now()}`;
+      const urlPattern = typeof window !== "undefined" ? window.location.pathname : "/";
+      const activeModalsOrDialogs = [];
+      const dialogs = document.querySelectorAll(
+        'dialog[open], [role="dialog"], [role="alertdialog"], .modal.is-active, .modal.show'
+      );
+      dialogs.forEach((d) => {
+        const label = d.getAttribute("aria-label") || d.getAttribute("title") || "modal_dialog";
+        activeModalsOrDialogs.push(label);
+      });
+      const activeTabs = [];
+      const tabs = document.querySelectorAll('[role="tab"][aria-selected="true"], .tab.active, .tab.is-active');
+      tabs.forEach((t) => {
+        const label = t.getAttribute("aria-label") || (t.textContent || "").trim();
+        activeTabs.push(label);
+      });
+      const semanticLandmarks = [];
+      const landmarks = document.querySelectorAll(
+        'main, nav, header, footer, aside, section, form, [role="main"], [role="navigation"]'
+      );
+      landmarks.forEach((l) => {
+        const role = l.getAttribute("role") || l.tagName.toLowerCase();
+        const label = l.getAttribute("aria-label") || "";
+        semanticLandmarks.push(`${role}${label ? `[${label}]` : ""}`);
+      });
+      const bodyChildren = Array.from(document.body.children);
+      const tagHierarchy = bodyChildren.map((c) => VolatileFeatureSuppressor.computeRelativePath(c)).join("|");
+      const domStructuralHash = `hash_${this.simpleHash(tagHierarchy)}`;
+      const exposedCandidateHandles = [];
+      const interactiveElements = document.querySelectorAll(
+        'button, a, input, select, [role="button"], [role="link"], [role="switch"], [role="menuitem"], [role="tab"]'
+      );
+      interactiveElements.forEach((el, index) => {
+        const suppression = VolatileFeatureSuppressor.suppressVolatileFeatures(el);
+        const label = el.getAttribute("aria-label") || el.getAttribute("title") || suppression.cleanedText || el.getAttribute("name") || `element_${index}`;
+        const role = el.getAttribute("role") || el.tagName.toLowerCase();
+        exposedCandidateHandles.push({
+          handleId: `handle_${index}`,
+          tagName: el.tagName.toLowerCase(),
+          role,
+          accessibleName: label,
+          domStructuralPath: suppression.relativeStructuralPath,
+          elementIndex: index,
+          volatileId: el.id || void 0,
+          volatileClasses: el.className && typeof el.className === "string" ? el.className.split(/\s+/).filter(Boolean) : void 0
+        });
+      });
+      let observedApplicationState;
+      if (typeof document !== "undefined") {
+        const appStateEl = document.getElementById("neg-app-state") || document.getElementById("app-state");
+        if (appStateEl && appStateEl.getAttribute("data-state")) {
+          try {
+            observedApplicationState = JSON.parse(appStateEl.getAttribute("data-state"));
+          } catch {
+          }
+        }
+      }
+      if (!observedApplicationState && typeof window !== "undefined" && window.IntentNavMockState) {
+        observedApplicationState = { ...window.IntentNavMockState };
+      }
+      const node = {
+        stateId,
+        stateType: activeModalsOrDialogs.length > 0 ? "MODAL" : "PAGE",
+        urlPattern,
+        domStructuralHash,
+        semanticLandmarks,
+        activeModalsOrDialogs,
+        activeTabs,
+        exposedCandidateHandles,
+        observedApplicationState,
+        timestamp: Date.now()
+      };
+      this.lastObservedState = node;
+      return node;
+    }
+    /**
+     * Starts observing DOM mutations with debouncing and detailed mutation tracking
+     */
+    observeMutations(onMutation, debounceMs = 100) {
+      if (typeof MutationObserver === "undefined") return;
+      let accumulatedMutations = [];
+      this.mutationObserver = new MutationObserver((mutations) => {
+        accumulatedMutations.push(...mutations);
+        if (this.mutationDebounceTimer !== null) {
+          clearTimeout(this.mutationDebounceTimer);
+        }
+        this.mutationDebounceTimer = window.setTimeout(() => {
+          const batch = [...accumulatedMutations];
+          accumulatedMutations = [];
+          onMutation(batch);
+        }, debounceMs);
+      });
+      this.mutationObserver.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["class", "style", "aria-expanded", "aria-checked", "disabled", "open"],
+        characterData: true
+      });
+    }
+    disconnect() {
+      if (this.mutationObserver) {
+        this.mutationObserver.disconnect();
+        this.mutationObserver = null;
+      }
+      if (this.mutationDebounceTimer !== null) {
+        clearTimeout(this.mutationDebounceTimer);
+        this.mutationDebounceTimer = null;
+      }
+    }
+    getLastObservedState() {
+      return this.lastObservedState;
+    }
+    simpleHash(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0;
+      }
+      return Math.abs(hash).toString(36);
+    }
+  };
+
+  // src/core/fingerprint/constructor.ts
+  var FingerprintConstructor = class {
+    /**
+     * Generates a deterministic hash from functional evidence only.
+     * Volatile presentation features (IDs, classes, coordinates) are strictly excluded.
+     */
+    static computeFingerprintHash(fingerprint) {
+      const raw = `${fingerprint.canonicalFunction}|${fingerprint.actionType}|${fingerprint.targetEntity}|${fingerprint.role}|${fingerprint.canonicalLabel.toLowerCase().trim()}`;
+      let hash = 0;
+      for (let i = 0; i < raw.length; i++) {
+        hash = (hash << 5) - hash + raw.charCodeAt(i);
+        hash |= 0;
+      }
+      return `fph_${Math.abs(hash).toString(16)}`;
+    }
+    /**
+     * Constructs a FunctionalCapabilityFingerprint from a DOM Element and metadata
+     */
+    static fromElement(element, options) {
+      const suppression = VolatileFeatureSuppressor.suppressVolatileFeatures(element);
+      const ancestorRelationships = [];
+      const containerSemantics = [];
+      let parent = element.parentElement;
+      let depth = 0;
+      while (parent && depth < 4) {
+        const parentRole = parent.getAttribute("role") || parent.tagName.toLowerCase();
+        const parentLabel = parent.getAttribute("aria-label") || "";
+        ancestorRelationships.push(`${parentRole}${parentLabel ? `[${parentLabel}]` : ""}`);
+        if (["section", "nav", "main", "form", "dialog", "aside"].includes(parent.tagName.toLowerCase()) || parentRole) {
+          containerSemantics.push(parentRole);
+        }
+        parent = parent.parentElement;
+        depth++;
+      }
+      const nearbyText = [];
+      const prev = element.previousElementSibling;
+      if (prev && prev.textContent) nearbyText.push(prev.textContent.trim().slice(0, 100));
+      const next = element.nextElementSibling;
+      if (next && next.textContent) nearbyText.push(next.textContent.trim().slice(0, 100));
+      const accessibleName = element.getAttribute("aria-label") || element.getAttribute("aria-labelledby") || element.getAttribute("title") || element.getAttribute("placeholder") || suppression.cleanedText || "";
+      const visibleLabel = suppression.cleanedText;
+      const role = element.getAttribute("role") || element.tagName.toLowerCase();
+      const riskClass = options.riskClass || (options.actionType === "DELETE" || options.actionType === "DEACTIVATE_ACCOUNT" ? "DESTRUCTIVE" : options.actionType === "REVOKE_ACCESS" || options.actionType === "AUTHENTICATE" ? "SECURITY_SENSITIVE" : options.actionType === "MODIFY_PREFERENCE" || options.actionType === "TOGGLE" ? "REVERSIBLE" : "READ_ONLY");
+      const canonicalLabel = options.canonicalLabel || accessibleName || options.canonicalFunction;
+      const fpHash = this.computeFingerprintHash({
+        canonicalFunction: options.canonicalFunction,
+        actionType: options.actionType,
+        targetEntity: options.targetEntity,
+        canonicalLabel,
+        role
+      });
+      return {
+        capabilityId: options.capabilityId,
+        canonicalFunction: options.canonicalFunction,
+        actionType: options.actionType,
+        targetEntity: options.targetEntity,
+        fingerprintHash: fpHash,
+        mandatoryPreStatePredicates: options.mandatoryPreStatePredicates || [],
+        allowedStateDelta: options.allowedStateDelta || [],
+        expectedPostState: options.expectedPostState || [],
+        requiredContextPredicates: options.requiredContextPredicates || [],
+        forbiddenContextPredicates: options.forbiddenContextPredicates || [],
+        semanticEvidence: {
+          canonicalLabel,
+          semanticSynonyms: options.semanticSynonyms || [],
+          accessibleName,
+          role,
+          visibleLabel,
+          sectionMeaning: containerSemantics.join(" > "),
+          actionDescription: `${options.actionType} on ${options.targetEntity}`
+        },
+        contextEvidence: {
+          ancestorRelationships,
+          nearbyText,
+          surroundingLabels: nearbyText,
+          containerSemantics,
+          menuPanelRelationships: containerSemantics,
+          relativeStructuralRelationships: [suppression.relativeStructuralPath],
+          urlSemantics: options.urlSemantics || (typeof window !== "undefined" ? window.location.pathname : "")
+        },
+        transitionEvidence: {
+          preStateFingerprint: "STATE_PRE_INITIAL",
+          activationEventCharacteristics: {
+            eventType: "click",
+            bubbles: true,
+            cancelable: true
+          },
+          expectedDelta: {},
+          postStateFingerprint: "STATE_POST_EXPECTED",
+          historicalTransitionObservations: 0,
+          witnessClasses: ["DOM_MUTATION", "ACCESSIBILITY_STATE_MUTATION"],
+          verificationWindowMs: 1500
+        },
+        riskMetadata: {
+          riskClass,
+          reversible: riskClass === "READ_ONLY" || riskClass === "REVERSIBLE",
+          financial: riskClass === "FINANCIAL",
+          security: riskClass === "SECURITY_SENSITIVE",
+          destructive: riskClass === "DESTRUCTIVE" || riskClass === "IRREVERSIBLE",
+          requiresConfirmation: ["SECURITY_SENSITIVE", "DESTRUCTIVE", "FINANCIAL", "IRREVERSIBLE"].includes(riskClass)
+        },
+        provenance: {
+          source: "DISCOVERED",
+          creationTimestamp: Date.now(),
+          validationTimestamp: 0,
+          routeVersion: "v1.0.0",
+          validationHistory: []
+        },
+        confidence: {
+          capabilityConfidence: 0.85,
+          routeConfidence: 0.7
+        },
+        negativeEvidence: {
+          rejectedCandidateIdentities: [],
+          contradictionPredicates: [],
+          failedInvariantPredicates: [],
+          failedTransitionWitnesses: [],
+          decoyRelationships: [],
+          rejectionReasons: []
+        }
+      };
+    }
+  };
+
+  // src/core/candidate/generator.ts
+  var CandidateGenerator = class {
+    static simpleHash(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0;
+      }
+      return Math.abs(hash).toString(36);
+    }
+    /**
+     * Generates candidate evaluation contexts from DOM elements purely based on observable semantics.
+     */
+    static generateFromDOM(container) {
+      const candidates = [];
+      const selector = 'button, a, input, select, [role="button"], [role="link"], [role="switch"], [role="menuitem"], [role="tab"]';
+      const elements = Array.from(container.querySelectorAll(selector));
+      for (let i = 0; i < elements.length; i++) {
+        const el = elements[i];
+        const inputType = (el.getAttribute("type") || "").toLowerCase();
+        const autocomplete = (el.getAttribute("autocomplete") || "").toLowerCase();
+        if (inputType === "password" || autocomplete.includes("password") || autocomplete.includes("cc-") || autocomplete.includes("credit-card") || autocomplete.includes("one-time-code")) {
+          continue;
+        }
+        const suppression = VolatileFeatureSuppressor.suppressVolatileFeatures(el);
+        const accessibleName = el.getAttribute("aria-label") || el.getAttribute("title") || suppression.cleanedText || el.getAttribute("name") || el.placeholder || `element_${i}`;
+        const role = el.getAttribute("role") || el.tagName.toLowerCase();
+        const nearbyTexts = [];
+        const parentEl = el.parentElement;
+        if (parentEl) {
+          const textElements = parentEl.querySelectorAll("p, span, strong, label, h1, h2, h3, h4");
+          textElements.forEach((t) => {
+            if (t !== el) {
+              const text = (t.textContent || "").trim().replace(/\s+/g, " ");
+              if (text.length > 0 && text.length < 150) {
+                nearbyTexts.push(text);
+              }
+            }
+          });
+        }
+        const containerSemantics = [];
+        const ancestorDescriptions = [];
+        let currentParent = el.parentElement;
+        let depth = 0;
+        while (currentParent && currentParent.tagName.toLowerCase() !== "body" && depth < 6) {
+          const pTag = currentParent.tagName.toLowerCase();
+          const pRole = currentParent.getAttribute("role") || pTag;
+          const pLabel = currentParent.getAttribute("aria-label") || "";
+          const heading = currentParent.querySelector("h1, h2, h3, h4");
+          const headingText = heading ? (heading.textContent || "").trim() : "";
+          if (["section", "nav", "main", "form", "dialog", "aside", "header"].includes(pTag) || currentParent.getAttribute("role")) {
+            containerSemantics.push(pRole);
+            if (pLabel) containerSemantics.push(pLabel.toLowerCase());
+            if (headingText) containerSemantics.push(headingText.toLowerCase());
+          }
+          ancestorDescriptions.push(`${pRole}${pLabel ? `[${pLabel}]` : ""}`);
+          currentParent = currentParent.parentElement;
+          depth++;
+        }
+        const combinedContext = `${accessibleName} ${nearbyTexts.join(" ")} ${containerSemantics.join(" ")}`.toLowerCase();
+        let observedActionType = "VIEW";
+        const isSwitch = role === "switch" || el.getAttribute("type") === "checkbox";
+        const isButton = role === "button" || el.tagName.toLowerCase() === "button";
+        const isLink = role === "link" || el.tagName.toLowerCase() === "a";
+        if (isSwitch) {
+          observedActionType = "MODIFY_PREFERENCE";
+        } else if (isButton) {
+          if (/delete|remove|erase|purge|destroy|wipe/i.test(accessibleName) && !/2fa|two[-\s]*factor|mfa/i.test(accessibleName)) {
+            observedActionType = "DELETE";
+          } else if (/export|download|archive|receipt|invoice/i.test(accessibleName)) {
+            observedActionType = "EXPORT_DATA";
+          } else if (/pause|deactivate|suspend|close account|break|hibernate/i.test(accessibleName)) {
+            observedActionType = "DEACTIVATE_ACCOUNT";
+          } else if (/(turn off|disable|remove|revoke|disconnect|sign out).*?(2fa|two[-\s]*factor|mfa|session|device)/i.test(accessibleName) || /turn off 2fa|disable 2fa|remove 2fa|disable mfa|revoke/i.test(accessibleName)) {
+            observedActionType = "REVOKE_ACCESS";
+          } else if (/(turn on|enable|setup|enroll).*?(2fa|two[-\s]*factor|mfa)/i.test(accessibleName) || /turn on 2fa|enable 2fa|setup 2fa|enroll/i.test(accessibleName)) {
+            observedActionType = "AUTHENTICATE";
+          } else if (/audit|log|view|show|display|trail/i.test(accessibleName)) {
+            observedActionType = "VIEW";
+          } else if (/submit|save|update|confirm/i.test(accessibleName)) {
+            observedActionType = "SUBMIT";
+          } else {
+            observedActionType = "MODIFY_PREFERENCE";
+          }
+        } else if (isLink) {
+          if (/audit|log|view|show|display|trail/i.test(accessibleName)) {
+            observedActionType = "VIEW";
+          } else {
+            observedActionType = "NAVIGATE";
+          }
+        }
+        let observedTargetEntity = "UNKNOWN";
+        if (/all notification|global alert|every alert|indiscriminately|entire platform|all account notification/i.test(combinedContext)) {
+          observedTargetEntity = "ALL_NOTIFICATIONS";
+        } else if (/all security|entire security|wipe security|all account security/i.test(combinedContext)) {
+          observedTargetEntity = "ALL_SECURITY";
+        } else if (/all data|wipe all|erase all personal/i.test(combinedContext)) {
+          observedTargetEntity = "ALL_DATA";
+        } else if (/organization|all org members|entire org/i.test(combinedContext)) {
+          observedTargetEntity = "ORGANIZATION_USERS";
+        } else if (/invoice|receipt|billing|payment/i.test(combinedContext)) {
+          observedTargetEntity = "BILLING_PREFERENCES";
+        } else if (/audit|sign-in log|access ledger|activity trail|audit trail|security event/i.test(combinedContext)) {
+          observedTargetEntity = "SECURITY_SETTINGS";
+        } else if (/session|device|disconnect|sign out all/i.test(combinedContext)) {
+          observedTargetEntity = "SECURITY_SETTINGS";
+        } else if (/theme|dark mode|night mode|display|contrast/i.test(combinedContext)) {
+          observedTargetEntity = "UI_THEME";
+        } else if (/marketing|promot|newsletter|campaign|bulletin/i.test(combinedContext)) {
+          observedTargetEntity = "MARKETING_NOTIFICATIONS";
+        } else if (/export|download.*?(data|record|archive|information)|my data|gdpr|personal (data|record|archive|information)/i.test(combinedContext)) {
+          observedTargetEntity = "PERSONAL_DATA_EXPORT";
+        } else if (/2fa|two-factor|two step|mfa|authenticat|security code/i.test(combinedContext)) {
+          observedTargetEntity = "TWO_FACTOR_AUTH";
+        } else if (/tracking|cookie|telemetry|analytics|behavioral/i.test(combinedContext)) {
+          observedTargetEntity = "PRIVACY_SETTINGS";
+        } else if (/deactivate|pause account|suspend profile|close account|membership hiatus|hibernate/i.test(combinedContext)) {
+          observedTargetEntity = "ACCOUNT_STATUS";
+        } else if (/security|password|credential/i.test(combinedContext)) {
+          observedTargetEntity = "SECURITY_SETTINGS";
+        }
+        const domStructuralPath = VolatileFeatureSuppressor.computeRelativePath(el);
+        const bindingHandle = {
+          handleId: `handle_${i}_${Date.now()}`,
+          tagName: el.tagName.toLowerCase(),
+          role,
+          accessibleName,
+          domStructuralPath,
+          elementIndex: i,
+          volatileId: el.id ? el.id : void 0,
+          volatileClasses: el.className && typeof el.className === "string" ? el.className.split(/\s+/).filter(Boolean) : void 0
+        };
+        const candidateId = `cand_${i}_${this.simpleHash(accessibleName + "_" + role + "_" + domStructuralPath)}`;
+        const candidateFingerprintHash = FingerprintConstructor.computeFingerprintHash({
+          canonicalFunction: `func_${observedActionType.toLowerCase()}_${observedTargetEntity.toLowerCase()}`,
+          actionType: observedActionType,
+          targetEntity: observedTargetEntity,
+          canonicalLabel: accessibleName,
+          role
+        });
+        const docView = container.defaultView || container.ownerDocument?.defaultView || (typeof window !== "undefined" ? window : null);
+        const appState = docView?.IntentNavMockState || {};
+        const defaultAppState = {
+          marketing_notifications_enabled: true,
+          marketing_emails_enabled: true,
+          two_factor_enabled: true,
+          export_download_initiated: false,
+          account_deactivated: false,
+          account_active: true,
+          analytics_tracking_enabled: true,
+          active_session_count: 3,
+          dark_mode_enabled: false,
+          invoice_available: true,
+          invoice_download_triggered: false,
+          audit_logs_available: true,
+          audit_logs_visible: false
+        };
+        candidates.push({
+          candidateId,
+          candidateLabel: accessibleName,
+          observedActionType,
+          observedTargetEntity,
+          observedRole: role,
+          containerSemantics,
+          ancestors: ancestorDescriptions,
+          nearbyText: nearbyTexts,
+          observedState: {
+            ...defaultAppState,
+            ...appState,
+            disabled: el.disabled ?? false,
+            checked: el.getAttribute("aria-checked") !== null ? el.getAttribute("aria-checked") === "true" : el.checked ?? false,
+            expanded: el.getAttribute("aria-expanded") === "true"
+          },
+          bindingHandle,
+          candidateFingerprintHash
+        });
+      }
+      return candidates;
+    }
+  };
+
+  // src/browser/contentScript.ts
+  var observer = new InterfaceObserver();
+  var witnessSequenceCounter = 0;
+  var capturedWitnesses = [];
+  var currentCorrelatedActivationId = null;
+  var currentActivationTimestamp = null;
+  function recordWitness(witnessClass, observedDelta, source = "MutationObserver", explicitTimestamp) {
+    witnessSequenceCounter++;
+    const now = typeof explicitTimestamp === "number" ? explicitTimestamp : Date.now();
+    capturedWitnesses.push({
+      witnessId: `wit_${now}_${witnessSequenceCounter}`,
+      witnessClass,
+      sequenceNumber: witnessSequenceCounter,
+      timestamp: now,
+      observedDelta,
+      correlatedActivationEventId: currentCorrelatedActivationId,
+      temporalDeltaMs: currentActivationTimestamp !== null ? Math.max(0, now - currentActivationTimestamp) : 0,
+      isCausallyCorrelated: false,
+      // Determined by the causal verifier downstream
+      correlationExplanation: `Observed ${witnessClass} at ${now}`,
+      source
+    });
+  }
+  if (typeof window !== "undefined" && window.history) {
+    const originalPushState = window.history.pushState;
+    window.history.pushState = function(...args) {
+      const res = originalPushState.apply(this, args);
+      recordWitness("HISTORY_STATE_MUTATION", { path: window.location.pathname, state: args[0] }, "History:pushState");
+      return res;
+    };
+    const originalReplaceState = window.history.replaceState;
+    window.history.replaceState = function(...args) {
+      const res = originalReplaceState.apply(this, args);
+      recordWitness("HISTORY_STATE_MUTATION", { path: window.location.pathname, state: args[0] }, "History:replaceState");
+      return res;
+    };
+    window.addEventListener("popstate", (e) => {
+      recordWitness("HISTORY_STATE_MUTATION", { path: window.location.pathname, state: e.state }, "History:popstate");
+    });
+    window.addEventListener("intentnav:mock-state-change", (e) => {
+      const customEvt = e;
+      const delta = customEvt.detail?.fullState || customEvt.detail || {};
+      const explicitTime = typeof customEvt.detail?.timestamp === "number" ? customEvt.detail.timestamp : void 0;
+      recordWitness("APPLICATION_STATE_MUTATION", delta, "CustomEvent:intentnav:mock-state-change", explicitTime);
+    });
+    window.addEventListener("intentnav:client-route-change", (e) => {
+      const customEvt = e;
+      const detail = customEvt.detail || {};
+      recordWitness("CLIENT_ROUTE_MUTATION", {
+        routeBefore: detail.routeBefore || window.location.pathname,
+        routeAfter: detail.routeAfter || detail.route || window.location.pathname,
+        source: detail.source || "SPA_ROUTER",
+        outletChanged: true,
+        timestamp: detail.timestamp || Date.now()
+      }, "CustomEvent:intentnav:client-route-change");
+    });
+    window.addEventListener("intentnav:async-ack", (e) => {
+      const customEvt = e;
+      const detail = customEvt.detail || {};
+      recordWitness("ASYNC_ACKNOWLEDGEMENT", {
+        operation: detail.operation || "async_operation",
+        status: detail.status || "COMPLETED",
+        export_download_initiated: true,
+        timestamp: detail.timestamp || Date.now()
+      }, "CustomEvent:intentnav:async-ack");
+    });
+  }
+  if (typeof window !== "undefined") {
+    observer.observeMutations((mutations) => {
+      if (!mutations || mutations.length === 0) {
+        recordWitness("DOM_MUTATION", { url: window.location.pathname, title: document.title });
+        return;
+      }
+      mutations.forEach((m) => {
+        if (m.type === "attributes") {
+          const target = m.target;
+          const attrName = m.attributeName || "";
+          const attrValue = target.getAttribute(attrName);
+          const delta = {
+            attribute: attrName,
+            value: attrValue,
+            targetTag: target.tagName.toLowerCase()
+          };
+          if (attrName === "aria-checked") {
+            delta["checked"] = attrValue === "true";
+            delta["marketing_emails_enabled"] = attrValue === "true";
+            delta["marketing_notifications_enabled"] = attrValue === "true";
+            delta["analytics_tracking_enabled"] = attrValue === "true";
+            recordWitness("ACCESSIBILITY_STATE_MUTATION", delta, "MutationObserver:attributes:aria-checked");
+          } else if (attrName === "aria-expanded") {
+            delta["expanded"] = attrValue === "true";
+            recordWitness("ACCESSIBILITY_STATE_MUTATION", delta, "MutationObserver:attributes:aria-expanded");
+          } else if (attrName === "disabled") {
+            delta["disabled"] = target.hasAttribute("disabled");
+            recordWitness("ACCESSIBILITY_STATE_MUTATION", delta, "MutationObserver:attributes:disabled");
+          } else {
+            recordWitness("DOM_MUTATION", delta, `MutationObserver:attributes:${attrName}`);
+          }
+        } else if (m.type === "childList") {
+          recordWitness("DOM_MUTATION", {
+            addedNodes: m.addedNodes.length,
+            removedNodes: m.removedNodes.length,
+            targetTag: m.target.tagName?.toLowerCase() || "unknown"
+          }, "MutationObserver:childList");
+        }
+      });
+    }, 50);
+  }
+  function resolveBindingHandle(handle) {
+    if (handle.domStructuralPath) {
+      try {
+        const el = document.querySelector(handle.domStructuralPath);
+        if (el) return el;
+      } catch {
+      }
+    }
+    const selector = `[role="${handle.role}"], ${handle.tagName}`;
+    const candidates = Array.from(document.querySelectorAll(selector));
+    const targetLabel = (handle.accessibleName || "").toLowerCase().trim();
+    for (const c of candidates) {
+      const aria = (c.getAttribute("aria-label") || c.getAttribute("title") || c.textContent || "").toLowerCase().trim();
+      if (targetLabel && aria && (aria.includes(targetLabel) || targetLabel.includes(aria))) {
+        return c;
+      }
+    }
+    return null;
+  }
+  if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.onMessage) {
+    chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+      (async () => {
+        switch (message.type) {
+          case "OBSERVE_INTERFACE_REQUEST": {
+            const stateNode = observer.captureInterfaceState();
+            const candidates = CandidateGenerator.generateFromDOM(document);
+            sendResponse({
+              stateNode,
+              candidates,
+              capturedWitnesses: [...capturedWitnesses]
+            });
+            break;
+          }
+          case "DISPATCH_ACTIVATION_EVENT": {
+            const payload = message.payload;
+            currentCorrelatedActivationId = payload.activationEventId;
+            const targetEl = resolveBindingHandle(payload.bindingHandle);
+            if (!targetEl) {
+              sendResponse({
+                success: false,
+                reason: `Target element could not be resolved from BindingHandle '${payload.bindingHandle.accessibleName}'`
+              });
+              break;
+            }
+            const actTimestamp = payload.activationTimestamp || message.timestamp || Date.now();
+            currentActivationTimestamp = actTimestamp;
+            capturedWitnesses.length = 0;
+            if (Date.now() <= actTimestamp) {
+              await new Promise((resolve) => setTimeout(resolve, 2));
+            }
+            const eventType = payload.eventType || "click";
+            const activationEvent = {
+              eventId: payload.activationEventId,
+              sequenceNumber: 1,
+              timestamp: actTimestamp,
+              targetCandidateId: payload.bindingHandle.handleId,
+              eventType,
+              bindingHandle: payload.bindingHandle,
+              initiatingCapabilityId: payload.capabilityId
+            };
+            const clickEvent = new MouseEvent("click", {
+              bubbles: true,
+              cancelable: true,
+              view: window
+            });
+            targetEl.dispatchEvent(clickEvent);
+            sendResponse({
+              success: true,
+              activationEvent,
+              timestamp: actTimestamp
+            });
+            break;
+          }
+          case "COLLECT_WITNESSES": {
+            sendResponse({ witnesses: [...capturedWitnesses] });
+            capturedWitnesses.length = 0;
+            break;
+          }
+          case "OBSERVE_POST_STATE": {
+            const stateNode = observer.captureInterfaceState();
+            sendResponse({
+              success: true,
+              stateNode,
+              timestamp: Date.now()
+            });
+            break;
+          }
+          default:
+            sendResponse({ unhandled: true });
+            break;
+        }
+      })();
+      return true;
+    });
+  }
+})();

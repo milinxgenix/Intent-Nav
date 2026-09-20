@@ -82,3 +82,4 @@ The initial architectural prototype established key structural boundaries, but c
 | **Benchmark Dataset** | 60 intents | $\ge 100$ intents across 10 categories with raw metric computation |
 
 This audit serves as the baseline record for the remediation pass.
+

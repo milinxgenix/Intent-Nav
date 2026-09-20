@@ -94,7 +94,7 @@ describe('Security and Privacy Invariants', () => {
         },
         transitionEvidence: {
           preStateFingerprint: 'PRE',
-          activationEventCharacteristics: { eventType: 'click' },
+          activationEventCharacteristics: { eventType: 'click', bubbles: true, cancelable: true },
           expectedDelta: {},
           postStateFingerprint: 'POST',
           historicalTransitionObservations: 1,
@@ -102,7 +102,7 @@ describe('Security and Privacy Invariants', () => {
           verificationWindowMs: 1000,
         },
         riskMetadata: {
-          riskClass: 'LOW',
+          riskClass: 'REVERSIBLE',
           reversible: true,
           financial: false,
           security: false,
@@ -147,3 +147,4 @@ describe('Security and Privacy Invariants', () => {
     expect(auditJson).not.toContain('Set-Cookie');
   });
 });
+

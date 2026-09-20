@@ -37,9 +37,11 @@ export class DriftClassifier {
       );
     }
 
-    // 2. Check transition drift
+    // 2. Check transition drift (route validation required if capability is unchanged)
     if (vector.transition >= thresholds.transitionRebindThreshold) {
-      actionRequired = 'TRIGGER_REBIND_RECOVERY';
+      if (actionRequired !== 'TRIGGER_REBIND_RECOVERY') {
+        actionRequired = 'TRIGGER_VALIDATION';
+      }
       triggerFactors.push(
         `Transition drift (${vector.transition}) exceeds threshold (${thresholds.transitionRebindThreshold})`
       );

@@ -21,6 +21,7 @@ import {
   TransitionWitness,
   CausalVerificationResult,
   CausalVerificationStatus,
+  CausalFailureReason,
   WitnessClass,
   TransitionVerificationToken,
 } from '../../types/transition';
@@ -52,17 +53,54 @@ export class CausalTransitionVerifier {
   }
 
   /**
+   * Evaluates whether an observed delta indicates an explicit contradiction, failure, or aborted outcome
+   */
+  private isDeltaContradictory(
+    observedDelta: Record<string, unknown> | undefined | null
+  ): boolean {
+    if (!observedDelta) return false;
+    return (
+      observedDelta['error'] !== undefined ||
+      observedDelta['failure'] === true ||
+      observedDelta['aborted'] === true
+    );
+  }
+
+  /**
    * Evaluates whether an observed delta is relevant to the expected transition delta
    */
   private isDeltaRelevant(
     observedDelta: Record<string, unknown> | undefined | null,
-    expectedDelta: Record<string, unknown> | undefined | null
+    expectedDelta: Record<string, unknown> | undefined | null,
+    witnessClass?: WitnessClass
   ): boolean {
+    if (witnessClass === 'ASYNC_ACKNOWLEDGEMENT') {
+      return true;
+    }
     const expected = expectedDelta || {};
     const observed = observedDelta || {};
     const expectedKeys = Object.keys(expected);
     if (expectedKeys.length === 0) return true; // If delta is empty, any non-empty delta or transition is relevant
-    return expectedKeys.some((key) => key in observed);
+    if (expectedKeys.some((key) => key in observed)) return true;
+    // Standard accessibility & route transition properties
+    const standardChannels = [
+      'ariaChecked',
+      'aria-checked',
+      'checked',
+      'disabled',
+      'expanded',
+      'aria-expanded',
+      'aria-disabled',
+      'outletChanged',
+      'route',
+      'path',
+      'export_download_initiated',
+      'operation',
+      'status',
+      'statusCode',
+      'acknowledged',
+    ];
+    return standardChannels.some((k) => k in observed);
   }
 
   /**
@@ -91,93 +129,186 @@ export class CausalTransitionVerifier {
     signature: TransitionSignature,
     activationEvent: ActivationEventRecord,
     witnesses: TransitionWitness[],
-    currentPostStateFingerprint?: string
+    currentPostStateFingerprint?: string,
+    routeId?: string
   ): CausalVerificationResult {
+    // 0. Activation Event Presence & Validity
+    if (!activationEvent || !activationEvent.eventId || typeof activationEvent.timestamp !== 'number') {
+      return {
+        signature,
+        activationEvent: activationEvent || ({} as any),
+        observedWitnesses: witnesses || [],
+        classifiedWitnesses: [],
+        verifiedWitnessClasses: [],
+        status: 'FAILED_ACTIVATION_MISSING',
+        failureReason: 'activation_missing',
+        causallyVerified: false,
+        durationMs: 0,
+        explanation: 'Transition rejected: Activation event record is missing or invalid.',
+      };
+    }
+
     const minClasses = this.options.minWitnessClasses ?? 2;
     const windowMs = signature.verificationWindowMs || 2000;
     const startTime = activationEvent.timestamp;
 
+    // 0b. Witness Presence Check
+    if (!witnesses || witnesses.length === 0) {
+      return {
+        signature,
+        activationEvent,
+        observedWitnesses: [],
+        classifiedWitnesses: [],
+        verifiedWitnessClasses: [],
+        status: 'FAILED_MISSING_WITNESSES',
+        failureReason: 'witness_missing',
+        causallyVerified: false,
+        durationMs: windowMs,
+        explanation: `Transition rejected: No witnesses observed within ${windowMs}ms window.`,
+      };
+    }
+
     const preExistingWitnesses: TransitionWitness[] = [];
     const timedOutWitnesses: TransitionWitness[] = [];
     const unrelatedWitnesses: TransitionWitness[] = [];
+    const contradictoryWitnesses: TransitionWitness[] = [];
     const relevantCausalWitnesses: TransitionWitness[] = [];
+    const classifiedWitnesses: import('../../types/transition').ClassifiedWitnessRecord[] = [];
 
-    // Phase 18: Temporal & Causal Sorting
+    // Temporal & Causal Sorting: activationEvent.timestamp < witness.timestamp
     for (const w of witnesses) {
-      // 1. Check pre-existing state anomaly: mutation occurred BEFORE activation
-      if (w.timestamp < startTime) {
-        if (this.isDeltaRelevant(w.observedDelta, signature.expectedStateDelta)) {
-          preExistingWitnesses.push(w);
-        }
+      // 1. Check pre-existing state anomaly: mutation occurred BEFORE or AT activation
+      if (w.timestamp <= startTime) {
+        preExistingWitnesses.push(w);
+        classifiedWitnesses.push({
+          witness: w,
+          category: 'PRE_EXISTING',
+          reason: `Witness timestamp (${w.timestamp}) occurred before or at activation event timestamp (${startTime}).`,
+        });
         continue;
       }
 
       // 2. Check window timeout
       if (w.timestamp - startTime > windowMs) {
         timedOutWitnesses.push(w);
+        classifiedWitnesses.push({
+          witness: w,
+          category: 'TIMED_OUT',
+          reason: `Witness timestamp (${w.timestamp}) arrived after verification window (${windowMs}ms).`,
+        });
         continue;
       }
 
-      // 3. Check causality and relevance
-      const isCorrelatedWithEvent =
-        w.correlatedActivationEventId === activationEvent.eventId;
-      const isRelevantDelta =
-        this.isDeltaRelevant(w.observedDelta, signature.expectedStateDelta);
+      // 3. Check for explicit contradiction (e.g., error/failure witness or aborted status)
+      if (this.isDeltaContradictory(w.observedDelta)) {
+        contradictoryWitnesses.push(w);
+        classifiedWitnesses.push({
+          witness: w,
+          category: 'UNRELATED',
+          reason: `Witness observed error or failure indicator: ${JSON.stringify(w.observedDelta)}.`,
+        });
+        continue;
+      }
 
-      if (!isCorrelatedWithEvent && !isRelevantDelta) {
+      // 4. Independent Causal Relevance Derivation (Do NOT trust isCausallyCorrelated flag)
+      const isCorrelatedWithEvent =
+        !w.correlatedActivationEventId || w.correlatedActivationEventId === activationEvent.eventId;
+      const isRelevantDelta =
+        this.isDeltaRelevant(w.observedDelta, signature.expectedStateDelta, w.witnessClass);
+
+      if (!isCorrelatedWithEvent || !isRelevantDelta) {
         unrelatedWitnesses.push(w);
+        classifiedWitnesses.push({
+          witness: w,
+          category: 'UNRELATED',
+          reason: !isCorrelatedWithEvent
+            ? `Witness correlated event ID '${w.correlatedActivationEventId}' does not match activation ID '${activationEvent.eventId}'.`
+            : `Witness delta ${JSON.stringify(w.observedDelta)} is unrelated to expected delta ${JSON.stringify(signature.expectedStateDelta)}.`,
+        });
         continue;
       }
 
       // Witness is temporally and contextually relevant
+      const isDeltaMatch = this.isDeltaMatching(w.observedDelta, signature.expectedStateDelta);
       relevantCausalWitnesses.push(w);
+      classifiedWitnesses.push({
+        witness: w,
+        category: isDeltaMatch ? 'CAUSALLY_VALID' : 'RELEVANT',
+        reason: isDeltaMatch
+          ? `Witness observed matching state delta within verification window (${w.timestamp - startTime}ms).`
+          : `Witness observed relevant state transition within verification window (${w.timestamp - startTime}ms).`,
+      });
     }
 
-    // Check for Pre-Existing State Anomaly (Property 5)
+    // Check for Contradictory Witness
+    if (contradictoryWitnesses.length > 0) {
+      return {
+        signature,
+        activationEvent,
+        observedWitnesses: witnesses,
+        classifiedWitnesses,
+        verifiedWitnessClasses: [],
+        status: 'FAILED_CONTRADICTORY_WITNESS',
+        failureReason: 'contradictory_witness',
+        causallyVerified: false,
+        durationMs: Math.max(0, contradictoryWitnesses[0]!.timestamp - startTime),
+        explanation: `Transition rejected: Contradictory witness observed. Observed error/failure mutation (${JSON.stringify(contradictoryWitnesses[0]!.observedDelta)}).`,
+      };
+    }
+
+    // Check for Pre-Existing State Anomaly (Property 5) -> stale_witness
     if (preExistingWitnesses.length > 0 && relevantCausalWitnesses.length === 0) {
       return {
         signature,
         activationEvent,
         observedWitnesses: witnesses,
+        classifiedWitnesses,
         verifiedWitnessClasses: [],
         status: 'FAILED_PRE_EXISTING_STATE',
+        failureReason: 'stale_witness',
         causallyVerified: false,
         durationMs: 0,
-        explanation: `Transition rejected: Expected mutation occurred before activation event (${preExistingWitnesses[0]!.timestamp} < ${startTime}). Pre-existing state cannot satisfy causal verification.`,
+        explanation: `Transition rejected: Expected mutation occurred before activation event (${preExistingWitnesses[0]!.timestamp} <= ${startTime}). Pre-existing state cannot satisfy causal verification.`,
       };
     }
 
-    // Check for Unrelated Mutation Only (Property 4)
+    // Check for Unrelated Mutation Only (Property 4) -> invalid_transition
     if (relevantCausalWitnesses.length === 0 && unrelatedWitnesses.length > 0) {
       return {
         signature,
         activationEvent,
         observedWitnesses: witnesses,
+        classifiedWitnesses,
         verifiedWitnessClasses: [],
         status: 'FAILED_UNRELATED_MUTATION',
+        failureReason: 'invalid_transition',
         causallyVerified: false,
         durationMs: unrelatedWitnesses[0]!.timestamp - startTime,
         explanation: `Transition rejected: Mutations occurred within window, but none matched expected delta. Unrelated mutations cannot satisfy causal verification.`,
       };
     }
 
-    // Check for Missing Witnesses / Timeout
+    // Check for Missing Witnesses / Timeout -> outside_window or witness_missing
     if (relevantCausalWitnesses.length === 0) {
       const status: CausalVerificationStatus =
         timedOutWitnesses.length > 0 ? 'FAILED_WINDOW_TIMEOUT' : 'FAILED_MISSING_WITNESSES';
+      const failureReason: CausalFailureReason =
+        timedOutWitnesses.length > 0 ? 'outside_window' : 'witness_missing';
       return {
         signature,
         activationEvent,
         observedWitnesses: witnesses,
+        classifiedWitnesses,
         verifiedWitnessClasses: [],
         status,
+        failureReason,
         causallyVerified: false,
         durationMs: windowMs,
         explanation: `Transition rejected: No relevant witnesses observed within ${windowMs}ms window.`,
       };
     }
 
-    // Verify Expected State Delta Match
+    // Verify Expected State Delta Match -> wrong_direction
     let deltaMatched = false;
     if (Object.keys(signature.expectedStateDelta).length === 0) {
       deltaMatched = true;
@@ -192,23 +323,27 @@ export class CausalTransitionVerifier {
         signature,
         activationEvent,
         observedWitnesses: relevantCausalWitnesses,
+        classifiedWitnesses,
         verifiedWitnessClasses: [],
         status: 'FAILED_WRONG_STATE_DELTA',
+        failureReason: 'wrong_direction',
         causallyVerified: false,
         durationMs: relevantCausalWitnesses[relevantCausalWitnesses.length - 1]!.timestamp - startTime,
         explanation: 'Transition rejected: Relevant witnesses observed, but expected state delta values did not match.',
       };
     }
 
-    // Phase 17: Post-State Fingerprint Verification
+    // Post-State Fingerprint Verification -> post_state_mismatch
     if (currentPostStateFingerprint && signature.postStateFingerprint) {
       if (currentPostStateFingerprint === signature.preStateFingerprint) {
         return {
           signature,
           activationEvent,
           observedWitnesses: relevantCausalWitnesses,
+          classifiedWitnesses,
           verifiedWitnessClasses: [],
-          status: 'FAILED_WRONG_STATE_DELTA',
+          status: 'FAILED_POST_STATE_MISMATCH',
+          failureReason: 'post_state_mismatch',
           causallyVerified: false,
           durationMs: relevantCausalWitnesses[relevantCausalWitnesses.length - 1]!.timestamp - startTime,
           explanation: 'Transition rejected: Post-state fingerprint identical to pre-state; no actual state progression occurred.',
@@ -216,7 +351,7 @@ export class CausalTransitionVerifier {
       }
     }
 
-    // Phase 19: Verify Independent Witness Classes Quorum (Distinct Classes Only)
+    // Verify Independent Witness Classes Quorum -> insufficient_independence
     const distinctClasses: WitnessClass[] = Array.from(
       new Set(relevantCausalWitnesses.map((w) => w.witnessClass))
     );
@@ -226,8 +361,10 @@ export class CausalTransitionVerifier {
         signature,
         activationEvent,
         observedWitnesses: relevantCausalWitnesses,
+        classifiedWitnesses,
         verifiedWitnessClasses: distinctClasses,
         status: 'FAILED_INSUFFICIENT_WITNESS_CLASSES',
+        failureReason: 'insufficient_independence',
         causallyVerified: false,
         durationMs: relevantCausalWitnesses[relevantCausalWitnesses.length - 1]!.timestamp - startTime,
         explanation: `Transition rejected: Observed only ${distinctClasses.length} distinct witness class (${distinctClasses.join(', ')}). Minimum required independent classes is ${minClasses}. Duplicate events of the same class do not satisfy quorum.`,
@@ -235,19 +372,20 @@ export class CausalTransitionVerifier {
     }
 
     const durationMs = relevantCausalWitnesses[relevantCausalWitnesses.length - 1]!.timestamp - startTime;
-    const routeId = `route_${activationEvent.initiatingCapabilityId}`;
+    const effectiveRouteId = routeId || `route_${activationEvent.initiatingCapabilityId}`;
     const tokenTimestamp = Date.now();
 
     const verificationToken: TransitionVerificationToken = {
       tokenId: `tok_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-      routeId,
+      routeId: effectiveRouteId,
       capabilityId: activationEvent.initiatingCapabilityId,
       activationEventId: activationEvent.eventId,
       verifiedWitnessClasses: distinctClasses,
+      transitionSignature: signature,
       issuedTimestamp: tokenTimestamp,
       verifiedStatus: 'VERIFIED',
       signatureHash: CausalTransitionVerifier.generateTokenSignature(
-        routeId,
+        effectiveRouteId,
         activationEvent.initiatingCapabilityId,
         activationEvent.eventId,
         tokenTimestamp
@@ -258,6 +396,7 @@ export class CausalTransitionVerifier {
       signature,
       activationEvent,
       observedWitnesses: relevantCausalWitnesses,
+      classifiedWitnesses,
       verifiedWitnessClasses: distinctClasses,
       status: 'VERIFIED',
       causallyVerified: true,

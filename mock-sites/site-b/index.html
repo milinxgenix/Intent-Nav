@@ -20,11 +20,12 @@
       <h1>Member Preferences Hub (Site B)</h1>
     </header>
 
-    <!-- Changed Navigation Order: Security first, then Alerts, then Data Privacy -->
     <nav class="nav-bar" role="navigation" aria-label="Preferences Menu">
       <a href="#security-hub">MFA & Authentication</a>
       <a href="#bulletins">Communication Preferences</a>
       <a href="#data-hub">Data Rights & Privacy</a>
+      <a href="#appearance-hub">Display Theme</a>
+      <a href="#billing-hub">Payment Records</a>
       <a href="#membership">Membership Status</a>
     </nav>
 
@@ -39,6 +40,24 @@
           </div>
           <button id="btn-mfa-protection" role="button">
             Turn Off Multi-Factor Auth
+          </button>
+        </div>
+        <div class="item-row">
+          <div>
+            <strong>Connected Devices List</strong>
+            <p style="font-size: 12px; color: #6b7280;">Terminate remote browser sessions</p>
+          </div>
+          <button id="btn-disconnect-devices" role="button">
+            Sign Out All Other Devices
+          </button>
+        </div>
+        <div class="item-row">
+          <div>
+            <strong>Security Sign-in Activity</strong>
+            <p style="font-size: 12px; color: #6b7280;">Inspect past logins and authentication trail</p>
+          </div>
+          <button id="btn-activity-records" role="button">
+            Account Access and Sign-in Log
           </button>
         </div>
       </section>
@@ -57,7 +76,7 @@
         </div>
       </section>
 
-      <!-- 3. Renamed: Data Rights -->
+      <!-- 3. Renamed: Data Rights & Privacy -->
       <section id="data-hub" class="section-card" role="region" aria-label="Data Rights & Privacy">
         <h2>Your Data & Privacy Rights</h2>
         <div class="item-row">
@@ -69,9 +88,46 @@
             Download Personal Information
           </button>
         </div>
+        <div class="item-row">
+          <div>
+            <strong>Tracking & Behavioral Telemetry</strong>
+            <p style="font-size: 12px; color: #6b7280;">Modify behavioral analytics collection</p>
+          </div>
+          <button id="btn-privacy-cookies" role="switch" aria-checked="true">
+            Adjust Tracking Preferences
+          </button>
+        </div>
       </section>
 
-      <!-- 4. Renamed: Membership Status -->
+      <!-- 4. Appearance Hub -->
+      <section id="appearance-hub" class="section-card" role="region" aria-label="Display Theme">
+        <h2>Theme & Display Settings</h2>
+        <div class="item-row">
+          <div>
+            <strong>Night Viewing Palette</strong>
+            <p style="font-size: 12px; color: #6b7280;">Dark background high contrast styling</p>
+          </div>
+          <button id="btn-night-mode" role="switch" aria-checked="false">
+            Switch Interface to Dark Mode
+          </button>
+        </div>
+      </section>
+
+      <!-- 5. Billing Hub -->
+      <section id="billing-hub" class="section-card" role="region" aria-label="Payment Records">
+        <h2>Statements & Invoices</h2>
+        <div class="item-row">
+          <div>
+            <strong>Recent Payment Statement</strong>
+            <p style="font-size: 12px; color: #6b7280;">Obtain receipt for last billing cycle</p>
+          </div>
+          <button id="btn-get-receipt" role="button">
+            Download Payment Receipt
+          </button>
+        </div>
+      </section>
+
+      <!-- 6. Renamed: Membership Status -->
       <section id="membership" class="section-card" role="region" aria-label="Membership Status">
         <h2>Membership Inactivity & Closure</h2>
         <div class="item-row">

@@ -13,3 +13,4 @@ graph TD
     DemotedState --> RollbackCheck{"Prior Validated Version Exists?"}
     RollbackCheck -- "Yes" --> Rollback["Rollback to Prior Validated Route (e.g. V1)"]
     RollbackCheck -- "No" --> FreshRecovery["Trigger Fresh Recovery"]
+

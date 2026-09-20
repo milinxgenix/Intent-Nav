@@ -1,6 +1,6 @@
 {
   "experimentId": "EXP_0001_B1",
-  "system": "Baseline 1: Fixed Selector",
+  "system": "Baseline 1: Fixed Selector Replay",
   "site": "SiteA",
   "query": "I want to stop promotional emails",
   "expected": "CAP_DISABLE_MARKETING",
@@ -8,6 +8,6 @@
   "status": "SUCCESS",
   "verified": false,
   "authorized": true,
-  "latencyMs": 0.02,
+  "latencyMs": 0.48,
   "auditTrail": "VALIDATED_BY_INTENTNAV_AUDIT_LOG"
 }

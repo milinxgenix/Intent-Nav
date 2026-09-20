@@ -47,6 +47,8 @@ export interface TransitionWitness {
   temporalDeltaMs: number; // witness.timestamp - activationEvent.timestamp
   isCausallyCorrelated: boolean;
   correlationExplanation: string;
+  source?: string;
+  targetInfo?: string;
 }
 
 export interface TransitionSignature {
@@ -59,6 +61,18 @@ export interface TransitionSignature {
   postStateFingerprint: string;
 }
 
+export type CausalFailureReason =
+  | 'activation_missing'
+  | 'witness_missing'
+  | 'outside_window'
+  | 'wrong_direction'
+  | 'contradictory_witness'
+  | 'stale_witness'
+  | 'invalid_transition'
+  | 'insufficient_independence'
+  | 'post_state_mismatch'
+  | 'causal_relation_unproven';
+
 export type CausalVerificationStatus =
   | 'VERIFIED'
   | 'FAILED_UNRELATED_MUTATION'
@@ -66,17 +80,36 @@ export type CausalVerificationStatus =
   | 'FAILED_WRONG_STATE_DELTA'
   | 'FAILED_MISSING_WITNESSES'
   | 'FAILED_INSUFFICIENT_WITNESS_CLASSES'
-  | 'FAILED_WINDOW_TIMEOUT';
+  | 'FAILED_WINDOW_TIMEOUT'
+  | 'FAILED_CONTRADICTORY_WITNESS'
+  | 'FAILED_POST_STATE_MISMATCH'
+  | 'FAILED_ACTIVATION_MISSING';
+
+export type WitnessCausalCategory =
+  | 'PRE_EXISTING'
+  | 'TIMED_OUT'
+  | 'UNRELATED'
+  | 'RELEVANT'
+  | 'CAUSALLY_VALID';
+
+export interface ClassifiedWitnessRecord {
+  witness: TransitionWitness;
+  category: WitnessCausalCategory;
+  reason: string;
+}
 
 export interface CausalVerificationResult {
   signature: TransitionSignature;
   activationEvent: ActivationEventRecord;
   observedWitnesses: TransitionWitness[];
+  classifiedWitnesses?: ClassifiedWitnessRecord[];
   verifiedWitnessClasses: WitnessClass[];
   status: CausalVerificationStatus;
+  failureReason?: CausalFailureReason;
   causallyVerified: boolean; // MUST be true only if temporal ordering + delta match + >=2 classes (or required min)
   durationMs: number;
   explanation: string;
+  verificationToken?: TransitionVerificationToken;
 }
 
 /**
@@ -90,6 +123,7 @@ export interface TransitionVerificationToken {
   capabilityId: string;
   activationEventId: string;
   verifiedWitnessClasses: WitnessClass[];
+  transitionSignature?: TransitionSignature;
   issuedTimestamp: number;
   verifiedStatus: 'VERIFIED';
   signatureHash: string;

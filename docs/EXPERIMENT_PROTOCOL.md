@@ -80,3 +80,4 @@ $$\text{Total Runs} = 60 \text{ Intents} \times 4 \text{ Sites} \times 5 \text{ 
   $$\overline{t}_{\text{rebind}} = \frac{1}{N_{\text{rebind}}} \sum_{i=1}^{N_{\text{rebind}}} t_i \quad (\text{measured in milliseconds})$$
 - **Invariant Rejection Rate (IRR %)**:
   $$\text{IRR} = \frac{N_{\text{candidates\_rejected\_by\_invariants}}}{N_{\text{total\_candidates\_observed}}} \times 100\%$$
+

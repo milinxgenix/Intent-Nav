@@ -22,6 +22,10 @@ export interface CandidateEvaluationContext {
   observedActionType: string;
   observedTargetEntity: string;
   observedRole: string;
+  role?: string;
+  tagName?: string;
+  accessibleName?: string;
+  domStructuralPath?: string;
   observedState?: Record<string, unknown>;
   ancestors?: string[];
   containerSemantics?: string[];
@@ -136,7 +140,7 @@ export class InvariantClosureEngine {
     // 8. Role / Control Compatibility
     const roleCheck = InvariantPredicates.matchRoleCompatibility(
       targetFingerprint.semanticEvidence.role || 'button',
-      candidate.observedRole
+      candidate.observedRole || candidate.role || ''
     );
     if (roleCheck.passed) passedPredicates.push(roleCheck);
     else failedPredicates.push(roleCheck);
@@ -158,6 +162,18 @@ export class InvariantClosureEngine {
     ) {
       forbiddenTargets.push('ALL_NOTIFICATIONS');
     }
+    if (
+      targetFingerprint.targetEntity !== 'ALL_SECURITY' &&
+      candidate.observedTargetEntity === 'ALL_SECURITY'
+    ) {
+      forbiddenTargets.push('ALL_SECURITY');
+    }
+    if (
+      targetFingerprint.targetEntity !== 'ALL_DATA' &&
+      candidate.observedTargetEntity === 'ALL_DATA'
+    ) {
+      forbiddenTargets.push('ALL_DATA');
+    }
     const forbiddenTargetCheck = InvariantPredicates.rejectForbiddenTarget(
       candidate.observedTargetEntity,
       forbiddenTargets
@@ -167,13 +183,14 @@ export class InvariantClosureEngine {
 
     // 11. Forbidden Actions (e.g. destructive action on reversible goal)
     const forbiddenActions: string[] = [];
+    if (targetFingerprint.actionType !== 'DELETE') {
+      forbiddenActions.push('DELETE', 'PURGE', 'DESTROY');
+    }
     if (
-      targetFingerprint.riskMetadata?.reversible ||
-      targetFingerprint.actionType === 'MODIFY_PREFERENCE' ||
-      targetFingerprint.actionType === 'TOGGLE' ||
-      targetFingerprint.actionType === 'VIEW'
+      targetFingerprint.actionType !== 'REVOKE_ACCESS' &&
+      targetFingerprint.actionType !== 'TOGGLE'
     ) {
-      forbiddenActions.push('DELETE', 'PURGE', 'DESTROY', 'REVOKE_ACCESS');
+      forbiddenActions.push('REVOKE_ACCESS');
     }
     const forbiddenActionCheck = InvariantPredicates.rejectForbiddenAction(
       candidate.observedActionType,

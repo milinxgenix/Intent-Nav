@@ -57,3 +57,4 @@ If an `ACTIVE_VALIDATED` route fails during subsequent execution:
 3. The Route Manager checks for a previous validated route version (e.g. $V_1$).
 4. If found, the system rolls back to the prior validated route.
 5. If no prior valid route exists, fresh candidate discovery and invariant closure are initiated.
+

@@ -148,14 +148,23 @@ export class CandidateRankingEngine {
 
       scoredList.push({
         candidateId: candidate.candidateId,
+        candidateLabel: candidate.candidateLabel,
         bindingHandle: candidate.bindingHandle,
+        isEligible: true,
         scoreBreakdown: breakdown,
+        rank: 0,
+        weightsVersion: this.version,
         rankingVersion: this.version,
         rankingTimestamp: Date.now(),
       });
     }
 
-    // Sort descending by totalScore
-    return scoredList.sort((a, b) => b.scoreBreakdown.totalScore - a.scoreBreakdown.totalScore);
+    // Sort descending by totalScore and assign ranks
+    scoredList.sort((a, b) => b.scoreBreakdown.totalScore - a.scoreBreakdown.totalScore);
+    scoredList.forEach((item, index) => {
+      item.rank = index + 1;
+    });
+
+    return scoredList;
   }
 }

@@ -9,7 +9,6 @@ export interface BaselineCandidate {
   className?: string;
   role?: string;
   label?: string;
-  candidateLabel?: string;
   targetEntity?: string;
   actionType?: string;
 }
@@ -42,3 +41,4 @@ export class Baseline1SelectorReplay {
     return { success: false };
   }
 }
+

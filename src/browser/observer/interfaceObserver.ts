@@ -81,6 +81,19 @@ export class InterfaceObserver {
       });
     });
 
+    let observedApplicationState: Record<string, unknown> | undefined;
+    if (typeof document !== 'undefined') {
+      const appStateEl = document.getElementById('neg-app-state') || document.getElementById('app-state');
+      if (appStateEl && appStateEl.getAttribute('data-state')) {
+        try {
+          observedApplicationState = JSON.parse(appStateEl.getAttribute('data-state')!);
+        } catch {}
+      }
+    }
+    if (!observedApplicationState && typeof window !== 'undefined' && (window as any).IntentNavMockState) {
+      observedApplicationState = { ...(window as any).IntentNavMockState };
+    }
+
     const node: InterfaceStateNode = {
       stateId,
       stateType: activeModalsOrDialogs.length > 0 ? 'MODAL' : 'PAGE',
@@ -90,6 +103,7 @@ export class InterfaceObserver {
       activeModalsOrDialogs,
       activeTabs,
       exposedCandidateHandles,
+      observedApplicationState,
       timestamp: Date.now(),
     };
 

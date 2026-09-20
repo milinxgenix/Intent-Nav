@@ -85,3 +85,4 @@ Against adversarial web layouts (demonstrated on Mock Site D):
 1. **Hard Contradiction Gate**: Candidate elements exhibiting semantic proximity to user intent but matching forbidden negative evidence (e.g. destructive actions, wrong entity targets) are rejected at the invariant gate.
 2. **Double Verification Quorum**: In dynamic environments, synthetic clicks are never dispatched without corroborating structural and parent invariants.
 3. **Synthetic Precedence Protection**: All executed events must correlate with expected transition witnesses within a maximum temporal window (default: 800ms). Uncorrelated or anomalous transitions immediately trigger provisional quarantine.
+

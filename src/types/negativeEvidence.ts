@@ -34,8 +34,8 @@ export interface ContradictionEvidence {
   suppressionWeight: number; // 0.0 to 1.0
 }
 
-// Alias for first-class NegativeEvidenceRecord entity
-export type NegativeEvidenceRecord = ContradictionEvidence;
+// Alias for first-class ContradictionRecord entity
+export type ContradictionRecord = ContradictionEvidence;
 
 export interface NegativeEvidenceEntry {
   id: string;

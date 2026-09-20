@@ -18,15 +18,21 @@ export class IntentNormalizer {
     // 1. Determine ActionType
     let actionType: ActionType = 'VIEW';
     if (
-      /stop|disable|turn\s*off|opt\s*out|unsubscribe|mute|block|pause|switch\s*off|remove/i.test(input)
+      /stop|disable|turn\s*off|opt\s*out|unsubscribe|mute|block|pause|switch\s*off|remove|revoke|terminate|disconnect|sign\s*out|log\s*out|end\s*session|invalidate|kill/i.test(input)
     ) {
       if (/account|membership|subscription|profile/i.test(input)) {
         actionType = 'DEACTIVATE_ACCOUNT';
       } else if (/2fa|two[-\s]*factor|two[-\s]*step|multi[-\s]*factor|mfa|security\s*key/i.test(input)) {
         actionType = 'REVOKE_ACCESS';
+      } else if (/session|device|token|login|everywhere/i.test(input)) {
+        actionType = 'REVOKE_ACCESS';
       } else {
         actionType = 'MODIFY_PREFERENCE';
       }
+    } else if (/clear.*?(device|session|recognized)/i.test(input)) {
+      actionType = 'REVOKE_ACCESS';
+    } else if (/force\s*logout|sign\s*out\s*everywhere/i.test(input)) {
+      actionType = 'REVOKE_ACCESS';
     } else if (/enable|turn\s*on|activate|opt\s*in/i.test(input)) {
       actionType = 'MODIFY_PREFERENCE';
     } else if (/export|download|backup|save\s*my\s*data|get\s*all\s*data|records\s*download/i.test(input)) {
@@ -36,7 +42,7 @@ export class IntentNormalizer {
     } else if (/break|hiatus|hibernate|hold|suspend/i.test(input)) {
       actionType = 'DEACTIVATE_ACCOUNT';
     } else if (/2fa|two[-\s]*factor|two[-\s]*step|multi[-\s]*factor|mfa|password|auth|security/i.test(input)) {
-      if (/disable|turn\s*off|remove/i.test(input)) {
+      if (/disable|turn\s*off|remove|revoke|terminate/i.test(input)) {
         actionType = 'REVOKE_ACCESS';
       } else {
         actionType = 'MODIFY_PREFERENCE';
@@ -47,13 +53,27 @@ export class IntentNormalizer {
 
     // 2. Determine TargetEntity
     let targetEntity: TargetEntity = 'UNKNOWN';
-    if (/marketing|promot|newsletter|advertising|campaign|spam/i.test(input)) {
+    if (/all notification|every notification|all alert|all account notification|indiscriminately|turn off all/i.test(input)) {
+      targetEntity = 'ALL_NOTIFICATIONS';
+    } else if (/all security|every security|all account security/i.test(input)) {
+      targetEntity = 'ALL_SECURITY';
+    } else if (/all data|wipe all|erase all personal|every file/i.test(input)) {
+      targetEntity = 'ALL_DATA';
+    } else if (/invoice|receipt|statement|billing|payment/i.test(input)) {
+      targetEntity = 'BILLING_PREFERENCES';
+    } else if (/dark mode|night mode|theme|display palette|display theme/i.test(input)) {
+      targetEntity = 'UI_THEME';
+    } else if (/marketing|promot|newsletter|advertising|campaign|spam|commercial/i.test(input)) {
       targetEntity = 'MARKETING_NOTIFICATIONS';
-    } else if (/export|download|personal\s*data|my\s*information|my\s*data|records/i.test(input)) {
+    } else if (/export|download.*?(data|record|archive|information|everything)|everything.*?about me|personal\s*data|my\s*information|my\s*data|records download/i.test(input)) {
       targetEntity = 'PERSONAL_DATA_EXPORT';
-    } else if (/2fa|two[-\s]*factor|two[-\s]*step|mfa|authenticat|security\s*key/i.test(input)) {
+    } else if (/2fa|two[-\s]*factor|two[-\s]*step|multi[-\s]*factor|mfa|authenticat|security\s*key/i.test(input)) {
       targetEntity = 'TWO_FACTOR_AUTH';
-    } else if (/security|password|login\s*alerts|sessions/i.test(input)) {
+    } else if (/audit|sign-in log|access ledger|activity trail|audit trail|security event|login history/i.test(input)) {
+      targetEntity = 'SECURITY_SETTINGS';
+    } else if (/session|devices|active session|sign out all/i.test(input)) {
+      targetEntity = 'SECURITY_SETTINGS';
+    } else if (/security|password|login\s*alerts/i.test(input)) {
       targetEntity = 'SECURITY_SETTINGS';
     } else if (/pause|deactivate|close\s*account|delete\s*account|take\s*a\s*break|hiatus|hibernate|suspend|subscription\s*on\s*hold|account\s*membership/i.test(input)) {
       targetEntity = 'ACCOUNT_STATUS';

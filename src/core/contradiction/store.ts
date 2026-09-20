@@ -53,9 +53,12 @@ export class NegativeEvidenceStore {
     candidateContext?: CandidateEvaluationContext
   ): NegativeEvidenceEntry {
     const id = `neg_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-    const interfaceEvidenceHash = candidateContext
+    const capId = partialFingerprint.capabilityId || 'GLOBAL';
+    const rawEvidenceHash = candidateContext
       ? NegativeEvidenceStore.computeEvidenceHash(candidateContext)
-      : `evh_${candidateIdentifier}`;
+      : `id_${candidateIdentifier}`;
+    const interfaceEvidenceHash = `${capId}::${rawEvidenceHash}`;
+    const idKey = `${capId}::${candidateIdentifier}`;
 
     const entry: NegativeEvidenceEntry = {
       id,
@@ -76,12 +79,12 @@ export class NegativeEvidenceStore {
     };
 
     this.records.set(interfaceEvidenceHash, entry);
-    this.idIndex.set(candidateIdentifier, interfaceEvidenceHash);
+    this.idIndex.set(idKey, interfaceEvidenceHash);
 
     if (this.store) {
       const contradictionRecord: ContradictionEvidence = {
         evidenceId: id,
-        capabilityId: partialFingerprint.capabilityId || 'UNKNOWN_CAP',
+        capabilityId: capId,
         candidateFingerprintHash: entry.candidateFingerprintHash!,
         interfaceEvidenceHash,
         failedInvariant: failedInvariantId,
@@ -107,30 +110,66 @@ export class NegativeEvidenceStore {
    */
   public isKnownContradiction(
     candidateIdentifier: string,
-    candidateContext?: CandidateEvaluationContext
+    candidateContext?: CandidateEvaluationContext,
+    capabilityId?: string
   ): boolean {
     if (candidateContext) {
-      const currentHash = NegativeEvidenceStore.computeEvidenceHash(candidateContext);
-      if (this.records.has(currentHash)) {
-        return true; // Exact material evidence match -> suppress
-      }
-      // If candidateIdentifier was known but material evidence has changed, allow reconsideration!
-      const previousHash = this.idIndex.get(candidateIdentifier);
-      if (previousHash && previousHash !== currentHash) {
-        // Material interface change detected!
-        return false;
+      const rawEvidenceHash = NegativeEvidenceStore.computeEvidenceHash(candidateContext);
+      if (capabilityId) {
+        const scopedHash = `${capabilityId}::${rawEvidenceHash}`;
+        if (this.records.has(scopedHash) || this.records.has(`GLOBAL::${rawEvidenceHash}`)) {
+          return true;
+        }
+        const idKey = `${capabilityId}::${candidateIdentifier}`;
+        const previousHash = this.idIndex.get(idKey) || this.idIndex.get(`GLOBAL::${candidateIdentifier}`);
+        if (previousHash && !previousHash.endsWith(`id_${candidateIdentifier}`) && previousHash !== scopedHash) {
+          // Material interface change detected!
+          return false;
+        }
+      } else {
+        // When capabilityId is not specified, check across recorded capability scopes
+        for (const [hash] of this.records) {
+          if (hash.endsWith(`::${rawEvidenceHash}`) || hash === rawEvidenceHash) {
+            return true;
+          }
+        }
+        for (const [key, previousHash] of this.idIndex) {
+          if (key === candidateIdentifier || key.endsWith(`::${candidateIdentifier}`)) {
+            if (!previousHash.endsWith(`id_${candidateIdentifier}`) && !previousHash.endsWith(`::${rawEvidenceHash}`)) {
+              // Material interface change detected!
+              return false;
+            }
+          }
+        }
       }
     }
 
-    return this.idIndex.has(candidateIdentifier);
+    if (capabilityId) {
+      return this.idIndex.has(`${capabilityId}::${candidateIdentifier}`) || this.idIndex.has(`GLOBAL::${candidateIdentifier}`) || this.idIndex.has(candidateIdentifier);
+    }
+
+    for (const key of this.idIndex.keys()) {
+      if (key === candidateIdentifier || key.endsWith(`::${candidateIdentifier}`)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
    * Retrieves negative evidence details
    */
-  public getNegativeEvidence(candidateIdentifier: string): NegativeEvidenceEntry | undefined {
-    const hash = this.idIndex.get(candidateIdentifier);
-    return hash ? this.records.get(hash) : undefined;
+  public getNegativeEvidence(candidateIdentifier: string, capabilityId?: string): NegativeEvidenceEntry | undefined {
+    if (capabilityId) {
+      const hash = this.idIndex.get(`${capabilityId}::${candidateIdentifier}`) || this.idIndex.get(`GLOBAL::${candidateIdentifier}`) || this.idIndex.get(candidateIdentifier);
+      if (hash) return this.records.get(hash);
+    }
+    for (const [key, hash] of this.idIndex) {
+      if (key === candidateIdentifier || key.endsWith(`::${candidateIdentifier}`)) {
+        return this.records.get(hash);
+      }
+    }
+    return undefined;
   }
 
   /**

@@ -46,3 +46,4 @@ Once the winning candidate is selected:
 1. A new `RouteVersion` is generated with incremented version number ($V_{n+1}$).
 2. The route is placed directly into **`PROVISIONAL` quarantine**.
 3. It cannot be executed or set to active until causal transition verification is performed.
+

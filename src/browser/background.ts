@@ -1,260 +1,162 @@
 /**
  * IntentNav-SCFR: Background Service Worker (Manifest V3)
  * Orchestrates the closed-loop navigation engine and maintains state across tabs
- * Uses real ExecutionDispatcher for actual content-script browser activation and witness collection.
  */
 
 import { IntentNavMachine, ExecutionDispatcher } from '../core/stateMachine/machine';
 import { ExtensionMessage } from '../types/messages';
-import { FunctionalCapabilityFingerprint } from '../types/capability';
-import { PersistentCapabilityStore } from '../core/storage/persistentStore';
-import { AuditLogger } from '../core/audit/logger';
+import { AUTHORITATIVE_CAPABILITY_CATALOG } from '../core/capability/catalog';
 
-const store = new PersistentCapabilityStore();
-const auditLogger = new AuditLogger();
-const machine = new IntentNavMachine(auditLogger, store);
+const machine = new IntentNavMachine();
 
-// Pre-register canonical capabilities with complete authoritative invariant predicates
-const DEFAULT_CAPABILITIES: FunctionalCapabilityFingerprint[] = [
-  {
-    capabilityId: 'CAP_DISABLE_MARKETING',
-    canonicalFunction: 'disable_marketing_communications',
-    actionType: 'TOGGLE',
-    targetEntity: 'MARKETING_NOTIFICATIONS',
-    mandatoryPreStatePredicates: [
-      {
-        id: 'pred_marketing_interactive',
-        name: 'Control Interactive',
-        description: 'Control must not be disabled and ready for toggle',
-        evaluate: (ctx) => ctx['disabled'] !== true,
-      },
-    ],
-    allowedStateDelta: [{ property: 'checked', expectedChange: 'ENABLED_TO_DISABLED' }],
-    expectedPostState: [{ property: 'marketing_emails_enabled', expectedValue: false }],
-    requiredContextPredicates: [{ target: 'container', pattern: 'notification', required: true }],
-    forbiddenContextPredicates: [{ target: 'container', pattern: 'all notification', required: false }],
-    semanticEvidence: {
-      canonicalLabel: 'Disable marketing emails',
-      semanticSynonyms: [
-        'turn off promotional emails',
-        'stop marketing messages',
-        'opt out of marketing notifications',
-        'unsubscribe from marketing',
-        'stop promotional bulletins',
-        'turn off marketing notifications',
-      ],
-      accessibleName: 'Marketing email notifications toggle',
-      role: 'switch',
-      visibleLabel: 'Marketing Communications',
-      sectionMeaning: 'Notifications > Preferences',
-      actionDescription: 'Disable promotional and marketing email communication',
-    },
-    contextEvidence: {
-      ancestorRelationships: ['section[Notifications]', 'main[Settings]'],
-      nearbyText: ['Receive promotional offers and discounts', 'Promotional bulletins'],
-      surroundingLabels: ['Marketing Communications'],
-      containerSemantics: ['notifications', 'settings', 'bulletins', 'preferences'],
-      menuPanelRelationships: ['Notifications'],
-      relativeStructuralRelationships: ['main > section:nth-of-type(2) > div > button'],
-      urlSemantics: '/settings/notifications',
-    },
-    transitionEvidence: {
-      preStateFingerprint: 'PRE_STATE_MARKETING_ENABLED',
-      activationEventCharacteristics: { eventType: 'click', bubbles: true, cancelable: true },
-      expectedDelta: { marketing_emails_enabled: false },
-      postStateFingerprint: 'POST_STATE_MARKETING_DISABLED',
-      historicalTransitionObservations: 12,
-      witnessClasses: ['DOM_MUTATION', 'ACCESSIBILITY_STATE_MUTATION'],
-      verificationWindowMs: 2000,
-    },
-    riskMetadata: {
-      riskClass: 'REVERSIBLE',
-      reversible: true,
-      financial: false,
-      security: false,
-      destructive: false,
-      requiresConfirmation: false,
-    },
-    provenance: {
-      source: 'INITIAL_SPEC',
-      creationTimestamp: Date.now(),
-      validationTimestamp: Date.now(),
-      routeVersion: 'v1.0.0',
-      validationHistory: [],
-    },
-    confidence: {
-      capabilityConfidence: 0.95,
-      routeConfidence: 0.90,
-    },
-    negativeEvidence: {
-      rejectedCandidateIdentities: ['ALL_NOTIFICATIONS'],
-      contradictionPredicates: [],
-      failedInvariantPredicates: [],
-      failedTransitionWitnesses: [],
-      decoyRelationships: [],
-      rejectionReasons: [],
-    },
-  },
-  {
-    capabilityId: 'CAP_EXPORT_DATA',
-    canonicalFunction: 'export_personal_data',
-    actionType: 'EXPORT_DATA',
-    targetEntity: 'PERSONAL_DATA_EXPORT',
-    mandatoryPreStatePredicates: [
-      {
-        id: 'pred_export_interactive',
-        name: 'Export Enabled',
-        description: 'Export button must be interactive',
-        evaluate: (ctx) => ctx['disabled'] !== true,
-      },
-    ],
-    allowedStateDelta: [{ property: 'export_download_initiated', expectedChange: 'ADDED' }],
-    expectedPostState: [{ property: 'export_download_initiated', expectedValue: true }],
-    requiredContextPredicates: [{ target: 'container', pattern: 'privacy', required: true }],
-    forbiddenContextPredicates: [],
-    semanticEvidence: {
-      canonicalLabel: 'Export personal data',
-      semanticSynonyms: [
-        'download personal information',
-        'export my data',
-        'download everything you have about me',
-        'request data archive',
-        'download personal information',
-        'export my data archive',
-      ],
-      accessibleName: 'Export personal data button',
-      role: 'button',
-      visibleLabel: 'Download Your Data',
-      sectionMeaning: 'Privacy & Data Protection',
-      actionDescription: 'Export personal data archive',
-    },
-    contextEvidence: {
-      ancestorRelationships: ['section[Privacy]', 'main[Settings]'],
-      nearbyText: ['Download archive of all personal information and activity'],
-      surroundingLabels: ['Personal Data Archive'],
-      containerSemantics: ['privacy', 'settings', 'data-hub', 'data rights'],
-      menuPanelRelationships: ['Privacy'],
-      relativeStructuralRelationships: ['main > section:nth-of-type(1) > div > button'],
-      urlSemantics: '/settings/privacy',
-    },
-    transitionEvidence: {
-      preStateFingerprint: 'PRE_STATE_EXPORT_IDLE',
-      activationEventCharacteristics: { eventType: 'click', bubbles: true, cancelable: true },
-      expectedDelta: { export_download_initiated: true },
-      postStateFingerprint: 'POST_STATE_EXPORT_INITIATED',
-      historicalTransitionObservations: 8,
-      witnessClasses: ['DOM_MUTATION', 'APPLICATION_STATE_MUTATION'],
-      verificationWindowMs: 2000,
-    },
-    riskMetadata: {
-      riskClass: 'SENSITIVE',
-      reversible: true,
-      financial: false,
-      security: false,
-      destructive: false,
-      requiresConfirmation: false,
-    },
-    provenance: {
-      source: 'INITIAL_SPEC',
-      creationTimestamp: Date.now(),
-      validationTimestamp: Date.now(),
-      routeVersion: 'v1.0.0',
-      validationHistory: [],
-    },
-    confidence: {
-      capabilityConfidence: 0.92,
-      routeConfidence: 0.88,
-    },
-    negativeEvidence: {
-      rejectedCandidateIdentities: [],
-      contradictionPredicates: [],
-      failedInvariantPredicates: [],
-      failedTransitionWitnesses: [],
-      decoyRelationships: [],
-      rejectionReasons: [],
-    },
-  },
-  {
-    capabilityId: 'CAP_DISABLE_2FA',
-    canonicalFunction: 'disable_two_factor_auth',
-    actionType: 'REVOKE_ACCESS',
-    targetEntity: 'TWO_FACTOR_AUTH',
-    mandatoryPreStatePredicates: [
-      {
-        id: 'pred_2fa_interactive',
-        name: '2FA Button Enabled',
-        description: '2FA control must not be disabled',
-        evaluate: (ctx) => ctx['disabled'] !== true,
-      },
-    ],
-    allowedStateDelta: [{ property: 'two_factor_enabled', expectedChange: 'ENABLED_TO_DISABLED' }],
-    expectedPostState: [{ property: 'two_factor_enabled', expectedValue: false }],
-    requiredContextPredicates: [{ target: 'container', pattern: 'security', required: true }],
-    forbiddenContextPredicates: [],
-    semanticEvidence: {
-      canonicalLabel: 'Disable two-factor authentication',
-      semanticSynonyms: [
-        'turn off 2fa',
-        'remove two factor authentication',
-        'disable mfa',
-        'turn off multi-factor auth',
-        'remove 2fa security',
-      ],
-      accessibleName: 'Disable two-factor authentication button',
-      role: 'button',
-      visibleLabel: 'Turn Off 2FA',
-      sectionMeaning: 'Security > Two-Factor Authentication',
-      actionDescription: 'Disable multi-factor security protection',
-    },
-    contextEvidence: {
-      ancestorRelationships: ['section[Security]', 'main[Settings]'],
-      nearbyText: ['Two-factor authentication adds an extra layer of security'],
-      surroundingLabels: ['Two-Factor Authentication'],
-      containerSemantics: ['security', 'settings', 'security-hub', 'authentication'],
-      menuPanelRelationships: ['Security'],
-      relativeStructuralRelationships: ['main > section:nth-of-type(3) > div > button'],
-      urlSemantics: '/settings/security',
-    },
-    transitionEvidence: {
-      preStateFingerprint: 'PRE_STATE_2FA_ACTIVE',
-      activationEventCharacteristics: { eventType: 'click', bubbles: true, cancelable: true },
-      expectedDelta: { two_factor_enabled: false },
-      postStateFingerprint: 'POST_STATE_2FA_DISABLED',
-      historicalTransitionObservations: 4,
-      witnessClasses: ['DOM_MUTATION', 'APPLICATION_STATE_MUTATION'],
-      verificationWindowMs: 2500,
-    },
-    riskMetadata: {
-      riskClass: 'SECURITY_SENSITIVE',
-      reversible: false,
-      financial: false,
-      security: true,
-      destructive: true,
-      requiresConfirmation: true, // MANDATORY USER CONFIRMATION
-    },
-    provenance: {
-      source: 'INITIAL_SPEC',
-      creationTimestamp: Date.now(),
-      validationTimestamp: Date.now(),
-      routeVersion: 'v1.0.0',
-      validationHistory: [],
-    },
-    confidence: {
-      capabilityConfidence: 0.96,
-      routeConfidence: 0.92,
-    },
-    negativeEvidence: {
-      rejectedCandidateIdentities: [],
-      contradictionPredicates: [],
-      failedInvariantPredicates: [],
-      failedTransitionWitnesses: [],
-      decoyRelationships: [],
-      rejectionReasons: [],
-    },
-  },
-];
+AUTHORITATIVE_CAPABILITY_CATALOG.forEach((cap) => machine.registerCapability(cap));
+machine.init().catch(console.error);
 
-DEFAULT_CAPABILITIES.forEach((cap) => machine.registerCapability(cap));
+// Real browser Execution Dispatcher communicating with Content Script
+class BrowserExecutionDispatcher implements ExecutionDispatcher {
+  constructor(private tabId: number) {}
+
+  async dispatchActivation(
+    activationEventId: string,
+    candidate: any,
+    capabilityId: string
+  ): Promise<{ success: boolean; activationEvent?: any; reason?: string }> {
+    try {
+      const actTimestamp = Date.now();
+      const resp = await chrome.tabs.sendMessage(this.tabId, {
+        type: 'DISPATCH_ACTIVATION_EVENT',
+        payload: {
+          activationEventId,
+          activationTimestamp: actTimestamp,
+          bindingHandle: candidate.bindingHandle,
+          capabilityId,
+        },
+        timestamp: actTimestamp,
+        messageId: `act_${actTimestamp}`,
+      });
+      if (resp && resp.success) {
+        return {
+          success: true,
+          activationEvent: resp.activationEvent,
+        };
+      }
+      return { success: false, reason: resp?.reason || 'Browser dispatch rejected by content script' };
+    } catch (err: any) {
+      return { success: false, reason: err.message || 'Tab communication error during dispatch' };
+    }
+  }
+
+  async collectWitnesses(): Promise<any[]> {
+    try {
+      // Allow DOM mutations and async events to settle and be captured by InterfaceObserver
+      await new Promise((resolve) => setTimeout(resolve, 150));
+      const resp = await chrome.tabs.sendMessage(this.tabId, {
+        type: 'COLLECT_WITNESSES',
+        payload: {},
+        timestamp: Date.now(),
+        messageId: `wit_${Date.now()}`,
+      });
+      return resp?.witnesses || [];
+    } catch {
+      return [];
+    }
+  }
+
+  async observePostState(): Promise<any> {
+    try {
+      const resp = await chrome.tabs.sendMessage(this.tabId, {
+        type: 'OBSERVE_POST_STATE',
+        payload: {},
+        timestamp: Date.now(),
+        messageId: `post_${Date.now()}`,
+      });
+      if (resp && resp.stateNode) {
+        return resp.stateNode;
+      }
+      throw new Error('Tab did not return valid post-state stateNode');
+    } catch (err: any) {
+      throw new Error(`Tab communication error during post-state observation: ${err.message}`);
+    }
+  }
+}
+
+/**
+ * Directly processes a functional navigation intent by querying the active web tab,
+ * delegating observation and dispatch to contentScript via chrome.tabs, and running
+ * the complete IntentNav state machine.
+ */
+export async function processIntentDirect(
+  goal: string,
+  options: {
+    userConfirmationGranted?: boolean;
+    tabId?: number;
+    corruptPromotionToken?: boolean;
+    executeQuarantinedRoute?: boolean;
+    targetRouteId?: string;
+  } = {}
+): Promise<{ success: boolean; context: any; auditLog?: any }> {
+  let tabId = options.tabId;
+  if (!tabId && typeof chrome !== 'undefined' && chrome.tabs) {
+    try {
+      const tabs = await chrome.tabs.query({ active: true });
+      const targetTab =
+        tabs.find(
+          (t) =>
+            t.url &&
+            (t.url.startsWith('http://localhost') || t.url.startsWith('http://127.0.0.1'))
+        ) || tabs[0];
+      tabId = targetTab?.id;
+    } catch {}
+  }
+
+  let observedFeatures = {
+    tag: 'body',
+    observedActionType: 'VIEW',
+    observedTargetEntity: 'UNKNOWN',
+  };
+  let availableCandidates: any[] = [];
+  let dispatcher: ExecutionDispatcher | undefined;
+
+  if (tabId && typeof chrome !== 'undefined' && chrome.tabs) {
+    try {
+      const obsResp = await chrome.tabs.sendMessage(tabId, {
+        type: 'OBSERVE_INTERFACE_REQUEST',
+        payload: {},
+        timestamp: Date.now(),
+        messageId: `msg_${Date.now()}`,
+      });
+      if (obsResp) {
+        availableCandidates = obsResp.candidates || [];
+        if (obsResp.stateNode) {
+          observedFeatures.tag = obsResp.stateNode.activeTabs?.[0] || 'body';
+        }
+      }
+      dispatcher = new BrowserExecutionDispatcher(tabId);
+    } catch (err: any) {
+      console.warn('[Background] Tab observation communication failed:', err?.message);
+    }
+  }
+
+  const resultContext = await machine.processIntent(
+    goal,
+    observedFeatures,
+    availableCandidates,
+    options.userConfirmationGranted ?? false,
+    dispatcher,
+    options
+  );
+
+  return {
+    success: resultContext.currentState === 'EXECUTED',
+    context: resultContext,
+    auditLog: machine.auditLogger.exportLog(),
+  };
+}
+
+if (typeof globalThis !== 'undefined') {
+  (globalThis as any).processIntentDirect = processIntentDirect;
+  (globalThis as any).intentNavMachine = machine;
+}
 
 // Handle extension messages
 if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
@@ -262,72 +164,16 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
     (async () => {
       switch (message.type) {
         case 'PROCESS_INTENT': {
-          const payload = message.payload as { goal: string; userConfirmationGranted?: boolean };
-
-          // Query active tab for observations
-          let observedFeatures = {
-            tag: 'body',
-            observedActionType: 'VIEW',
-            observedTargetEntity: 'UNKNOWN',
+          const payload = message.payload as {
+            goal: string;
+            userConfirmationGranted?: boolean;
+            tabId?: number;
           };
-          let availableCandidates: any[] = [];
-          let executionDispatcher: ExecutionDispatcher | undefined;
-
-          try {
-            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-            if (tab && tab.id) {
-              const activeTabId = tab.id;
-              const obsResp = await chrome.tabs.sendMessage(activeTabId, {
-                type: 'OBSERVE_INTERFACE_REQUEST',
-                payload: {},
-                timestamp: Date.now(),
-                messageId: `msg_${Date.now()}`,
-              });
-              if (obsResp) {
-                availableCandidates = obsResp.candidates || [];
-              }
-
-              // Phase 14 & 25: Real Content-Script Dispatcher
-              executionDispatcher = {
-                async dispatchActivation(activationEventId, candidate, capabilityId) {
-                  const resp = await chrome.tabs.sendMessage(activeTabId, {
-                    type: 'DISPATCH_ACTIVATION_EVENT',
-                    payload: {
-                      activationEventId,
-                      bindingHandle: candidate.bindingHandle,
-                      capabilityId,
-                    },
-                    timestamp: Date.now(),
-                    messageId: `act_${Date.now()}`,
-                  });
-                  return resp || { success: false, reason: 'No response from tab' };
-                },
-                async collectWitnesses() {
-                  // Allow asynchronous transition mutation events to settle
-                  await new Promise((r) => setTimeout(r, 150));
-                  const resp = await chrome.tabs.sendMessage(activeTabId, {
-                    type: 'COLLECT_WITNESSES',
-                    payload: {},
-                    timestamp: Date.now(),
-                    messageId: `wit_${Date.now()}`,
-                  });
-                  return resp?.witnesses || [];
-                },
-              };
-            }
-          } catch {
-            // Tab not responsive or test environment
-          }
-
-          const resultContext = await machine.processIntent(
-            payload.goal,
-            observedFeatures,
-            availableCandidates,
-            payload.userConfirmationGranted ?? false,
-            executionDispatcher
-          );
-
-          sendResponse({ success: true, context: resultContext });
+          const res = await processIntentDirect(payload.goal, {
+            userConfirmationGranted: payload.userConfirmationGranted,
+            tabId: payload.tabId,
+          });
+          sendResponse(res);
           break;
         }
 
@@ -354,3 +200,4 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
     return true;
   });
 }
+

@@ -8,6 +8,7 @@ import path from 'path';
 import fs from 'fs';
 import { BenchmarkRunner } from './runner';
 import { BenchmarkReporter } from './reporter';
+import { MetricValidator } from './metricValidator';
 
 describe('Empirical Benchmark Runner', () => {
   it('executes full comparative benchmark across baselines and writes reports', async () => {
@@ -16,6 +17,11 @@ describe('Empirical Benchmark Runner', () => {
 
     expect(metrics).toHaveLength(5);
     expect(records.length).toBeGreaterThanOrEqual(1000); // 60 intents * 4 sites * 5 systems = 1200 runs
+
+    // Assert mathematical and reconciliation invariants
+    const validation = MetricValidator.validate(metrics, records, true);
+    expect(validation.isValid).toBe(true);
+    expect(validation.issues.filter(i => i.severity === 'ERROR')).toHaveLength(0);
 
     const intentNav = metrics.find((m) => m.systemName.includes('IntentNav-SCFR'))!;
     expect(intentNav).toBeDefined();

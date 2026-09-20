@@ -74,3 +74,4 @@ Tracks failed candidates and contradiction patterns to prevent recurring errors:
 - `rejectedCandidateIdentities`: Array of candidate IDs known to fail invariants.
 - `contradictionPredicates`: Identifiers of triggered negative predicates.
 - `failedTransitionWitnesses`: Historical witness failure logs.
+

@@ -22,6 +22,8 @@
     <a href="#privacy">Privacy</a>
     <a href="#security">Security</a>
     <a href="#notifications">Notifications</a>
+    <a href="#appearance">Appearance</a>
+    <a href="#billing">Billing</a>
     <a href="#account">Account</a>
   </nav>
 
@@ -78,9 +80,55 @@
           Disable Two-Factor Authentication
         </button>
       </div>
+      <div class="control-row">
+        <div>
+          <strong>Active Sessions & Devices</strong>
+          <p style="font-size: 12px; color: #666;">Sign out of all other recognized browsers and devices</p>
+        </div>
+        <button id="btn-revoke-sessions" role="button">
+          Revoke Other Sessions
+        </button>
+      </div>
+      <div class="control-row">
+        <div>
+          <strong>Security Audit History</strong>
+          <p style="font-size: 12px; color: #666;">View account authentication log and access ledger</p>
+        </div>
+        <button id="btn-view-audit-logs" role="button">
+          Security Audit Logs
+        </button>
+      </div>
     </section>
 
-    <!-- 4. Account -->
+    <!-- 4. Appearance -->
+    <section id="appearance" role="region" aria-label="Appearance & Display">
+      <h2>Display & Theme</h2>
+      <div class="control-row">
+        <div>
+          <strong>Dark Mode Contrast</strong>
+          <p style="font-size: 12px; color: #666;">Switch interface display theme between light and dark</p>
+        </div>
+        <button id="btn-toggle-dark-mode" role="switch" aria-checked="false">
+          Dark Mode Theme
+        </button>
+      </div>
+    </section>
+
+    <!-- 5. Billing -->
+    <section id="billing" role="region" aria-label="Billing & Payments">
+      <h2>Billing & Payments</h2>
+      <div class="control-row">
+        <div>
+          <strong>Recent Invoices</strong>
+          <p style="font-size: 12px; color: #666;">Download monthly statement PDF receipt</p>
+        </div>
+        <button id="btn-download-invoice" role="button">
+          Download Invoice
+        </button>
+      </div>
+    </section>
+
+    <!-- 6. Account -->
     <section id="account" role="region" aria-label="Account Management">
       <h2>Account Status</h2>
       <div class="control-row">

@@ -17,23 +17,35 @@ export class Baseline3SemanticOnly {
     return inter.size / union.size;
   }
 
-  public execute(query: string, candidates: BaselineCandidate[]): { success: boolean; selectedCandidateId?: string; similarityScore: number } {
-    let bestCandidate: BaselineCandidate | null = null;
-    let highestSim = -1;
+  public execute(query: string, candidates: BaselineCandidate[]): {
+    success: boolean;
+    selectedCandidateId?: string;
+    similarityScore: number;
+    topCandidateIds?: string[];
+  } {
+    const scored: Array<{ id: string; sim: number }> = [];
 
     for (const c of candidates) {
-      const text = c.candidateLabel || c.label;
-      if (!text) continue;
-      const sim = this.computeSimilarity(query, text);
-      if (sim > highestSim) {
-        highestSim = sim;
-        bestCandidate = c;
+      const label = c.label || (c as any).candidateLabel;
+      if (!label) continue;
+      const sim = this.computeSimilarity(query, label);
+      if (sim > 0.15) {
+        scored.push({ id: c.id || (c as any).candidateId || label, sim });
       }
     }
 
-    if (bestCandidate && highestSim > 0.15) {
-      return { success: true, selectedCandidateId: bestCandidate.id || bestCandidate.candidateLabel || bestCandidate.label, similarityScore: highestSim };
+    scored.sort((a, b) => b.sim - a.sim);
+
+    const first = scored[0];
+    if (first) {
+      return {
+        success: true,
+        selectedCandidateId: first.id,
+        similarityScore: first.sim,
+        topCandidateIds: scored.slice(0, 3).map((s) => s.id),
+      };
     }
-    return { success: false, similarityScore: 0 };
+    return { success: false, similarityScore: 0, topCandidateIds: [] };
   }
 }
+

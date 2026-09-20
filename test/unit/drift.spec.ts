@@ -13,7 +13,14 @@ describe('TypedDriftDetector & DriftClassifier', () => {
     canonicalFunction: 'disable_marketing_communications',
     actionType: 'MODIFY_PREFERENCE',
     targetEntity: 'MARKETING_NOTIFICATIONS',
-    mandatoryPreStatePredicates: [],
+    mandatoryPreStatePredicates: [
+      {
+        id: 'PRE_CHECKED',
+        name: 'Marketing Enabled',
+        description: 'Marketing notifications must be enabled',
+        evaluate: (state: any) => state.marketing_emails_enabled === true,
+      },
+    ],
     allowedStateDelta: [],
     expectedPostState: [],
     requiredContextPredicates: [],
@@ -70,8 +77,8 @@ describe('TypedDriftDetector & DriftClassifier', () => {
     },
   };
 
-  it('computes 5D vector and maintains route when only presentation drift occurs', () => {
-    // Only IDs and classes changed, but ancestors, role, target and actions match
+  // Test A: Presentation-only change: high P, low Cap, low T, route remains valid
+  it('A. presentation-only change: high P, low Cap, low T, route remains valid', () => {
     const vector = TypedDriftDetector.computeDrift(baseFingerprint, {
       tag: 'button',
       id: 'scrambled-id-99881',
@@ -82,6 +89,7 @@ describe('TypedDriftDetector & DriftClassifier', () => {
       relativeStructuralPath: 'main > section:nth-of-type(1) > button:nth-of-type(1)',
       observedActionType: 'MODIFY_PREFERENCE',
       observedTargetEntity: 'MARKETING_NOTIFICATIONS',
+      observedPreState: { marketing_emails_enabled: true },
     });
 
     expect(vector.presentation).toBeGreaterThan(0.4);
@@ -93,8 +101,25 @@ describe('TypedDriftDetector & DriftClassifier', () => {
     expect(classification.explanation).toContain('Only presentation drift');
   });
 
-  it('triggers recovery and explains cause when capability drift is detected', () => {
-    // Control targets something else
+  // Test B: Structural change: high S, functional semantics unchanged
+  it('B. structural change: high S, functional semantics unchanged', () => {
+    const vector = TypedDriftDetector.computeDrift(baseFingerprint, {
+      tag: 'button',
+      role: 'switch',
+      relativeStructuralPath: 'body > div#app-root > aside > nav > ul > li > div > button',
+      observedActionType: 'MODIFY_PREFERENCE',
+      observedTargetEntity: 'MARKETING_NOTIFICATIONS',
+      ancestors: ['section[notifications]', 'main[settings]'],
+      observedPreState: { marketing_emails_enabled: true },
+    });
+
+    expect(vector.structure).toBeGreaterThan(0.6);
+    expect(vector.capability).toBe(0.0);
+    expect(vector.transition).toBe(0.0);
+  });
+
+  // Test C: Capability change: high Cap, route invalid/recovery triggered
+  it('C. capability change: high Cap, route invalid/recovery triggered', () => {
     const vector = TypedDriftDetector.computeDrift(baseFingerprint, {
       tag: 'button',
       role: 'button',
@@ -108,6 +133,24 @@ describe('TypedDriftDetector & DriftClassifier', () => {
     expect(classification.actionRequired).toBe('TRIGGER_REBIND_RECOVERY');
     expect(classification.dominantDriftDimension).toBe('capability');
     expect(classification.explanation).toContain('Significant drift detected in capability');
+  });
+
+  // Test D: Transition change: high T, route validation required
+  it('D. transition change: high T, route validation required', () => {
+    const vector = TypedDriftDetector.computeDrift(baseFingerprint, {
+      tag: 'button',
+      role: 'switch',
+      observedActionType: 'MODIFY_PREFERENCE',
+      observedTargetEntity: 'MARKETING_NOTIFICATIONS',
+      observedPreState: { marketing_emails_enabled: false }, // Violates mandatory pre-state!
+    });
+
+    expect(vector.transition).toBe(1.0);
+    expect(vector.capability).toBe(0.0);
+
+    const classification = DriftClassifier.classify(vector);
+    expect(classification.actionRequired).toBe('TRIGGER_VALIDATION');
+    expect(classification.dominantDriftDimension).toBe('transition');
   });
 });
 

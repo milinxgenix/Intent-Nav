@@ -46,3 +46,4 @@ When evaluating candidate $C$ against capability $K$:
 4. If any negative predicate triggers $\to$ `status = 'CONTRADICTED'`, committed to negative evidence.
 5. If any positive predicate fails $\to$ `status = 'FAIL'`.
 6. Only if all positive predicates pass and zero negative predicates trigger $\to$ `status = 'PASS'`, `isEligibleForRanking = true`.
+

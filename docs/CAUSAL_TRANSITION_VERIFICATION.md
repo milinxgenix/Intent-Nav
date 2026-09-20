@@ -35,3 +35,4 @@ To eliminate correlation errors caused by single-channel artifacts (e.g. random 
 
 4. **Multi-Class Quorum**:
    If the number of unique witness classes is $< 2$ (or configured minimum), the transition is rejected as `FAILED_INSUFFICIENT_WITNESS_CLASSES`.
+

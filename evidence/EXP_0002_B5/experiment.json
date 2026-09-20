@@ -1,13 +1,13 @@
 {
   "experimentId": "EXP_0002_B5",
-  "system": "IntentNav-SCFR",
+  "system": "IntentNav-SCFR (Invention Prototype)",
   "site": "SiteB",
   "query": "I want to stop promotional emails",
   "expected": "CAP_DISABLE_MARKETING",
   "selected": "btn-promotions-switch",
-  "status": "QUARANTINED",
-  "verified": false,
+  "status": "SUCCESS",
+  "verified": true,
   "authorized": true,
-  "latencyMs": 1.4,
+  "latencyMs": 3.67,
   "auditTrail": "VALIDATED_BY_INTENTNAV_AUDIT_LOG"
 }

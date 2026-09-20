@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IntentNav Negative Test Site — Adversarial Failure Mode Triggers</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; background: #fff; color: #222; }
+    h1 { font-size: 1.2rem; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem; }
+    section { margin: 1rem 0; padding: 0.8rem; border: 1px solid #ddd; border-radius: 4px; }
+    button { padding: 0.4rem 0.8rem; margin: 0.2rem; cursor: pointer; }
+    .label { font-size: 0.85rem; color: #666; margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>IntentNav Negative Test Site — Adversarial Triggers (N1–N14)</h1>
+  <p class="label">Isolated adversarial test harness for negative verification.</p>
+
+  <!-- N1: Invariant Violation (role mismatch: button instead of switch, no aria-checked) -->
+  <section id="sec-n1" aria-label="Marketing Preferences" data-container="marketing">
+    <div class="label">Marketing Preferences — N1: Invariant Violation</div>
+    <button id="n1-button" role="button" aria-label="Turn off marketing notifications">
+      Turn off marketing notifications
+    </button>
+  </section>
+
+  <!-- N2: Semantic Decoy (Genuine switch vs Decoy purge button) -->
+  <section id="sec-n2" aria-label="Marketing Preferences" data-container="marketing">
+    <div class="label">Marketing Preferences — N2: Semantic Decoy Filtering</div>
+    <button id="n2-genuine" role="switch" aria-checked="true" aria-label="Turn off marketing notifications">
+      Turn off marketing notifications
+    </button>
+    <button id="n2-decoy" role="button" aria-label="Turn off all notifications and purge data">
+      Turn off all notifications and purge data
+    </button>
+  </section>
+
+  <!-- N3: Stale BindingHandle / Volatile ID -->
+  <section id="sec-n3" aria-label="Marketing Preferences" data-container="marketing">
+    <div class="label">Marketing Preferences — N3: Stale Volatile ID Resolution</div>
+    <button id="volatile-x9q7-hash" role="switch" aria-checked="true" aria-label="Turn off marketing notifications">
+      Turn off marketing notifications
+    </button>
+  </section>
+
+  <!-- N4: Missing Witnesses (Silent button) -->
+  <section id="sec-n4" aria-label="Marketing Preferences" data-container="marketing">
+    <div class="label">Marketing Preferences — N4: Missing Witnesses</div>
+    <button id="n4-silent-button" role="switch" aria-checked="true" aria-label="Turn off marketing notifications">
+      Turn off marketing notifications
+    </button>
+  </section>
+
+  <!-- N5: Single Witness Class (Only DOM mutation, no app state) -->
+  <section id="sec-n5" aria-label="Marketing Preferences" data-container="marketing">
+    <div class="label">Marketing Preferences — N5: Single Witness Class</div>
+    <button id="n5-single-witness-button" role="switch" aria-checked="true" aria-label="Turn off marketing notifications">
+      Turn off marketing notifications
+    </button>
+  </section>
+
+  <!-- N6: Contradictory Witness (Error/Failure indicator) -->
+  <section id="sec-n6" aria-label="Marketing Preferences" data-container="marketing">
+    <div class="label">Marketing Preferences — N6: Contradictory Witness</div>
+    <button id="n6-contradictory-button" role="switch" aria-checked="true" aria-label="Turn off marketing notifications">
+      Turn off marketing notifications
+    </button>
+  </section>
+
+  <!-- N7: Stale Witness (Mutation timestamp in past) -->
+  <section id="sec-n7" aria-label="Marketing Preferences" data-container="marketing">
+    <div class="label">Marketing Preferences — N7: Stale Witness</div>
+    <button id="n7-stale-button" role="switch" aria-checked="true" aria-label="Turn off marketing notifications">
+      Turn off marketing notifications
+    </button>
+  </section>
+
+  <!-- N8: Unrelated Witness (Unrelated delta keys) -->
+  <section id="sec-n8" aria-label="Marketing Preferences" data-container="marketing">
+    <div class="label">Marketing Preferences — N8: Unrelated Witness</div>
+    <button id="n8-unrelated-button" role="switch" aria-checked="true" aria-label="Turn off marketing notifications">
+      Turn off marketing notifications
+    </button>
+  </section>
+
+  <!-- N9: Wrong Post-State (State does not change to expected value) -->
+  <section id="sec-n9" aria-label="Marketing Preferences" data-container="marketing">
+    <div class="label">Marketing Preferences — N9: Wrong Post-State</div>
+    <button id="n9-wrong-state-button" role="switch" aria-checked="true" aria-label="Turn off marketing notifications">
+      Turn off marketing notifications
+    </button>
+  </section>
+
+  <!-- N10: Failed Causal Chain -->
+  <section id="sec-n10" aria-label="Marketing Preferences" data-container="marketing">
+    <div class="label">Marketing Preferences — N10: Failed Causal Chain</div>
+    <button id="n10-failed-causal-button" role="switch" aria-checked="true" aria-label="Turn off marketing notifications">
+      Turn off marketing notifications
+    </button>
+  </section>
+
+  <!-- N11: Invalid Promotion Token -->
+  <section id="sec-n11" aria-label="Marketing Preferences" data-container="marketing">
+    <div class="label">Marketing Preferences — N11: Invalid Promotion Token</div>
+    <button id="n11-token-button" role="switch" aria-checked="true" aria-label="Turn off marketing notifications">
+      Turn off marketing notifications
+    </button>
+  </section>
+
+  <!-- N12: Quarantined Route -->
+  <section id="sec-n12" aria-label="Marketing Preferences" data-container="marketing">
+    <div class="label">Marketing Preferences — N12: Quarantined Route Gating</div>
+    <button id="n12-quarantine-button" role="switch" aria-checked="true" aria-label="Turn off marketing notifications">
+      Turn off marketing notifications
+    </button>
+  </section>
+
+  <!-- N13: High-Risk Authorization Denied (IRREVERSIBLE without confirmation) -->
+  <section id="sec-n13" aria-label="Account Settings" data-container="account">
+    <div class="label">Account Settings — N13: Deactivate Account (IRREVERSIBLE)</div>
+    <button id="n13-delete-account" role="button" aria-label="Deactivate account" data-risk-class="IRREVERSIBLE">
+      Deactivate account
+    </button>
+  </section>
+
+  <!-- N14: High-Risk Quorum Insufficient -->
+  <section id="sec-n14" aria-label="Active Sessions & Devices" data-container="sessions devices security">
+    <div class="label">Security & Active Sessions — N14: Revoke Active Sessions (IRREVERSIBLE)</div>
+    <button id="n14-revoke-all" role="button" aria-label="Revoke active sessions" data-risk-class="IRREVERSIBLE">
+      Revoke active sessions
+    </button>
+  </section>
+
+  <!-- App state container -->
+  <div id="neg-app-state" style="display:none" aria-hidden="true"></div>
+
+  <script>
+    // Scenario-specific element isolation
+    const params = new URLSearchParams(window.location.search);
+    const activeScenario = params.get('scenario');
+    if (activeScenario) {
+      const allSections = document.querySelectorAll('section[id^="sec-"]');
+      allSections.forEach((sec) => {
+        if (sec.id.toLowerCase() !== `sec-${activeScenario.toLowerCase()}`) {
+          sec.remove();
+        }
+      });
+    }
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>

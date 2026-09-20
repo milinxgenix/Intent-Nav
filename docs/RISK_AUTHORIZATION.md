@@ -56,3 +56,4 @@ For actions flagged as `IRREVERSIBLE`, the controller enforces:
 The authorization subsystem is formally validated by automated property tests in `test/properties/properties.spec.ts`:
 - **Property 5 (Decoupled Confidence)**: A test fixture with $S_{\text{match}} = 0.999$ on a `DELETE_ACCOUNT` capability is fed to the engine. The engine returns `status: "CONFIRMATION_REQUIRED"`, `canExecute: false`.
 - **Property 6 (Zero Unauthorized High-Risk Actions)**: Across 1,200 benchmark runs spanning 4 mock sites (including Site D with adversarial decoys and destructive traps), exactly **0** high-risk actions executed without authorization.
+

@@ -1,15 +1,22 @@
-# IntentNav-SCFR: Empirical Benchmark Evaluation Report
-*Generated at: 2026-09-16T04:53:09.895Z*
+# IntentNav-SCFR: Controlled Simulated Benchmark Evaluation Report
+*Generated at: 2026-09-19T04:40:02.977Z*
+
+> [!IMPORTANT]
+> **Methodology & Architectural Distinction**:
+> This benchmark report presents the results of **Controlled Simulated Benchmarks** executed in a Node.js/JSDOM runtime environment (`benchmark/runner.ts`).
+> 
+> - **Controlled Simulated Benchmark (JSDOM)**: Evaluates algorithmic decision logic (candidate generation, 5D typed drift vector calculation, invariant closure pre-filtering, and ranking scores) across 2,000 runs using simulated DOM trees and ground-truth element identifiers (`SITE_EXPECTED_ELEMENT_IDS`). It does **not** evaluate real Chromium rendering, live OS mouse click dispatch, or asynchronous browser extension messaging.
+> - **Real Headless Chromium E2E Verification**: Real browser closed-loop execution, live DOM mutation capture, accessibility state observation, multi-channel causal verification, and route promotion are verified separately using real headless Google Chrome (`Chrome/153.0.8010.52`) executing the unpacked MV3 extension via CDP (`scripts/runChromiumE2E.js` and `scripts/runNegativeChromiumE2E.js`). Results are recorded in `evidence/chromium_e2e_evidence.json` (10/10 EXECUTED and VERIFIED) and `evidence/chromium_e2e_negative_evidence.json` (14/14 safely refused or resolved).
 
 Comparative evaluation of **IntentNav-SCFR** against 4 alternative architectural baselines across Mock Sites A, B, C, and D over 100 benchmark user intents:
 
 | System / Baseline | Top-1 Accuracy | UI-Change Recovery | Decoy Rejection | Causal Verification | Unauthorized High-Risk | Avg Latency (ms) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Baseline 1: Fixed Selector Replay** | 25.0% | 0.0% | 100.0% | 0.0% | **0** | 0.0ms |
-| **Baseline 2: Keyword String Matching** | 70.5% | 69.5% | 83.0% | 0.0% | **96** | 0.0ms |
-| **Baseline 3: Semantic-Only Matching** | 44.7% | 43.2% | 84.0% | 0.0% | **63** | 0.0ms |
+| **Baseline 2: Keyword String Matching** | 42.4% | 41.4% | 56.0% | 0.0% | **98** | 0.0ms |
+| **Baseline 3: Semantic-Only Matching** | 35.0% | 35.8% | 84.0% | 0.0% | **70** | 0.0ms |
 | **Baseline 4: Intent-to-Page Navigation** | 79.0% | 0.0% | 0.0% | 0.0% | **0** | 0.0ms |
-| **IntentNav-SCFR (Invention Prototype)** | 40.0% | 40.0% | 100.0% | 33.0% | **0** | 5.8ms |
+| **IntentNav-SCFR (Invention Prototype)** | 33.7% | 34.4% | 100.0% | 26.3% | **0** | 7.1ms |
 
 ## 2. Key Empirical Findings
 
@@ -23,13 +30,13 @@ Comparative evaluation of **IntentNav-SCFR** against 4 alternative architectural
 First 10 sample runs:
 | Run ID | System | Site | Query | Selected Candidate | Status | Verified | Authorized |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| EXP_0001_B1 | Baseline 1: Fixed Selector | SiteA | "I want to stop promotiona..." | `btn-disable-marketing` | SUCCESS | NO | YES |
-| EXP_0001_B2 | Baseline 2: Keyword Matching | SiteA | "I want to stop promotiona..." | `btn-disable-marketing` | SUCCESS | NO | YES |
-| EXP_0001_B3 | Baseline 3: Semantic Only | SiteA | "I want to stop promotiona..." | `none` | FAILED | NO | NO |
-| EXP_0001_B4 | Baseline 4: Page Navigation | SiteA | "I want to stop promotiona..." | `/settings/notifications` | NAVIGATED_PAGE | NO | NO |
-| EXP_0001_B5 | IntentNav-SCFR | SiteA | "I want to stop promotiona..." | `btn-disable-marketing` | QUARANTINED | NO | YES |
-| EXP_0002_B1 | Baseline 1: Fixed Selector | SiteB | "I want to stop promotiona..." | `none` | FAILED | NO | NO |
-| EXP_0002_B2 | Baseline 2: Keyword Matching | SiteB | "I want to stop promotiona..." | `btn-promotions-switch` | SUCCESS | NO | YES |
-| EXP_0002_B3 | Baseline 3: Semantic Only | SiteB | "I want to stop promotiona..." | `btn-promotions-switch` | SUCCESS | NO | YES |
-| EXP_0002_B4 | Baseline 4: Page Navigation | SiteB | "I want to stop promotiona..." | `/settings/notifications` | NAVIGATED_PAGE | NO | NO |
-| EXP_0002_B5 | IntentNav-SCFR | SiteB | "I want to stop promotiona..." | `btn-promotions-switch` | QUARANTINED | NO | YES |
+| EXP_0001_B1 | Baseline 1: Fixed Selector Replay | SiteA | "I want to stop promotiona..." | `btn-disable-marketing` | SUCCESS | NO | YES |
+| EXP_0001_B2 | Baseline 2: Keyword String Matching | SiteA | "I want to stop promotiona..." | `btn-disable-marketing` | SUCCESS | NO | YES |
+| EXP_0001_B3 | Baseline 3: Semantic-Only Matching | SiteA | "I want to stop promotiona..." | `none` | FAILED | NO | NO |
+| EXP_0001_B4 | Baseline 4: Intent-to-Page Navigation | SiteA | "I want to stop promotiona..." | `/settings/notifications` | SUCCESS | NO | NO |
+| EXP_0001_B5 | IntentNav-SCFR (Invention Prototype) | SiteA | "I want to stop promotiona..." | `btn-disable-marketing` | SUCCESS | YES | YES |
+| EXP_0002_B1 | Baseline 1: Fixed Selector Replay | SiteB | "I want to stop promotiona..." | `none` | FAILED | NO | NO |
+| EXP_0002_B2 | Baseline 2: Keyword String Matching | SiteB | "I want to stop promotiona..." | `btn-promotions-switch` | SUCCESS | NO | YES |
+| EXP_0002_B3 | Baseline 3: Semantic-Only Matching | SiteB | "I want to stop promotiona..." | `btn-promotions-switch` | SUCCESS | NO | YES |
+| EXP_0002_B4 | Baseline 4: Intent-to-Page Navigation | SiteB | "I want to stop promotiona..." | `/settings/notifications` | SUCCESS | NO | NO |
+| EXP_0002_B5 | IntentNav-SCFR (Invention Prototype) | SiteB | "I want to stop promotiona..." | `btn-promotions-switch` | SUCCESS | YES | YES |

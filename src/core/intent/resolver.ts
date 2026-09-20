@@ -23,10 +23,18 @@ export class CapabilityIntentResolver {
     intent: NormalizedIntent,
     capabilities: FunctionalCapabilityFingerprint[]
   ): CapabilityMatchResult[] {
+    // Blanket adversarial targets must immediately abstain with zero matches
+    if (['ALL_NOTIFICATIONS', 'ALL_SECURITY', 'ALL_DATA', 'ORGANIZATION_USERS'].includes(intent.targetEntity)) {
+      return [];
+    }
+
     const results: CapabilityMatchResult[] = [];
 
     for (const cap of capabilities) {
-      const isActionMatched = cap.actionType === intent.actionType;
+      const isActionMatched =
+        cap.actionType === intent.actionType ||
+        (cap.actionType === 'TOGGLE' && (intent.actionType === 'MODIFY_PREFERENCE' || intent.actionType === 'REVOKE_ACCESS')) ||
+        (cap.actionType === 'REVOKE_ACCESS' && (intent.actionType === 'TOGGLE' || intent.actionType === 'MODIFY_PREFERENCE'));
       const isTargetMatched = cap.targetEntity === intent.targetEntity;
 
       const reasons: string[] = [];
@@ -38,6 +46,9 @@ export class CapabilityIntentResolver {
       if (isTargetMatched) {
         score += 0.50;
         reasons.push(`Target entity matched: ${cap.targetEntity}`);
+      } else if (intent.targetEntity !== 'UNKNOWN') {
+        // Explicit target mismatch penalty - prevents targeting security settings when looking for notifications
+        score -= 0.35;
       }
 
       // 2. Action match has secondary functional weight

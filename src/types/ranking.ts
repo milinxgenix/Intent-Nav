@@ -40,12 +40,17 @@ export interface ScoreBreakdown {
   totalScore: number;
 }
 
+import { BindingHandle } from './capability';
+
 export interface CandidateRebindScore {
   candidateId: string;
   candidateLabel: string;
+  bindingHandle?: BindingHandle;
   isEligible: boolean;
   scoreBreakdown: ScoreBreakdown;
   rank: number;
   weightsVersion: string;
+  rankingVersion?: string;
+  rankingTimestamp?: number;
 }
 

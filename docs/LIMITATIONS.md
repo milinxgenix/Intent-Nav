@@ -67,3 +67,4 @@ If an application undergoes an architectural redesign that completely removes a 
 ### Impact & Mitigation
 - **Impact**: Invariant closure will correctly reject existing candidates to prevent accidental misexecution.
 - **Mitigation**: Rather than hallucinating a target, IntentNav-SCFR safely aborts the active route, flags the capability as `UNRESOLVABLE_DRIFT`, logs the event to the audit trail, and alerts the operator to record a new baseline route $V_{k+1}$.
+

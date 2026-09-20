@@ -8,9 +8,82 @@ import {
   TargetMatchPredicateContext,
   ActionMatchPredicateContext,
   PreStatePredicateContext,
-  PostStatePredicateContext,
 } from '../../types/invariant';
-import { StateDeltaPredicate, ExpectedStatePredicate, ContextPredicate } from '../../types/capability';
+import {
+  StateDeltaPredicate,
+  ExpectedStatePredicate,
+  ContextPredicate,
+  DeclarativeInvariantPredicate,
+  InvariantPredicate,
+} from '../../types/capability';
+
+export class DeclarativePredicateEvaluator {
+  public static evaluate(
+    pred: DeclarativeInvariantPredicate,
+    context: Record<string, unknown>
+  ): boolean {
+    if (!context || typeof context !== 'object') {
+      return false;
+    }
+    const rawVal = context[pred.property];
+
+    switch (pred.operator) {
+      case 'EQUALS':
+        return rawVal === pred.expectedValue;
+      case 'NOT_EQUALS':
+        return rawVal !== pred.expectedValue;
+      case 'CONTAINS':
+        if (typeof rawVal === 'string') {
+          return rawVal.includes(String(pred.expectedValue));
+        }
+        if (Array.isArray(rawVal)) {
+          return rawVal.includes(pred.expectedValue);
+        }
+        return false;
+      case 'NOT_CONTAINS':
+        if (typeof rawVal === 'string') {
+          return !rawVal.includes(String(pred.expectedValue));
+        }
+        if (Array.isArray(rawVal)) {
+          return !rawVal.includes(pred.expectedValue);
+        }
+        return true;
+      case 'IN':
+        return Array.isArray(pred.expectedValues) && pred.expectedValues.includes(rawVal);
+      case 'NOT_IN':
+        return Array.isArray(pred.expectedValues) && !pred.expectedValues.includes(rawVal);
+      case 'GREATER_THAN':
+        return typeof rawVal === 'number' && rawVal > (pred.expectedValue as number);
+      case 'LESS_THAN':
+        return typeof rawVal === 'number' && rawVal < (pred.expectedValue as number);
+      case 'TRUTHY':
+        return Boolean(rawVal);
+      case 'FALSY':
+        return !rawVal;
+      case 'EXISTS':
+        return rawVal !== undefined && rawVal !== null;
+      case 'MATCHES_REGEX':
+        try {
+          return new RegExp(String(pred.expectedValue)).test(String(rawVal ?? ''));
+        } catch {
+          return false;
+        }
+      default:
+        return false;
+    }
+  }
+}
+
+export function createDeclarativePredicate(decl: DeclarativeInvariantPredicate): InvariantPredicate {
+  return {
+    id: decl.id,
+    name: decl.name,
+    description: decl.description,
+    declarative: decl,
+    evaluate: (context: Record<string, unknown>) => DeclarativePredicateEvaluator.evaluate(decl, context),
+  };
+}
+
 
 export class InvariantPredicates {
   /**
@@ -20,7 +93,8 @@ export class InvariantPredicates {
     const compatible =
       context.observedAction === context.requiredAction ||
       (context.requiredAction === 'MODIFY_PREFERENCE' && (context.observedAction === 'TOGGLE' || context.observedAction === 'SUBMIT')) ||
-      (context.requiredAction === 'TOGGLE' && (context.observedAction === 'MODIFY_PREFERENCE' || context.observedAction === 'VIEW'));
+      (context.requiredAction === 'TOGGLE' && (context.observedAction === 'MODIFY_PREFERENCE' || context.observedAction === 'VIEW' || context.observedAction === 'REVOKE_ACCESS')) ||
+      (context.requiredAction === 'REVOKE_ACCESS' && (context.observedAction === 'TOGGLE' || context.observedAction === 'MODIFY_PREFERENCE'));
 
     return {
       predicateId: 'POS_PRED_ACTION_TYPE',
@@ -118,11 +192,13 @@ export class InvariantPredicates {
 
     for (const delta of allowedDeltas) {
       if (delta.expectedChange === 'ENABLED_TO_DISABLED') {
-        const isCurrentlyChecked = observedState['checked'] === true || observedState['aria-checked'] === 'true';
-        if (observedState['checked'] !== undefined && !isCurrentlyChecked) {
-          // If it is already disabled, toggle might be opposite
-          notes.push(`Control is already unchecked; cannot transition ENABLED_TO_DISABLED`);
-          compatible = false;
+        if (delta.property === 'checked' || delta.property === 'aria-checked') {
+          const isCurrentlyChecked = observedState['checked'] === true || observedState['aria-checked'] === 'true';
+          if (observedState['checked'] !== undefined && !isCurrentlyChecked) {
+            // If it is already disabled, toggle might be opposite
+            notes.push(`Control is already unchecked; cannot transition ENABLED_TO_DISABLED`);
+            compatible = false;
+          }
         }
       }
     }
@@ -146,7 +222,7 @@ export class InvariantPredicates {
   public static matchExpectedPostState(
     expectedPostState: ExpectedStatePredicate[],
     observedRole: string,
-    observedAction: string
+    _observedAction: string
   ): PredicateEvaluationRecord {
     if (expectedPostState.length === 0) {
       return {
@@ -159,7 +235,8 @@ export class InvariantPredicates {
     }
 
     // Verify control type can achieve expected post-state
-    const isInteractive = ['button', 'switch', 'link', 'input', 'select', 'a'].includes(observedRole.toLowerCase());
+    const role = (observedRole || '').toLowerCase();
+    const isInteractive = !observedRole || ['button', 'switch', 'link', 'input', 'select', 'a'].includes(role);
     return {
       predicateId: 'POS_PRED_EXPECTED_POST_STATE',
       predicateName: 'Expected Post-State Compatibility',
@@ -198,7 +275,15 @@ export class InvariantPredicates {
 
     for (const ctx of requiredContext) {
       const pat = ctx.pattern.toLowerCase();
-      if (!fullContext.includes(pat)) {
+      let matched = false;
+      if (pat.includes('|')) {
+        const parts = pat.split('|').map((p) => p.trim());
+        matched = parts.some((p) => fullContext.includes(p));
+      } else {
+        matched = fullContext.includes(pat);
+      }
+
+      if (!matched) {
         if (ctx.required) {
           passed = false;
           missing.push(ctx.pattern);
@@ -268,8 +353,8 @@ export class InvariantPredicates {
     expectedRole: string,
     observedRole: string
   ): PredicateEvaluationRecord {
-    const rExp = expectedRole.toLowerCase();
-    const rObs = observedRole.toLowerCase();
+    const rExp = (expectedRole || '').toLowerCase();
+    const rObs = (observedRole || '').toLowerCase();
 
     const compatible =
       rExp === rObs ||
@@ -315,9 +400,10 @@ export class InvariantPredicates {
     observedTarget: string,
     forbiddenTargets: string[]
   ): PredicateEvaluationRecord {
-    const isForbidden = forbiddenTargets.some(
-      (ft) => ft.toLowerCase() === observedTarget.toLowerCase()
-    );
+    const obs = (observedTarget || '').toLowerCase();
+    const isForbidden = obs ? forbiddenTargets.some(
+      (ft) => ft.toLowerCase() === obs
+    ) : false;
 
     return {
       predicateId: 'NEG_PRED_FORBIDDEN_TARGET',
@@ -339,9 +425,10 @@ export class InvariantPredicates {
     observedAction: string,
     forbiddenActions: string[]
   ): PredicateEvaluationRecord {
-    const isForbidden = forbiddenActions.some(
-      (fa) => fa.toLowerCase() === observedAction.toLowerCase()
-    );
+    const obs = (observedAction || '').toLowerCase();
+    const isForbidden = obs ? forbiddenActions.some(
+      (fa) => fa.toLowerCase() === obs
+    ) : false;
 
     return {
       predicateId: 'NEG_PRED_FORBIDDEN_ACTION',

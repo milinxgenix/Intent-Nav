@@ -21,3 +21,4 @@ sequenceDiagram
     Note over Verifier: Causality Check:<br/>1. t_witness > t_activation? (YES)<br/>2. t_witness - t_activation <= 2000ms? (YES)<br/>3. Delta matches expectedStateDelta? (YES)<br/>4. >= 2 independent witness classes? (YES: DOM + A11y + History)
 
     Verifier-->>Controller: CAUSALLY VERIFIED (Promote to ACTIVE_VALIDATED)
+

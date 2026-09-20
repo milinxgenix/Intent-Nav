@@ -24,6 +24,7 @@ export interface InterfaceStateNode {
   activeModalsOrDialogs: string[];
   activeTabs: string[];
   exposedCandidateHandles?: BindingHandle[];
+  observedApplicationState?: Record<string, unknown>;
   timestamp: number;
 }
 

@@ -26,8 +26,8 @@
 ### Claim 1: Computer-Implemented Adaptive Closed-Loop Navigation Method
 1. **What is implemented:** Complete closed-loop state machine orchestrating intent normalization, persistent capability resolution, typed drift vector, hard invariant closure, contradiction filtering, post-gate ranking, provisional route quarantine, multi-class transition verification, promotion, and independent authorization.
 2. **Where implemented:** [`src/core/stateMachine/machine.ts`](file:///Users/kumarmilind/Desktop/Navigation/src/core/stateMachine/machine.ts).
-3. **What test proves it:** [`test/adversarial/matrix.spec.ts`](file:///Users/kumarmilind/Desktop/Navigation/test/adversarial/matrix.spec.ts) (All 26 scenarios A through Z).
-4. **What experiment demonstrates it:** 1,200 empirical runs in `benchmark/results/benchmark_results.csv`.
+3. **What test proves it:** [`test/adversarial/matrix.spec.ts`](file:///Users/kumarmilind/Desktop/Navigation/test/adversarial/matrix.spec.ts) (All 26 scenarios A through Z), [`test/e2e/browser_e2e.spec.ts`](file:///Users/kumarmilind/Desktop/Navigation/test/e2e/browser_e2e.spec.ts) (All 16 Browser E2E scenarios across full lifecycle).
+4. **What experiment demonstrates it:** 2,000 empirical runs in `benchmark/results/benchmark_results.csv` (100 intents × 4 sites × 5 systems).
 5. **What log proves it:** `AuditLogger.exportLog()` outputs complete frozen JSON audit trail.
 6. **What happens if it fails:** Transitions to `ABSTAINED`, `QUARANTINED`, or `FAILED` without silent execution.
 7. **Code enforcement vs description:** Enforced through formal TypeScript state transitions and frozen context mutations.
@@ -195,7 +195,7 @@
 1. **What is implemented:** Separation of Capability Confidence from Execution Authorization; high confidence on high-risk operations cannot authorize execution without manual user consent.
 2. **Where implemented:** [`src/core/authorization/controller.ts`](file:///Users/kumarmilind/Desktop/Navigation/src/core/authorization/controller.ts).
 3. **What test proves it:** [`test/unit/authorization.spec.ts`](file:///Users/kumarmilind/Desktop/Navigation/test/unit/authorization.spec.ts), Properties 3 & 10 in [`test/properties/properties.spec.ts`](file:///Users/kumarmilind/Desktop/Navigation/test/properties/properties.spec.ts).
-4. **What experiment demonstrates it:** EXACT ZERO unauthorized high-risk executions in 1,200 benchmark runs.
+4. **What experiment demonstrates it:** EXACT ZERO unauthorized high-risk executions in 2,000 benchmark runs.
 5. **What log proves it:** `unauthorizedHighRiskExecutions: 0` in `benchmark_summary.json`.
 6. **What happens if it fails:** Enters `CONFIRMATION_PENDING` and awaits user click.
 7. **Code enforcement:** Explicit rule in `ExecutionAuthorizationController.authorize()`.
@@ -206,7 +206,7 @@
 ### Claim 16: Complete Computing System
 1. **What is implemented:** Unified system composition integrating observer, graph engine, drift engine, invariant engine, causal verifier, and execution authorization controller.
 2. **Where implemented:** [`src/index.ts`](file:///Users/kumarmilind/Desktop/Navigation/src/index.ts), [`src/core/stateMachine/machine.ts`](file:///Users/kumarmilind/Desktop/Navigation/src/core/stateMachine/machine.ts).
-3. **What test proves it:** All 14 test suites (69 automated tests passing).
+3. **What test proves it:** All 20 test files (106 automated tests passing, including all 16 Browser E2E real DOM scenarios).
 4. **What experiment demonstrates it:** End-to-end benchmark suite across 4 sites.
 5. **What log proves it:** Comprehensive state machine context and audit exports.
 6. **What happens if it fails:** Build and test failures.
@@ -226,3 +226,4 @@
 8. **Bypass shortcuts:** None.
 9. **Generic AI override:** None.
 10. **Reproducibility:** Verified cleanly on macOS arm64/x64 and Linux.
+

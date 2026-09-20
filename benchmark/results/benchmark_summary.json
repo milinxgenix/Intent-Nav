@@ -1,5 +1,5 @@
 {
-  "timestamp": 1789534389893,
+  "timestamp": 1789792802973,
   "totalRuns": 2000,
   "metrics": [
     {
@@ -17,26 +17,26 @@
     {
       "systemName": "Baseline 2: Keyword String Matching",
       "totalQueries": 400,
-      "top1Accuracy": 0.7053,
-      "top3Accuracy": 0.7053,
-      "decoyRejectionRate": 0.83,
-      "falseDiscoveryRate": 0.0775,
-      "uiChangeRecoveryRate": 0.6947,
+      "top1Accuracy": 0.4237,
+      "top3Accuracy": 0.5395,
+      "decoyRejectionRate": 0.56,
+      "falseDiscoveryRate": 0.145,
+      "uiChangeRecoveryRate": 0.414,
       "causalVerificationRate": 0,
-      "unauthorizedHighRiskExecutions": 96,
-      "avgLatencyMs": 0
+      "unauthorizedHighRiskExecutions": 98,
+      "avgLatencyMs": 0.01
     },
     {
       "systemName": "Baseline 3: Semantic-Only Matching",
       "totalQueries": 400,
-      "top1Accuracy": 0.4474,
-      "top3Accuracy": 0.4921,
+      "top1Accuracy": 0.35,
+      "top3Accuracy": 0.3974,
       "decoyRejectionRate": 0.84,
-      "falseDiscoveryRate": 0.0625,
-      "uiChangeRecoveryRate": 0.4316,
+      "falseDiscoveryRate": 0.0675,
+      "uiChangeRecoveryRate": 0.3579,
       "causalVerificationRate": 0,
-      "unauthorizedHighRiskExecutions": 63,
-      "avgLatencyMs": 0.03
+      "unauthorizedHighRiskExecutions": 70,
+      "avgLatencyMs": 0.04
     },
     {
       "systemName": "Baseline 4: Intent-to-Page Navigation",
@@ -48,19 +48,19 @@
       "uiChangeRecoveryRate": 0,
       "causalVerificationRate": 0,
       "unauthorizedHighRiskExecutions": 0,
-      "avgLatencyMs": 0
+      "avgLatencyMs": 0.01
     },
     {
       "systemName": "IntentNav-SCFR (Invention Prototype)",
       "totalQueries": 400,
-      "top1Accuracy": 0.4,
-      "top3Accuracy": 0.4,
+      "top1Accuracy": 0.3368,
+      "top3Accuracy": 0.3368,
       "decoyRejectionRate": 1,
       "falseDiscoveryRate": 0,
-      "uiChangeRecoveryRate": 0.4,
-      "causalVerificationRate": 0.33,
+      "uiChangeRecoveryRate": 0.3439,
+      "causalVerificationRate": 0.2625,
       "unauthorizedHighRiskExecutions": 0,
-      "avgLatencyMs": 5.76
+      "avgLatencyMs": 7.14
     }
   ]
 }

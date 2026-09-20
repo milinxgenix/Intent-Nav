@@ -45,7 +45,7 @@ export class TypedDriftDetector {
   /**
    * Normalized Levenshtein distance between two strings in [0.0, 1.0]
    */
-  private static normalizedStringDistance(a: string, b: string): number {
+  public static normalizedStringDistance(a: string, b: string): number {
     const s1 = a.trim().toLowerCase();
     const s2 = b.trim().toLowerCase();
     if (s1 === s2) return 0.0;
@@ -91,9 +91,9 @@ export class TypedDriftDetector {
 
     let idDrift = 0.0;
     if (isObservedIdVolatile) {
-      idDrift = 0.95;
-    } else if (observedId && observedId !== stored.capabilityId) {
-      idDrift = this.normalizedStringDistance(stored.capabilityId, observedId);
+      idDrift = 1.0; // Complete volatile ID drift (suppressed per REQ-C2)
+    } else if (observedId) {
+      idDrift = 0.0;
     }
 
     let classDrift = 0.0;
@@ -102,10 +102,8 @@ export class TypedDriftDetector {
       classDrift = volatileCount / observedClasses.length;
     }
 
+    // Normalized linear combination of presentation sub-features in [0.0, 1.0]
     presentation = Math.min(1.0, 0.5 * idDrift + 0.5 * classDrift);
-    if (isObservedIdVolatile && classDrift > 0.5) {
-      presentation = Math.max(presentation, 0.85);
-    }
 
     // 2. Contextual Drift: Compares equivalent context channels (ancestors, nearby text, container semantics)
     let context = 0.0;
@@ -180,7 +178,7 @@ export class TypedDriftDetector {
       ) {
         roleDiff = 0.20;
       } else {
-        roleDiff = 0.80;
+        roleDiff = 1.0;
       }
     }
 

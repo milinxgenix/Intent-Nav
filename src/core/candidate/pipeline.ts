@@ -48,9 +48,9 @@ export class CandidatePipeline {
 
     // STEP 1: Hard Invariant Closure & Contradiction Filtering for each candidate
     for (const candidate of candidates) {
-      // Check negative evidence store first
-      if (this.negativeEvidenceStore.isKnownContradiction(candidate.candidateId)) {
-        const neg = this.negativeEvidenceStore.getNegativeEvidence(candidate.candidateId)!;
+      // Check negative evidence store first with candidate context for material evidence hashing
+      if (this.negativeEvidenceStore.isKnownContradiction(candidate.candidateId, candidate, targetFingerprint.capabilityId)) {
+        const neg = this.negativeEvidenceStore.getNegativeEvidence(candidate.candidateId, targetFingerprint.capabilityId)!;
         const fakeResult: InvariantClosureResult = {
           candidateId: candidate.candidateId,
           status: 'CONTRADICTED',
@@ -87,13 +87,17 @@ export class CandidatePipeline {
       if (closureResult.isEligibleForRanking && closureResult.status === 'PASS') {
         eligibleCandidates.push(candidate);
       } else {
-        // Record contradiction if status is CONTRADICTED
+        // Record contradiction if status is CONTRADICTED, passing candidate material interface evidence
         if (closureResult.status === 'CONTRADICTED') {
           this.negativeEvidenceStore.recordContradiction(
             candidate.candidateId,
             'KNOWN_DECOY_PATTERN',
             'HARD_GATE_FAILURE',
-            closureResult.rejectionReason || 'Hard gate contradiction'
+            closureResult.rejectionReason || 'Hard gate contradiction',
+            {},
+            targetFingerprint,
+            undefined,
+            candidate
           );
         }
 

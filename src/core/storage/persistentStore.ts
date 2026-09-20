@@ -12,6 +12,7 @@ import { CapabilityNode, InterfaceStateNode, RouteVersion } from '../../types/st
 import { ContradictionEvidence } from '../../types/negativeEvidence';
 import { ValidationRecord } from '../../types/transition';
 import { TypedDriftVector } from '../../types/drift';
+import { DeclarativePredicateEvaluator } from '../invariant/predicates';
 
 export const CURRENT_SCHEMA_VERSION = 1;
 
@@ -31,8 +32,13 @@ export interface PersistentStoreSchema {
 }
 
 export class PersistentCapabilityStore {
+  private static nodeFallbackStorage: Map<string, string> = new Map();
   private inMemoryCache: PersistentStoreSchema;
   private isInitialized = false;
+
+  public static resetNodeFallbackStorage(): void {
+    PersistentCapabilityStore.nodeFallbackStorage.clear();
+  }
 
   constructor(private storageKey: string = 'intentnav_persistent_store') {
     this.inMemoryCache = this.getDefaultSchema();
@@ -62,6 +68,7 @@ export class PersistentCapabilityStore {
       const data = await chrome.storage.local.get(this.storageKey);
       if (data && data[this.storageKey]) {
         this.inMemoryCache = data[this.storageKey] as PersistentStoreSchema;
+        this.hydrateAllCapabilities();
         await this.checkAndMigrateSchema();
       } else {
         this.inMemoryCache = this.getDefaultSchema();
@@ -72,6 +79,21 @@ export class PersistentCapabilityStore {
       if (raw) {
         try {
           this.inMemoryCache = JSON.parse(raw);
+          this.hydrateAllCapabilities();
+          await this.checkAndMigrateSchema();
+        } catch {
+          this.inMemoryCache = this.getDefaultSchema();
+        }
+      } else {
+        this.inMemoryCache = this.getDefaultSchema();
+        await this.persist();
+      }
+    } else {
+      const raw = PersistentCapabilityStore.nodeFallbackStorage.get(this.storageKey);
+      if (raw) {
+        try {
+          this.inMemoryCache = JSON.parse(raw);
+          this.hydrateAllCapabilities();
           await this.checkAndMigrateSchema();
         } catch {
           this.inMemoryCache = this.getDefaultSchema();
@@ -83,6 +105,40 @@ export class PersistentCapabilityStore {
     }
 
     this.isInitialized = true;
+  }
+
+  private hydrateAllCapabilities(): void {
+    if (!this.inMemoryCache || !this.inMemoryCache.capabilities) return;
+    for (const cap of Object.values(this.inMemoryCache.capabilities)) {
+      this.hydrateCapability(cap);
+    }
+  }
+
+  private hydratePredicateList(predicates?: any[]): void {
+    if (!predicates || !Array.isArray(predicates)) return;
+    for (const pred of predicates) {
+      if (pred && typeof pred === 'object') {
+        if (pred.declarative && (!pred.evaluate || typeof pred.evaluate !== 'function')) {
+          pred.evaluate = (context: Record<string, unknown>) =>
+            DeclarativePredicateEvaluator.evaluate(pred.declarative!, context);
+        }
+      }
+    }
+  }
+
+  public hydrateCapability(cap: FunctionalCapabilityFingerprint): FunctionalCapabilityFingerprint {
+    if (!cap) return cap;
+    this.hydratePredicateList(cap.mandatoryPreStatePredicates);
+    this.hydratePredicateList(cap.allowedStateDelta);
+    this.hydratePredicateList(cap.expectedPostState);
+    this.hydratePredicateList(cap.requiredContextPredicates);
+    this.hydratePredicateList(cap.forbiddenContextPredicates);
+
+    if (cap.negativeEvidence) {
+      this.hydratePredicateList(cap.negativeEvidence.contradictionPredicates);
+      this.hydratePredicateList(cap.negativeEvidence.failedInvariantPredicates);
+    }
+    return cap;
   }
 
   private async checkAndMigrateSchema(): Promise<void> {
@@ -101,17 +157,28 @@ export class PersistentCapabilityStore {
     await this.persist();
   }
 
-  private async persist(): Promise<void> {
+  private persistSync(): void {
     this.inMemoryCache.metadata.lastUpdated = Date.now();
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem(this.storageKey, JSON.stringify(this.inMemoryCache));
+      } catch {}
+    } else {
+      PersistentCapabilityStore.nodeFallbackStorage.set(this.storageKey, JSON.stringify(this.inMemoryCache));
+    }
+  }
+
+  private async persist(): Promise<void> {
+    this.persistSync();
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
       await chrome.storage.local.set({ [this.storageKey]: this.inMemoryCache });
-    } else if (typeof localStorage !== 'undefined') {
-      localStorage.setItem(this.storageKey, JSON.stringify(this.inMemoryCache));
     }
   }
 
   // --- Capabilities ---
   public async saveCapability(cap: FunctionalCapabilityFingerprint): Promise<void> {
+    this.inMemoryCache.capabilities[cap.capabilityId] = cap;
+    this.persistSync();
     await this.init();
     this.inMemoryCache.capabilities[cap.capabilityId] = cap;
     await this.persist();
@@ -119,16 +186,21 @@ export class PersistentCapabilityStore {
 
   public async getCapability(capabilityId: string): Promise<FunctionalCapabilityFingerprint | null> {
     await this.init();
-    return this.inMemoryCache.capabilities[capabilityId] || null;
+    const cap = this.inMemoryCache.capabilities[capabilityId];
+    if (!cap) return null;
+    return this.hydrateCapability(cap);
   }
 
   public async getAllCapabilities(): Promise<FunctionalCapabilityFingerprint[]> {
     await this.init();
-    return Object.values(this.inMemoryCache.capabilities);
+    const caps = Object.values(this.inMemoryCache.capabilities);
+    return caps.map((c) => this.hydrateCapability(c));
   }
 
   // --- Capability Nodes & Graph ---
   public async saveCapabilityNode(node: CapabilityNode): Promise<void> {
+    this.inMemoryCache.capabilityNodes[node.capabilityId] = node;
+    this.persistSync();
     await this.init();
     this.inMemoryCache.capabilityNodes[node.capabilityId] = node;
     await this.persist();
@@ -146,6 +218,8 @@ export class PersistentCapabilityStore {
 
   // --- Interface States ---
   public async saveInterfaceState(state: InterfaceStateNode): Promise<void> {
+    this.inMemoryCache.interfaceStates[state.stateId] = state;
+    this.persistSync();
     await this.init();
     this.inMemoryCache.interfaceStates[state.stateId] = state;
     await this.persist();
@@ -163,6 +237,15 @@ export class PersistentCapabilityStore {
 
   // --- Route Versions ---
   public async saveRouteVersion(route: RouteVersion): Promise<void> {
+    this.inMemoryCache.routeVersions[route.routeId] = route;
+    const n = this.inMemoryCache.capabilityNodes[route.capabilityId];
+    if (n) {
+      n.routeVersions[route.routeId] = route;
+      if (route.status === 'ACTIVE_VALIDATED') {
+        n.activeRouteId = route.routeId;
+      }
+    }
+    this.persistSync();
     await this.init();
     this.inMemoryCache.routeVersions[route.routeId] = route;
     // Also update capability node if present
@@ -191,6 +274,9 @@ export class PersistentCapabilityStore {
   public async saveValidationRecord(record: ValidationRecord): Promise<void> {
     await this.init();
     this.inMemoryCache.validationRecords.push(record);
+    if (this.inMemoryCache.validationRecords.length > 50) {
+      this.inMemoryCache.validationRecords = this.inMemoryCache.validationRecords.slice(-50);
+    }
     await this.persist();
   }
 
@@ -204,6 +290,9 @@ export class PersistentCapabilityStore {
   public async saveNegativeEvidence(evidence: ContradictionEvidence): Promise<void> {
     await this.init();
     this.inMemoryCache.negativeEvidence.push(evidence);
+    if (this.inMemoryCache.negativeEvidence.length > 50) {
+      this.inMemoryCache.negativeEvidence = this.inMemoryCache.negativeEvidence.slice(-50);
+    }
     await this.persist();
   }
 
@@ -221,6 +310,9 @@ export class PersistentCapabilityStore {
   }): Promise<void> {
     await this.init();
     this.inMemoryCache.driftHistory.push(record);
+    if (this.inMemoryCache.driftHistory.length > 50) {
+      this.inMemoryCache.driftHistory = this.inMemoryCache.driftHistory.slice(-50);
+    }
     await this.persist();
   }
 
@@ -245,3 +337,4 @@ export class PersistentCapabilityStore {
     await this.persist();
   }
 }
+

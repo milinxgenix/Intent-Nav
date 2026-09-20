@@ -37,7 +37,6 @@ describe('CapabilityGraphEngine & RouteManager', () => {
       semanticLandmarks: ['main', 'nav'],
       activeModalsOrDialogs: [],
       activeTabs: [],
-      exposedCapabilityIds: [],
       timestamp: Date.now(),
     };
 
@@ -49,7 +48,6 @@ describe('CapabilityGraphEngine & RouteManager', () => {
       semanticLandmarks: ['section[Notifications]'],
       activeModalsOrDialogs: [],
       activeTabs: ['Notifications'],
-      exposedCapabilityIds: ['CAP_DISABLE_MARKETING'],
       timestamp: Date.now(),
     };
 

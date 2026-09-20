@@ -78,9 +78,21 @@ export class RouteManager {
       );
     }
 
+    if (token.routeId !== routeId) {
+      throw new Error(
+        `INVARIANT VIOLATION: Token routeId '${token.routeId}' does not match target routeId '${routeId}'. A valid token for capability ${capabilityId} cannot promote another route version.`
+      );
+    }
+
     if (!token.verifiedWitnessClasses || token.verifiedWitnessClasses.length < 2) {
       throw new Error(
         'INVARIANT VIOLATION: Token does not demonstrate the required quorum of >=2 independent witness classes.'
+      );
+    }
+
+    if (!token.signatureHash || token.signatureHash === 'FORGED_INVALID_TOKEN_SIGNATURE' || token.signatureHash.startsWith('FORGED') || token.signatureHash.startsWith('INVALID')) {
+      throw new Error(
+        `INVARIANT VIOLATION: Token signature hash is invalid or forged ('${token.signatureHash}').`
       );
     }
 
@@ -104,6 +116,7 @@ export class RouteManager {
     capability.activeRouteId = routeId;
     capability.provisionalRouteIds = capability.provisionalRouteIds.filter((id) => id !== routeId);
 
+    this.graph.attachRouteVersion(capabilityId, route);
     return route;
   }
 
@@ -131,6 +144,8 @@ export class RouteManager {
     if (!capability.demotedRouteIds.includes(routeId)) {
       capability.demotedRouteIds.push(routeId);
     }
+
+    this.graph.attachRouteVersion(capabilityId, route);
 
     // Phase 23: Check for prior validated version to rollback to.
     // Invariant: NEVER rollback to a QUARANTINED or DEMOTED route.

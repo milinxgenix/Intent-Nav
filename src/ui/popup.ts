@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const navigateBtn = document.getElementById('navigateBtn') as HTMLButtonElement;
   const researchModeCheckbox = document.getElementById('researchModeCheckbox') as HTMLInputElement;
   const researchPanel = document.getElementById('researchPanel') as HTMLElement;
-  const normalSummary = document.getElementById('normalSummary') as HTMLElement;
 
   const statusBanner = document.getElementById('statusBanner') as HTMLElement;
   const statusIcon = document.getElementById('statusIcon') as HTMLElement;
@@ -35,8 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const quorumBox = document.getElementById('quorumBox') as HTMLElement;
   const exportAuditBtn = document.getElementById('exportAuditBtn') as HTMLButtonElement;
   const auditLogContainer = document.getElementById('auditLogContainer') as HTMLElement;
-
-  let currentGoal = '';
 
   // Mode Toggle
   researchModeCheckbox.addEventListener('change', () => {
@@ -92,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function handleExecute(userConfirmationGranted: boolean) {
     const goal = intentInput.value.trim();
     if (!goal) return;
-    currentGoal = goal;
 
     updateStatus('idle', 'Observing interface and normalizing functional intent...');
 

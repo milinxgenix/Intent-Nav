@@ -113,45 +113,63 @@ export class CandidateGenerator {
       const isLink = role === 'link' || el.tagName.toLowerCase() === 'a';
 
       if (isSwitch) {
-        observedActionType = 'TOGGLE';
+        observedActionType = 'MODIFY_PREFERENCE';
       } else if (isButton) {
-        if (/delete|remove|erase|purge|destroy/i.test(accessibleName)) {
+        if (/delete|remove|erase|purge|destroy|wipe/i.test(accessibleName) && !/2fa|two[-\s]*factor|mfa/i.test(accessibleName)) {
           observedActionType = 'DELETE';
-        } else if (/export|download|archive/i.test(accessibleName)) {
+        } else if (/export|download|archive|receipt|invoice/i.test(accessibleName)) {
           observedActionType = 'EXPORT_DATA';
-        } else if (/pause|deactivate|suspend|close account|break/i.test(accessibleName)) {
+        } else if (/pause|deactivate|suspend|close account|break|hibernate/i.test(accessibleName)) {
           observedActionType = 'DEACTIVATE_ACCOUNT';
-        } else if (/turn off 2fa|disable 2fa|remove 2fa|disable mfa|revoke/i.test(accessibleName)) {
+        } else if (/(turn off|disable|remove|revoke|disconnect|sign out).*?(2fa|two[-\s]*factor|mfa|session|device)/i.test(accessibleName) || /turn off 2fa|disable 2fa|remove 2fa|disable mfa|revoke/i.test(accessibleName)) {
           observedActionType = 'REVOKE_ACCESS';
-        } else if (/turn on 2fa|enable 2fa|setup 2fa|enroll/i.test(accessibleName)) {
+        } else if (/(turn on|enable|setup|enroll).*?(2fa|two[-\s]*factor|mfa)/i.test(accessibleName) || /turn on 2fa|enable 2fa|setup 2fa|enroll/i.test(accessibleName)) {
           observedActionType = 'AUTHENTICATE';
+        } else if (/audit|log|view|show|display|trail/i.test(accessibleName)) {
+          observedActionType = 'VIEW';
         } else if (/submit|save|update|confirm/i.test(accessibleName)) {
           observedActionType = 'SUBMIT';
         } else {
           observedActionType = 'MODIFY_PREFERENCE';
         }
       } else if (isLink) {
-        observedActionType = 'NAVIGATE';
+        if (/audit|log|view|show|display|trail/i.test(accessibleName)) {
+          observedActionType = 'VIEW';
+        } else {
+          observedActionType = 'NAVIGATE';
+        }
       }
 
       // 5. Infer Target Entity from Combined DOM Semantics
       let observedTargetEntity = 'UNKNOWN';
       if (/all notification|global alert|every alert|indiscriminately|entire platform|all account notification/i.test(combinedContext)) {
         observedTargetEntity = 'ALL_NOTIFICATIONS';
+      } else if (/all security|entire security|wipe security|all account security/i.test(combinedContext)) {
+        observedTargetEntity = 'ALL_SECURITY';
+      } else if (/all data|wipe all|erase all personal/i.test(combinedContext)) {
+        observedTargetEntity = 'ALL_DATA';
+      } else if (/organization|all org members|entire org/i.test(combinedContext)) {
+        observedTargetEntity = 'ORGANIZATION_USERS';
+      } else if (/invoice|receipt|billing|payment/i.test(combinedContext)) {
+        observedTargetEntity = 'BILLING_PREFERENCES';
+      } else if (/audit|sign-in log|access ledger|activity trail|audit trail|security event/i.test(combinedContext)) {
+        observedTargetEntity = 'SECURITY_SETTINGS';
+      } else if (/session|device|disconnect|sign out all/i.test(combinedContext)) {
+        observedTargetEntity = 'SECURITY_SETTINGS';
+      } else if (/theme|dark mode|night mode|display|contrast/i.test(combinedContext)) {
+        observedTargetEntity = 'UI_THEME';
       } else if (/marketing|promot|newsletter|campaign|bulletin/i.test(combinedContext)) {
         observedTargetEntity = 'MARKETING_NOTIFICATIONS';
-      } else if (/export|download|my data|gdpr|personal record|data archive/i.test(combinedContext)) {
+      } else if (/export|download.*?(data|record|archive|information)|my data|gdpr|personal (data|record|archive|information)/i.test(combinedContext)) {
         observedTargetEntity = 'PERSONAL_DATA_EXPORT';
       } else if (/2fa|two-factor|two step|mfa|authenticat|security code/i.test(combinedContext)) {
         observedTargetEntity = 'TWO_FACTOR_AUTH';
-      } else if (/security|password|credential/i.test(combinedContext)) {
-        observedTargetEntity = 'SECURITY_SETTINGS';
       } else if (/tracking|cookie|telemetry|analytics|behavioral/i.test(combinedContext)) {
         observedTargetEntity = 'PRIVACY_SETTINGS';
-      } else if (/deactivate|pause account|suspend profile|close account|membership hiatus/i.test(combinedContext)) {
+      } else if (/deactivate|pause account|suspend profile|close account|membership hiatus|hibernate/i.test(combinedContext)) {
         observedTargetEntity = 'ACCOUNT_STATUS';
-      } else if (/billing|payment|credit card|invoice/i.test(combinedContext)) {
-        observedTargetEntity = 'BILLING_PREFERENCES';
+      } else if (/security|password|credential/i.test(combinedContext)) {
+        observedTargetEntity = 'SECURITY_SETTINGS';
       }
 
       // 6. Volatile Binding Handle for Browser Dispatch (BindingHandle != CapabilityIdentity)
@@ -179,6 +197,24 @@ export class CandidateGenerator {
         role,
       });
 
+      const docView = (container as Document).defaultView || container.ownerDocument?.defaultView || (typeof window !== 'undefined' ? window : null);
+      const appState = (docView as any)?.IntentNavMockState || {};
+      const defaultAppState = {
+        marketing_notifications_enabled: true,
+        marketing_emails_enabled: true,
+        two_factor_enabled: true,
+        export_download_initiated: false,
+        account_deactivated: false,
+        account_active: true,
+        analytics_tracking_enabled: true,
+        active_session_count: 3,
+        dark_mode_enabled: false,
+        invoice_available: true,
+        invoice_download_triggered: false,
+        audit_logs_available: true,
+        audit_logs_visible: false,
+      };
+
       candidates.push({
         candidateId,
         candidateLabel: accessibleName,
@@ -187,7 +223,10 @@ export class CandidateGenerator {
         observedRole: role,
         containerSemantics,
         ancestors: ancestorDescriptions,
+        nearbyText: nearbyTexts,
         observedState: {
+          ...defaultAppState,
+          ...appState,
           disabled: (el as HTMLButtonElement).disabled ?? false,
           checked:
             el.getAttribute('aria-checked') !== null

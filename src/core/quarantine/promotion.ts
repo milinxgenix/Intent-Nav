@@ -12,6 +12,7 @@ export interface PromotionDecision {
   promoted: boolean;
   route: RouteVersion;
   reason: string;
+  failureReason?: string;
   rollbackRoute?: RouteVersion | null;
 }
 
@@ -41,20 +42,36 @@ export class RoutePromotionController {
         promoted: false,
         route: quarantined,
         reason: `Promotion DENIED: Transition verification failed (${verificationResult.status})`,
+        failureReason: verificationResult.failureReason || 'verification_failed',
       };
     }
 
     // Causally verified: promote to ACTIVE_VALIDATED using TransitionVerificationToken
-    const activeRoute = this.routeManager.promoteToActive(
-      capabilityId,
-      routeId,
-      verificationResult.verificationToken
-    );
-    return {
-      promoted: true,
-      route: activeRoute,
-      reason: 'PROMOTED to ACTIVE_VALIDATED: Causal transition verified with required witnesses',
-    };
+    try {
+      const activeRoute = this.routeManager.promoteToActive(
+        capabilityId,
+        routeId,
+        verificationResult.verificationToken
+      );
+      return {
+        promoted: true,
+        route: activeRoute,
+        reason: 'PROMOTED to ACTIVE_VALIDATED: Causal transition verified with required witnesses',
+      };
+    } catch (err: any) {
+      const quarantined = this.quarantineController.quarantineFailedRoute(
+        capabilityId,
+        routeId,
+        err.message || 'Promotion rejected: invalid verification token',
+        { verificationResult }
+      );
+      return {
+        promoted: false,
+        route: quarantined,
+        reason: `Promotion REJECTED: ${err.message}`,
+        failureReason: 'invalid_promotion_token',
+      };
+    }
   }
 
   /**

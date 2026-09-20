@@ -108,3 +108,4 @@ Existing automation paradigms (DOM selector replay, keyword search, embedding-on
 - **`test/`**: Unit tests, 26 adversarial matrix scenarios (A-Z), and 10 formal safety properties.
 - **`benchmark/`**: 60-intent benchmark harness and 4 comparative baseline architectures.
 - **`docs/`**: Complete patent specification, coverage matrix, and technical documentation.
+

@@ -3,9 +3,9 @@
 > **A Self-Adaptive Functional Capability Identity, Drift-Localized Invariant Re-Binding, Causal Transition Verification, and Risk-Gated Navigation System for Dynamic Web Interfaces**
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
-[![Tests](https://img.shields.io/badge/tests-69%2F69%20passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-129%2F129%20passing-brightgreen.svg)]()
 [![Manifest](https://img.shields.io/badge/Manifest-V3%20Chromium-blue.svg)]()
-[![Patent Claims](https://img.shields.io/badge/Claims-1--17%20Implemented-success.svg)]()
+[![Patent Claims](https://img.shields.io/badge/Claims-1--20%20Implemented-success.svg)]()
 [![Local First](https://img.shields.io/badge/security-local--first%20zero--exfiltration-purple.svg)]()
 
 ---
@@ -140,20 +140,30 @@ The system was evaluated against four baseline paradigms across 60 intents on 4 
 ### Prerequisites
 - Node.js $\ge$ 20.0.0 (`node -v`)
 - npm $\ge$ 10.0.0 (`npm -v`)
+- Google Chrome or Chromium installed (for CDP E2E verification)
 
 ### Build & Run Tests
 ```bash
 # Install dependencies
 npm install
 
-# Build the Chromium Manifest V3 extension bundle
+# Build the Chromium Manifest V3 extension bundle & in-browser controller
 npm run build
 
-# Run all 14 test suites (69 tests including adversarial & property suites)
+# Run all 21 automated test suites (129 unit, causal, adversarial, and property tests)
 npm test
 ```
 
-### Run Benchmark Suite (1,200 Runs)
+### Real Google Chrome Headless CDP E2E Verification
+```bash
+# Run real closed-loop IntentNav execution in genuine Google Chrome (Scenarios A through J)
+npm run test:e2e:chromium
+
+# Validate raw 30-field evidence records against all 10 consistency checks
+npm run validate:evidence
+```
+
+### Run Benchmark Suite (2,000 Runs)
 ```bash
 npx tsx benchmark/runner.ts
 ```
@@ -161,7 +171,7 @@ npx tsx benchmark/runner.ts
 ### Serve Mock Test Sites
 ```bash
 node scripts/serveMocks.js
-# Access Sites A–D at http://localhost:8080/site-a/ ... /site-d/
+# Access Sites A–D at http://localhost:3000/mock-sites/site-a/ ... /site-d/
 ```
 
 ### Load Extension in Chrome / Chromium
@@ -172,26 +182,30 @@ node scripts/serveMocks.js
 
 ---
 
-## 7. Patent Claim Coverage (Claims 1–17)
+## 7. Authoritative Patent Claim Coverage (Claims 1–20)
 
-Every claimed mechanism is implemented in concrete TypeScript code, exercised by unit and property tests, and documented with cryptographic evidence:
+Every claimed mechanism from the governing specification (`v6.docx`) and [`docs/CLAIM_RECONCILIATION.md`](file:///Users/kumarmilind/Desktop/Navigation/docs/CLAIM_RECONCILIATION.md) v2.0 is implemented in production TypeScript code and verified across automated tests and real Chromium browser runs:
 
-- **Claim 1**: Core Closed-Loop Adaptive Navigation Architecture (`src/core/stateMachine/machine.ts`)
-- **Claim 2**: Persistent Functional Capability Identity Construction (`src/core/fingerprint/constructor.ts`)
-- **Claim 3**: Volatile Presentation Feature Suppressor (`src/core/fingerprint/suppressor.ts`)
-- **Claim 4**: Decoupled Capability-State Graph & Route Versions (`src/core/graph/capabilityGraph.ts`)
-- **Claim 5**: 5-Dimensional Typed Drift Localization Engine (`src/core/drift/detector.ts`)
-- **Claim 6**: Explanatory Drift Action Classifier (`src/core/drift/classifier.ts`)
-- **Claim 7**: Invariant Closure Gate Preceding Candidate Ranking (`src/core/candidate/pipeline.ts`)
-- **Claim 8**: Persistent Contradiction & Negative Evidence Repository (`src/core/contradiction/store.ts`)
-- **Claim 9**: Multi-Factor Re-Binding Post-Gate Scoring (`src/core/ranking/engine.ts`)
-- **Claim 10**: Multi-Class Causal Transition Verifier ($\ge 2$ witness classes) (`src/core/causal/verifier.ts`)
-- **Claim 11**: Provisional Route Quarantine Controller (`src/core/quarantine/controller.ts`)
-- **Claim 12**: Decoupled Execution Authorization & Risk Gating (`src/core/authorization/controller.ts`)
-- **Claim 13**: Dynamic Interface State Observer & Sanitizer (`src/browser/observer/interfaceObserver.ts`)
-- **Claim 14**: Mutation-Triggered Drift Detection & Rebind Interception (`src/browser/contentScript.ts`)
-- **Claim 15**: Immutable Cryptographic Audit Logger (`src/core/audit/logger.ts`)
-- **Claim 16**: Manifest V3 Chromium Extension Architecture (`manifest.json`, `background.ts`)
-- **Claim 17**: Dual-Mode Extension User Interface (`src/ui/popup.ts`, `src/ui/popup.html`)
+- **Claim 1 (REQ-C1)**: Closed-Loop Adaptive Navigation System Controller (`src/core/stateMachine/machine.ts`)
+- **Claim 2 (REQ-C2)**: Volatile Presentation Attribute Suppressor (`src/core/fingerprint/suppressor.ts`)
+- **Claim 3 (REQ-C3)**: Critical Invariant Closure Gate Preceding Ranking (`src/core/invariant/engine.ts`)
+- **Claim 4 (REQ-C4)**: 5D Typed Interface-Drift Localization Vector $[P, C, S, Cap, T]$ (`src/core/drift/detector.ts`, `classifier.ts`)
+- **Claim 5 (REQ-C5)**: Pre-Ranking Re-Binding Score Gate & Similarity Limits (`src/core/candidate/pipeline.ts`, `ranking/engine.ts`)
+- **Claim 6 (REQ-C6)**: Contradiction Predicates & Adversarial Decoy Rejection (`src/core/contradiction/store.ts`, `invariant/predicates.ts`)
+- **Claim 7 (REQ-C7)**: Ordered Transition Signature & Witness Quorum ($\ge 2$ classes) (`src/core/causal/verifier.ts`)
+- **Claim 8 (REQ-C8)**: Six Independent Transition Witness Classes (`src/core/causal/witnessCollector.ts`, `types/transition.ts`)
+- **Claim 9 (REQ-C9)**: Provisional Route Quarantine Controller & Negative Evidence (`src/core/quarantine/controller.ts`, `graph/routeManager.ts`)
+- **Claim 10 (REQ-C10)**: Route Demotion, Version Rollback & Historical Evidence (`src/core/quarantine/promotion.ts`, `graph/routeManager.ts`)
+- **Claim 11 (REQ-C11)**: Local Browser Runtime Boundary & Zero-Credential Egress (`src/core/intent/normalizer.ts`, `browser/contentScript.ts`)
+- **Claim 12 (REQ-C12)**: Browser Extension Architecture Subsystem (`manifest.json`, `background.ts`, `contentScript.ts`, `ui/popup.ts`)
+- **Claim 13 (REQ-C13)**: Non-Silent Fail-Safe Fallback State Machine (`src/core/causal/verifier.ts`, `stateMachine/machine.ts`)
+- **Claim 14 (REQ-C14)**: Decoupled Risk Gate & Multi-Source Evidence Quorum (`src/core/authorization/quorum.ts`, `authorization/controller.ts`)
+- **Claim 15 (REQ-C15)**: Validation Record Monotonic Sequencing & Timestamp Verification (`src/core/causal/verifier.ts`, `types/transition.ts`)
+- **Claim 16 (REQ-C16)**: Quarantined Negative Evidence Signature & Selection Suppression (`src/core/storage/persistentStore.ts`, `types/negativeEvidence.ts`)
+- **Claim 17 (REQ-C17)**: Route Version State Machine Transitions (`src/core/graph/routeManager.ts`, `quarantine/promotion.ts`)
+- **Claim 18 (REQ-C18)**: Multi-Factor Route Confidence & Negative Authority Boundaries (`src/core/ranking/engine.ts`, `authorization/controller.ts`)
+- **Claim 19 (REQ-C19)**: Statutory Computing System Processor & Subsystem Architecture (`src/index.ts`, `core/stateMachine/machine.ts`)
+- **Claim 20 (REQ-C20)**: Statutory Computer-Readable Non-Transitory Medium & Build Artifacts (`package.json`, `dist/`)
 
-For complete claim traceability, see [`docs/CLAIM_COVERAGE_MATRIX.md`](file:///Users/kumarmilind/Desktop/Navigation/docs/CLAIM_COVERAGE_MATRIX.md) and [`docs/FINAL_TECHNICAL_AUDIT.md`](file:///Users/kumarmilind/Desktop/Navigation/docs/FINAL_TECHNICAL_AUDIT.md).
+For complete claim traceability, see [`docs/CLAIM_COVERAGE_MATRIX.md`](file:///Users/kumarmilind/Desktop/Navigation/docs/CLAIM_COVERAGE_MATRIX.md) and [`docs/BENCHMARKS.md`](file:///Users/kumarmilind/Desktop/Navigation/docs/BENCHMARKS.md).
+
