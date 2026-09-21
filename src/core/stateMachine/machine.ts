@@ -413,7 +413,9 @@ export class IntentNavMachine {
           observedTargetEntity: observedFeatures.observedTargetEntity || matchedCap.targetEntity,
           observedRole: observedFeatures.role || targetStep?.targetRole || handle.role,
           bindingHandle: handle,
-          observedState: observedFeatures.observedPreState || { disabled: false },
+          observedState: observedFeatures.observedPreState
+            ? { disabled: false, ...observedFeatures.observedPreState }
+            : { disabled: false },
           containerSemantics: observedFeatures.containerSemantics || (matchedCap.contextEvidence?.containerSemantics ? [...matchedCap.contextEvidence.containerSemantics] : []),
           ancestors: observedFeatures.ancestors || (matchedCap.contextEvidence?.ancestorRelationships ? [...matchedCap.contextEvidence.ancestorRelationships] : []),
           nearbyText: observedFeatures.nearbyText || (matchedCap.contextEvidence?.nearbyText ? [...matchedCap.contextEvidence.nearbyText] : []),
@@ -439,25 +441,32 @@ export class IntentNavMachine {
       }
 
       selectedWinnerContext = activeCandidate;
-      this.context.selectedCandidate = {
-        candidateId: activeCandidate.candidateId,
-        candidateLabel: activeCandidate.candidateLabel,
-        isEligible: true,
-        rank: 1,
-        weightsVersion: 'v1.0.0',
-        scoreBreakdown: {
-          invariantFit: 1.0,
-          semanticFit: 1.0,
-          contextFit: 1.0,
-          transitionFit: 1.0,
-          validationHistory: 1.0,
-          contradictionPenalty: 0.0,
-          stalenessPenalty: 0.0,
-          riskPenalty: 0.0,
-          pathCostPenalty: 0.0,
-          totalScore: activeRoute.confidenceScore || 1.0,
-        },
-      };
+      const activeRankResults = this.rankingEngine.rankCandidates(matchedCap, [activeCandidate], {
+        intent: this.context.normalizedIntent?.rawGoal || this.context.normalizedIntent?.normalizedGoal,
+      });
+      if (activeRankResults.length > 0 && activeRankResults[0]) {
+        this.context.selectedCandidate = activeRankResults[0];
+      } else {
+        this.context.selectedCandidate = {
+          candidateId: activeCandidate.candidateId,
+          candidateLabel: activeCandidate.candidateLabel,
+          isEligible: true,
+          rank: 1,
+          weightsVersion: 'v1.0.0',
+          scoreBreakdown: {
+            invariantFit: 1.0,
+            semanticFit: 0.0,
+            contextFit: 0.0,
+            transitionFit: 0.0,
+            validationHistory: 0.0,
+            contradictionPenalty: 0.0,
+            stalenessPenalty: 0.0,
+            riskPenalty: 0.0,
+            pathCostPenalty: 0.0,
+            totalScore: activeRoute.confidenceScore || 1.0,
+          },
+        };
+      }
       routeToAuthorize = activeRoute;
     }
 

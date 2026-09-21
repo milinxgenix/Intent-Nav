@@ -221,6 +221,16 @@ export class InvariantPredicates {
           notes.push(`Delta predicate evaluation threw for '${delta.property}'`);
           compatible = false;
         }
+      } else if (delta.declarative) {
+        try {
+          if (!DeclarativePredicateEvaluator.evaluate(delta.declarative, observedState)) {
+            notes.push(`Delta declarative predicate evaluation failed for '${delta.property}'`);
+            compatible = false;
+          }
+        } catch {
+          notes.push(`Delta declarative predicate evaluation threw for '${delta.property}'`);
+          compatible = false;
+        }
       }
 
       // 3. Directional transition checks
@@ -232,7 +242,7 @@ export class InvariantPredicates {
             notes.push(`Control is already unchecked; cannot transition ENABLED_TO_DISABLED`);
             compatible = false;
           }
-        } else if (observedState[delta.property] !== undefined && observedState[delta.property] === false) {
+        } else if (observedState[delta.property] !== undefined && (observedState[delta.property] === false || observedState[delta.property] === 'disabled')) {
           notes.push(`Property '${delta.property}' is already false/disabled; cannot transition ENABLED_TO_DISABLED`);
           compatible = false;
         }
@@ -250,7 +260,7 @@ export class InvariantPredicates {
             notes.push(`Control is already checked; cannot transition DISABLED_TO_ENABLED`);
             compatible = false;
           }
-        } else if (observedState[delta.property] !== undefined && observedState[delta.property] === true) {
+        } else if (observedState[delta.property] !== undefined && (observedState[delta.property] === true || observedState[delta.property] === 'enabled')) {
           notes.push(`Property '${delta.property}' is already true/enabled; cannot transition DISABLED_TO_ENABLED`);
           compatible = false;
         }
@@ -266,11 +276,19 @@ export class InvariantPredicates {
           compatible = false;
         }
       } else if (delta.expectedChange === 'ADDED') {
+        if (observedAction && ['VIEW', 'READ', 'INSPECT'].includes(observedAction.toUpperCase())) {
+          notes.push(`Action '${observedAction}' is read-only; cannot produce ADDED delta on '${delta.property}'`);
+          compatible = false;
+        }
         if (observedState[delta.property] !== undefined && observedState[delta.property] !== null) {
           notes.push(`Property '${delta.property}' already exists; cannot transition ADDED`);
           compatible = false;
         }
       } else if (delta.expectedChange === 'REMOVED') {
+        if (observedAction && ['VIEW', 'READ', 'INSPECT'].includes(observedAction.toUpperCase())) {
+          notes.push(`Action '${observedAction}' is read-only; cannot produce REMOVED delta on '${delta.property}'`);
+          compatible = false;
+        }
         if (observedState[delta.property] === undefined || observedState[delta.property] === null) {
           notes.push(`Property '${delta.property}' does not exist; cannot transition REMOVED`);
           compatible = false;
@@ -334,8 +352,23 @@ export class InvariantPredicates {
 
     const label = (candidateLabel || '').toLowerCase();
     const target = (observedTarget || '').toLowerCase();
+    const action = (_observedAction || '').toUpperCase();
 
     for (const post of expectedPostState) {
+      // If expected post-state is completely undefined / unknown
+      if (post.expectedValue === undefined && !post.evaluate && !post.declarative) {
+        return {
+          predicateId: 'POS_PRED_EXPECTED_POST_STATE',
+          predicateName: 'Expected Post-State Compatibility',
+          isNegativePredicate: false,
+          passed: false,
+          hasInsufficientEvidence: true,
+          explanation: `Expected post-state value for '${post.property}' is unknown/undefined`,
+          observedValue: undefined,
+          expectedValue: undefined,
+        };
+      }
+
       // 2. Pre-State / Post-State Conflict: If the pre-state already equals expected post-state, cannot transition
       if (observedState && observedState[post.property] !== undefined && observedState[post.property] === post.expectedValue) {
         return {
@@ -349,7 +382,53 @@ export class InvariantPredicates {
         };
       }
 
-      // 3. Directional Semantic Contradiction
+      // Check if candidate contains observed projected post-state that mismatches expected value
+      if (observedState) {
+        const postVal =
+          observedState['post_' + post.property] ??
+          (observedState['postState'] as Record<string, unknown> | undefined)?.[post.property] ??
+          (observedState['projectedPostState'] as Record<string, unknown> | undefined)?.[post.property];
+        if (postVal !== undefined && post.expectedValue !== undefined && postVal !== post.expectedValue) {
+          return {
+            predicateId: 'POS_PRED_EXPECTED_POST_STATE',
+            predicateName: 'Expected Post-State Compatibility',
+            isNegativePredicate: false,
+            passed: false,
+            explanation: `Observed post-state for '${post.property}' (${postVal}) mismatches expected value (${post.expectedValue})`,
+            observedValue: postVal,
+            expectedValue: post.expectedValue,
+          };
+        }
+      }
+
+      // 3. Directional Semantic Contradiction from Action Type
+      if (post.expectedValue === false) {
+        if (['ACTIVATE', 'ENABLE', 'OPT_IN'].includes(action)) {
+          return {
+            predicateId: 'POS_PRED_EXPECTED_POST_STATE',
+            predicateName: 'Expected Post-State Compatibility',
+            isNegativePredicate: false,
+            passed: false,
+            explanation: `Candidate action '${_observedAction}' contradicts expected post-state (${post.property} = false)`,
+            observedValue: _observedAction,
+            expectedValue: post.expectedValue,
+          };
+        }
+      } else if (post.expectedValue === true) {
+        if (['DISABLE', 'DEACTIVATE', 'OPT_OUT', 'REVOKE_ACCESS'].includes(action)) {
+          return {
+            predicateId: 'POS_PRED_EXPECTED_POST_STATE',
+            predicateName: 'Expected Post-State Compatibility',
+            isNegativePredicate: false,
+            passed: false,
+            explanation: `Candidate action '${_observedAction}' contradicts expected post-state (${post.property} = true)`,
+            observedValue: _observedAction,
+            expectedValue: post.expectedValue,
+          };
+        }
+      }
+
+      // 4. Directional Semantic Contradiction from Label
       if (label) {
         if (post.expectedValue === false) {
           const indicatesEnableOnly =
@@ -384,7 +463,7 @@ export class InvariantPredicates {
         }
       }
 
-      // 4. Missing Evidence: If candidate evidence connecting to the post-state property is unknown
+      // 5. Missing Evidence: If candidate evidence connecting to the post-state property is unknown
       const propKeyword = post.property.replace(/_enabled|_initiated|_triggered|_visible|_active/g, '').replace(/_/g, ' ').trim().toLowerCase();
       const targetMatchesProp = Boolean(
         target &&
@@ -498,10 +577,19 @@ export class InvariantPredicates {
     let foundForbidden: string | null = null;
 
     for (const ctx of forbiddenContext) {
-      if (fullContext.includes(ctx.pattern.toLowerCase())) {
-        foundForbidden = ctx.pattern;
-        break;
+      const pat = ctx.pattern.toLowerCase();
+      if (pat.includes('|')) {
+        const subPatterns = pat.split('|').map((p) => p.trim()).filter(Boolean);
+        for (const sp of subPatterns) {
+          if (fullContext.includes(sp)) {
+            foundForbidden = sp;
+            break;
+          }
+        }
+      } else if (fullContext.includes(pat)) {
+        foundForbidden = pat;
       }
+      if (foundForbidden) break;
     }
 
     return {

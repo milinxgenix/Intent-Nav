@@ -75,7 +75,22 @@ export class InvariantClosureEngine {
     if (targetFingerprint.mandatoryPreStatePredicates.length > 0) {
       if (!candidate.observedState || Object.keys(candidate.observedState).length === 0) {
         hasInsufficientEvidence = true;
-        insufficientReason = 'Candidate observedState is missing for mandatory pre-state verification';
+        const missingProps = targetFingerprint.mandatoryPreStatePredicates
+          .map((p) => p.declarative?.property || p.name)
+          .join(', ');
+        insufficientReason = `Candidate observedState is missing mandatory pre-state evidence for '${missingProps}'`;
+        for (const pred of targetFingerprint.mandatoryPreStatePredicates) {
+          failedPredicates.push({
+            predicateId: pred.id,
+            predicateName: pred.name,
+            isNegativePredicate: false,
+            passed: false,
+            hasInsufficientEvidence: true,
+            explanation: `Pre-state evidence missing for predicate '${pred.name}'`,
+            observedValue: undefined,
+            expectedValue: pred.declarative?.expectedValue ?? pred.declarative?.expectedValues,
+          });
+        }
       } else {
         for (const pred of targetFingerprint.mandatoryPreStatePredicates) {
           const propName = pred.declarative?.property;
@@ -91,6 +106,7 @@ export class InvariantClosureEngine {
               predicateName: pred.name,
               isNegativePredicate: false,
               passed: false,
+              hasInsufficientEvidence: true,
               explanation: `Pre-state evidence missing for '${propName}' required by predicate '${pred.name}'`,
               observedValue: undefined,
               expectedValue: pred.declarative?.expectedValue ?? pred.declarative?.expectedValues,
@@ -128,8 +144,15 @@ export class InvariantClosureEngine {
       candidate.observedActionType,
       candidate.observedTargetEntity
     );
-    if (deltaCheck.passed) passedPredicates.push(deltaCheck);
-    else failedPredicates.push(deltaCheck);
+    if (deltaCheck.hasInsufficientEvidence) {
+      hasInsufficientEvidence = true;
+      insufficientReason = deltaCheck.explanation;
+      failedPredicates.push(deltaCheck);
+    } else if (deltaCheck.passed) {
+      passedPredicates.push(deltaCheck);
+    } else {
+      failedPredicates.push(deltaCheck);
+    }
 
     // 5. Expected Post-State Compatibility
     const postStateCheck = InvariantPredicates.matchExpectedPostState(
