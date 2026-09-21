@@ -1,27 +1,43 @@
-# IntentNav-SCFR: Empirical Benchmark Evaluation Report
-*Generated at: 2026-09-19T04:40:02.977Z*
+# IntentNav-SCFR: Controlled Simulated / JSDOM Benchmark Evaluation Report
+*Generated at: 2026-09-21T06:21:28.544Z*
 
-Comparative evaluation of **IntentNav-SCFR** against 4 alternative architectural baselines across Mock Sites A, B, C, and D over 100 benchmark user intents:
+> [!NOTE]
+> **Controlled Simulated JSDOM Benchmark**: This report evaluates comparative algorithmic disambiguation, invariant closure, and candidate ranking across simulated mock sites in a controlled JSDOM environment. Real browser execution evidence (including real Blink DOM mutations, live MV3 content scripts, CDP over WebSocket, and cryptographic authorization tokens) is separately evaluated and reported in `evidence/chromium_e2e_positive_evidence.json` and `evidence/chromium_e2e_negative_evidence.json`.
+>
+> **Scope Note on Simulated Transition Validation Rate**: This controlled JSDOM metric measures whether independently observed state/DOM changes match the expected capability delta. It does not constitute independent real-browser causal-transition verification.
 
-| System / Baseline | Top-1 Accuracy | UI-Change Recovery | Decoy Rejection | Causal Verification | Unauthorized High-Risk | Avg Latency (ms) |
+Comparative evaluation of **IntentNav-SCFR** against 4 alternative architectural baselines across Mock Sites A, B, C, and D over 100 benchmark user intents (2000 total trials):
+
+| System / Baseline | Top-1 Accuracy | UI-Change Recovery | Decoy Rejection | Simulated Transition Validation | Unauthorized High-Risk | Avg Latency (ms) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Baseline 1: Fixed Selector Replay** | 25.0% | 0.0% | 100.0% | 0.0% | **0** | 0.0ms |
 | **Baseline 2: Keyword String Matching** | 42.4% | 41.4% | 56.0% | 0.0% | **98** | 0.0ms |
-| **Baseline 3: Semantic-Only Matching** | 35.0% | 35.8% | 84.0% | 0.0% | **70** | 0.0ms |
+| **Baseline 3: Semantic-Only Matching** | 35.0% | 35.8% | 84.0% | 0.0% | **70** | 0.1ms |
 | **Baseline 4: Intent-to-Page Navigation** | 79.0% | 0.0% | 0.0% | 0.0% | **0** | 0.0ms |
-| **IntentNav-SCFR (Invention Prototype)** | 33.7% | 34.4% | 100.0% | 26.3% | **0** | 7.1ms |
+| **IntentNav-SCFR (Invention Prototype)** | 59.0% | 56.1% | 100.0% | 28.5% | **0** | 9.3ms |
 
 ## 2. Key Empirical Findings
 
 1. **Zero High-Risk Safety Violations**: IntentNav-SCFR achieved **0 unauthorized high-risk executions** due to the strict independence of Execution Authorization from Capability Confidence and the requirement for explicit evidence quorum.
 2. **100% Decoy Rejection via Invariant Closure**: On Mock Site D (Adversarial Decoys), semantic-only and keyword matching suffered false discovery rates up to 70%, selecting high-overlap destructive decoys. IntentNav-SCFR rejected 100% of functional decoys prior to candidate ranking.
 3. **Robustness to Volatile Identifiers**: On Mock Site C (random framework IDs and CSS classes), Fixed Selector Replay collapsed to 0% recovery, whereas IntentNav-SCFR maintained continuous functional recovery via relative structural invariant representations.
-4. **Causal Transition Verification**: 100% of recovered routes underwent provisional quarantine and were promoted only after multi-class causal transition verification.
+4. **Simulated Transition Validation Rate**: Evaluated candidate actions are validated against genuine observed DOM and mock application state deltas without synthetic delta injection. This controlled JSDOM metric measures whether independently observed state/DOM changes match the expected capability delta. It does not constitute independent real-browser causal-transition verification.
 
-## 3. Detailed Experiment Logs (2000 Total Runs)
+## 3. Resource & Interaction Telemetry
+
+| Metric | Measured Value | Scope / Environment |
+| :--- | :--- | :--- |
+| **Benchmark Duration** | 6214 ms | Node.js Test Harness (v20.17.0) |
+| **Process Peak RSS** | 680.8 MB | OS Process Level (darwin arm64) |
+| **Process Heap Used (End)** | 586.4 MB | V8 Heap Allocation |
+| **Process Heap Delta** | +547.1 MB | Net Heap Growth Across Trials |
+| **Process CPU Time** | User: 7826ms / Sys: 354ms | Total: 8180ms |
+| **Clicks Saved Metric** | `NOT_MEASURED` | Single-page mock application architectures have flat DOM access with all controls co-located; measuring manual clicks saved requires assuming arbitrary user navigation depth baselines without ground-truth recordings. |
+
+## 4. Detailed Experiment Logs (2000 Total Runs)
 
 First 10 sample runs:
-| Run ID | System | Site | Query | Selected Candidate | Status | Verified | Authorized |
+| Run ID | System | Site | Query | Selected Candidate | Status | Transition Validated | Authorized |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | EXP_0001_B1 | Baseline 1: Fixed Selector Replay | SiteA | "I want to stop promotiona..." | `btn-disable-marketing` | SUCCESS | NO | YES |
 | EXP_0001_B2 | Baseline 2: Keyword String Matching | SiteA | "I want to stop promotiona..." | `btn-disable-marketing` | SUCCESS | NO | YES |

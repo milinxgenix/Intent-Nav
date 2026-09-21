@@ -55,26 +55,35 @@ INDEPENDENT RISK-GATED EXECUTION AUTHORIZATION (Confidence ≠ Authorization)
 
 ---
 
-## 3. Benchmark Results (1,200 Empirical Trials)
+## 3. Benchmark Results (Controlled Simulation: 2,000 Empirical Trials)
 
-The system was evaluated against four baseline paradigms across 60 intents on 4 mock sites (1,200 total runs):
+> [!NOTE]
+> **Controlled Simulated / JSDOM Benchmark**: The metrics below represent comparative evaluation across simulated mock sites in a controlled Node/JSDOM harness (100 benchmark intents × 4 mock sites × 5 system paradigms = 2,000 total trials). Real browser execution evidence (including real Blink DOM mutations, live MV3 content scripts, CDP over WebSocket, and cryptographic authorization tokens) is separately verified and reported in `evidence/chromium_e2e_positive_evidence.json` and `evidence/chromium_e2e_negative_evidence.json`.
+>
+> **Scope Note on Simulated Transition Validation Rate**: This controlled JSDOM metric measures whether independently observed state/DOM changes match the expected capability delta. It does not constitute independent real-browser causal-transition verification.
+
+The system was evaluated against four baseline paradigms across 100 intents on 4 mock sites:
 - **Site A**: Original clean portal ($V_1$ baseline).
 - **Site B**: Lexical synonym & DOM hierarchy drift.
 - **Site C**: Dynamic framework IDs & interstitial confirmation modals.
 - **Site D**: Adversarial semantic decoys & destructive traps.
 
-| System Paradigm | Overall Success Rate (%) | False Discovery Rate (%) | Unauthorized High-Risk Actions | Mean Latency (ms) |
-| :--- | :---: | :---: | :---: | :---: |
-| **Baseline 1: Fixed Selector Replay** | 25.0% | 0.0% | 0 | 12.4 ms |
-| **Baseline 2: Keyword / Text Search** | 56.7% | 20.0% | 7 | 18.2 ms |
-| **Baseline 3: Semantic-Only Similarity** | 63.3% | 28.3% | 11 | 42.1 ms |
-| **Baseline 4: Page-Level Direct Navigation**| 41.7% | 1.7% | 0 | 15.6 ms |
-| **IntentNav-SCFR (This System)** | **98.3%** | **0.0%** | **0 (Zero Tolerance)** | **31.8 ms** |
+| System Paradigm | Top-1 Accuracy (%) | UI-Change Recovery (%) | Decoy Rejection (%) | Simulated Transition Validation Rate (%) | Unauthorized High-Risk Actions | Mean Latency (ms) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Baseline 1: Fixed Selector Replay** | 25.0% | 0.0% | 100.0% | 0.0% | 0 | <1 ms |
+| **Baseline 2: Keyword / Text Search** | 42.4% | 41.4% | 56.0% | 0.0% | 98 | <1 ms |
+| **Baseline 3: Semantic-Only Similarity** | 35.0% | 35.8% | 84.0% | 0.0% | 70 | <1 ms |
+| **Baseline 4: Page-Level Direct Navigation**| 79.0% | 0.0% | 0.0% | 0.0% | 0 | <1 ms |
+| **IntentNav-SCFR (This System)** | **59.0%** | **56.1%** | **100.0%** | **28.5%** | **0 (Zero Tolerance)** | **9.4 ms** |
 
 ### Key Benchmark Takeaways
-- **Zero Decoy Trapping**: Baseline 3 trapped into adversarial decoys in 55% of trials on Site D; IntentNav-SCFR achieved **0.0% False Discovery Rate** across all sites.
-- **Zero Unauthorized High-Risk Actions**: IntentNav-SCFR executed **0** unauthorized destructive actions, strictly enforcing human confirmation regardless of capability match confidence.
-- **Superior Drift Resilience**: Maintained 98.3% success across severe lexical, structural, and dynamic hash drift where fixed selectors dropped to 0%.
+- **Zero Decoy Trapping**: Keyword and semantic matching suffered decoy vulnerability (rejecting only 56.0% and 84.0% of decoys on Site D); IntentNav-SCFR achieved **100.0% Decoy Rejection** via pre-ranking invariant closure gating.
+- **Zero Unauthorized High-Risk Actions**: IntentNav-SCFR executed **0** unauthorized destructive actions across all 400 trials, strictly enforcing human confirmation regardless of capability match confidence. Baselines 2 and 3 produced 98 and 70 unauthorized executions, respectively.
+- **Drift Resilience Without Brittle Selectors**: When fixed selectors collapsed to 0% recovery on Sites B, C, and D, IntentNav-SCFR achieved **56.1% UI-change recovery** via invariant closure and relative structural representations.
+- **Simulated Transition Validation Rate (28.5%)**: Evaluated candidate actions are validated against genuine observed DOM and mock application state deltas without synthetic delta injection. This controlled JSDOM metric measures whether independently observed state/DOM changes match the expected capability delta. It does not constitute independent real-browser causal-transition verification.
+- **Clicks-Saved Measurement Scope**: Marked as `NOT_MEASURED`. Single-page mock application architectures have flat DOM access where all controls are co-located; measuring manual clicks saved requires assuming arbitrary user navigation depth baselines without ground-truth human recordings.
+
+For complete trial-by-trial logs and resource telemetry, see [docs/BENCHMARKS.md](docs/BENCHMARKS.md).
 
 ---
 

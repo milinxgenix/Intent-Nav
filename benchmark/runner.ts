@@ -16,7 +16,10 @@ import { Baseline1SelectorReplay, BaselineCandidate } from './baselines/baseline
 import { Baseline2KeywordMatching } from './baselines/baseline2_keyword';
 import { Baseline3SemanticOnly } from './baselines/baseline3_semantic';
 import { Baseline4PageNavigation } from './baselines/baseline4_pageNav';
-import { BenchmarkMetrics, ExperimentRunRecord } from './reporter';
+import { BenchmarkMetrics, ExperimentRunRecord, BenchmarkTelemetry } from './reporter';
+import { dispatchDOMActivation } from '../src/browser/eventDispatcher';
+import { ActivationEventCharacteristics } from '../src/types/capability';
+import { TransitionWitness } from '../src/types/transition';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -100,11 +103,14 @@ function getCandidatesForSite(site: 'SiteA' | 'SiteB' | 'SiteC' | 'SiteD'): Cand
     dom.window.eval(js);
   }
   const candidates = CandidateGenerator.generateFromDOM(dom.window.document);
+  try {
+    dom.window.close();
+  } catch {}
   siteCandidatesCache[site] = candidates;
   return candidates;
 }
 
-function getFreshDOMForSite(site: 'SiteA' | 'SiteB' | 'SiteC' | 'SiteD'): { window: any; document: Document } {
+function getFreshDOMForSite(site: 'SiteA' | 'SiteB' | 'SiteC' | 'SiteD'): { window: any; document: Document; dom: JSDOM } {
   const siteDir = site.replace('Site', 'site-').toLowerCase();
   const htmlPath = path.resolve(__dirname, `../mock-sites/${siteDir}/index.html`);
   const html = fs.readFileSync(htmlPath, 'utf8');
@@ -117,6 +123,7 @@ function getFreshDOMForSite(site: 'SiteA' | 'SiteB' | 'SiteC' | 'SiteD'): { wind
   return {
     window: dom.window,
     document: dom.window.document,
+    dom,
   };
 }
 
@@ -165,7 +172,13 @@ function toBaselineCandidates(candidates: CandidateEvaluationContext[]): Baselin
 }
 
 export class BenchmarkRunner {
-  public static async runBenchmark(intentsPath: string): Promise<{ metrics: BenchmarkMetrics[]; records: ExperimentRunRecord[] }> {
+  public static async runBenchmark(
+    intentsPath: string
+  ): Promise<{ metrics: BenchmarkMetrics[]; records: ExperimentRunRecord[]; telemetry: BenchmarkTelemetry }> {
+    const memStart = process.memoryUsage();
+    const cpuStart = process.cpuUsage();
+    const startTime = performance.now();
+
     const rawData = fs.readFileSync(intentsPath, 'utf8');
     const intents: Array<{ id: string; query: string; groundTruthCapability: string; riskClass: string; isAdversarial: boolean }> = JSON.parse(rawData);
 
@@ -180,14 +193,17 @@ export class BenchmarkRunner {
     // Execution dispatcher with real causal witnesses for IntentNav-SCFR
     let lastEventId = 'act_bench';
     let lastTimestamp = Date.now();
-    let lastCapabilityId = '';
-    let currentSiteDOM: { window: any; document: Document } | null = null;
+    let currentSiteDOM: { window: any; document: Document; dom?: JSDOM } | null = null;
+
+    let lastDispatchedDOMDelta: Record<string, unknown> = {};
+    let lastDispatchedAppStateDelta: Record<string, unknown> = {};
 
     const benchmarkDispatcher: ExecutionDispatcher = {
-      async dispatchActivation(activationEventId, candidate, capabilityId) {
+      async dispatchActivation(activationEventId, candidate, capabilityId, activationCharacteristics) {
         lastEventId = activationEventId;
         lastTimestamp = Date.now();
-        lastCapabilityId = capabilityId;
+        lastDispatchedDOMDelta = {};
+        lastDispatchedAppStateDelta = {};
 
         const doc = currentSiteDOM?.document;
         const win = currentSiteDOM?.window;
@@ -205,68 +221,129 @@ export class BenchmarkRunner {
 
         const preAppState = { ...(win.IntentNavMockState || {}) };
         const preAria = el.getAttribute('aria-checked');
+        const preChecked = (el as any).checked;
+        const preClasses = el.className;
         const preText = el.textContent;
 
-        // Real browser DOM event dispatch
-        const clickEvent = new win.MouseEvent('click', { bubbles: true, cancelable: true });
-        const eventDispatched = el.dispatchEvent(clickEvent);
+        const characteristics: ActivationEventCharacteristics =
+          activationCharacteristics || {
+            eventType: 'click',
+            bubbles: true,
+            cancelable: true,
+          };
+
+        const dispatchResult = dispatchDOMActivation(el, characteristics, win);
+        if (!dispatchResult.success) {
+          return {
+            success: false,
+            elementFound: true,
+            eventDispatched: false,
+            stateChanged: false,
+            reason: dispatchResult.reason || `Failed to dispatch ${characteristics.eventType} event`,
+          };
+        }
 
         const postAppState = { ...(win.IntentNavMockState || {}) };
         const postAria = el.getAttribute('aria-checked');
+        const postChecked = (el as any).checked;
+        const postClasses = el.className;
         const postText = el.textContent;
 
+        const appStateDelta: Record<string, unknown> = {};
+        for (const k of Object.keys(postAppState)) {
+          if (preAppState[k] !== postAppState[k]) {
+            appStateDelta[k] = postAppState[k];
+          }
+        }
+        for (const k of Object.keys(preAppState)) {
+          if (!(k in postAppState)) {
+            appStateDelta[k] = undefined;
+          }
+        }
+
+        const domDelta: Record<string, unknown> = {};
+        if (preAria !== postAria && postAria !== null) domDelta['ariaChecked'] = postAria;
+        if (preChecked !== postChecked && postChecked !== undefined) domDelta['checked'] = postChecked;
+        if (preClasses !== postClasses) domDelta['className'] = postClasses;
+        if (preText !== postText) domDelta['textContent'] = postText;
+
+        lastDispatchedDOMDelta = domDelta;
+        lastDispatchedAppStateDelta = appStateDelta;
+
         const stateChanged =
-          JSON.stringify(preAppState) !== JSON.stringify(postAppState) ||
-          preAria !== postAria ||
-          preText !== postText;
+          Object.keys(appStateDelta).length > 0 || Object.keys(domDelta).length > 0;
 
         return {
           success: true,
           elementFound: true,
-          eventDispatched,
-          stateChanged: stateChanged || true,
+          eventDispatched: true,
+          stateChanged,
           activationEvent: {
             eventId: activationEventId,
             sequenceNumber: 1,
             timestamp: lastTimestamp,
             targetCandidateId: candidate.candidateId,
-            eventType: 'click',
+            eventType: dispatchResult.eventType,
             initiatingCapabilityId: capabilityId,
+            key: characteristics.key,
+            code: characteristics.code,
+            keyCode: characteristics.keyCode,
           },
         };
       },
       async collectWitnesses() {
         const now = lastTimestamp + 15;
-        const win = currentSiteDOM?.window;
-        const appState = { ...(win?.IntentNavMockState || {}) };
-        const cap = AUTHORITATIVE_CAPABILITY_CATALOG.find((c) => c.capabilityId === lastCapabilityId);
-        const expectedDelta = cap?.transitionEvidence.expectedDelta || {};
-        const observedDelta = { ...appState, ...expectedDelta };
+        const witnesses: TransitionWitness[] = [];
 
-        return [
-          {
+        // Genuine DOM mutation witness
+        if (Object.keys(lastDispatchedDOMDelta).length > 0) {
+          witnesses.push({
             witnessId: `wit_dom_${now}`,
             witnessClass: 'DOM_MUTATION',
             sequenceNumber: 1,
             timestamp: now + 20,
-            observedDelta,
+            observedDelta: { ...lastDispatchedDOMDelta },
             correlatedActivationEventId: lastEventId,
             temporalDeltaMs: 20,
             isCausallyCorrelated: true,
-            correlationExplanation: 'Live DOM mutation observed after click dispatch',
-          },
-          {
+            correlationExplanation: 'Live DOM mutation observed after event dispatch',
+          });
+        }
+
+        // Genuine application state mutation witness
+        if (Object.keys(lastDispatchedAppStateDelta).length > 0) {
+          witnesses.push({
+            witnessId: `wit_app_${now}`,
+            witnessClass: 'APPLICATION_STATE_MUTATION',
+            sequenceNumber: witnesses.length + 1,
+            timestamp: now + 30,
+            observedDelta: { ...lastDispatchedAppStateDelta },
+            correlatedActivationEventId: lastEventId,
+            temporalDeltaMs: 30,
+            isCausallyCorrelated: true,
+            correlationExplanation: 'Live application state mutation observed after event dispatch',
+          });
+        }
+
+        // Accessibility state mutation witness if checked / ariaChecked mutated
+        if ('ariaChecked' in lastDispatchedDOMDelta || 'checked' in lastDispatchedDOMDelta) {
+          const a11yDelta: Record<string, unknown> = {};
+          if ('ariaChecked' in lastDispatchedDOMDelta) a11yDelta['ariaChecked'] = lastDispatchedDOMDelta['ariaChecked'];
+          if ('checked' in lastDispatchedDOMDelta) a11yDelta['checked'] = lastDispatchedDOMDelta['checked'];
+          witnesses.push({
             witnessId: `wit_a11y_${now}`,
             witnessClass: 'ACCESSIBILITY_STATE_MUTATION',
-            sequenceNumber: 2,
+            sequenceNumber: witnesses.length + 1,
             timestamp: now + 40,
-            observedDelta,
+            observedDelta: a11yDelta,
             correlatedActivationEventId: lastEventId,
             temporalDeltaMs: 40,
             isCausallyCorrelated: true,
-            correlationExplanation: 'Live Accessibility state mutation observed after click dispatch',
-          },
-        ];
+            correlationExplanation: 'Live accessibility state mutation observed after event dispatch',
+          });
+        }
+
+        return witnesses;
       },
       async observePostState() {
         const win = currentSiteDOM?.window;
@@ -305,11 +382,13 @@ export class BenchmarkRunner {
       for (const site of sites) {
         runCounter++;
         const expId = `EXP_${runCounter.toString().padStart(4, '0')}`;
-        currentSiteDOM = getFreshDOMForSite(site);
-        const candidates = getCandidatesForSite(site);
-        const baselineCandidates = toBaselineCandidates(candidates);
-        const expectedCandidate = getExpectedCandidate(site, intent.groundTruthCapability, candidates);
-        const expectedCandidateId = expectedCandidate?.bindingHandle?.volatileId || null;
+        const freshDOM = getFreshDOMForSite(site);
+        currentSiteDOM = freshDOM;
+        try {
+          const candidates = getCandidatesForSite(site);
+          const baselineCandidates = toBaselineCandidates(candidates);
+          const expectedCandidate = getExpectedCandidate(site, intent.groundTruthCapability, candidates);
+          const expectedCandidateId = expectedCandidate?.bindingHandle?.volatileId || null;
         const expectedCandidateSyntheticId = expectedCandidate?.candidateId || null;
 
         // --- Baseline 1: Fixed Selector Replay ---
@@ -338,6 +417,7 @@ export class BenchmarkRunner {
           expectedCapability: intent.groundTruthCapability,
           selectedCandidateId: b1Res.selectedCandidateId || null,
           status: (b1Res.success && isB1Match && intent.groundTruthCapability !== 'NONE') ? 'SUCCESS' : (b1Res.success ? 'WRONG_TARGET' : 'FAILED'),
+          transitionValidated: false,
           causallyVerified: false,
           authorized: b1Res.success,
           latencyMs: Number(t_b1.toFixed(2)),
@@ -383,6 +463,7 @@ export class BenchmarkRunner {
           expectedCapability: intent.groundTruthCapability,
           selectedCandidateId: b2Res.selectedCandidateId || null,
           status: (b2Res.success && isB2Match && !b2IsDecoy && intent.groundTruthCapability !== 'NONE') ? 'SUCCESS' : (b2IsDecoy ? 'DECOY_TRIGGERED' : (b2Res.success ? 'WRONG_TARGET' : 'FAILED')),
+          transitionValidated: false,
           causallyVerified: false,
           authorized: b2Res.success,
           latencyMs: Number(t_b2.toFixed(2)),
@@ -428,6 +509,7 @@ export class BenchmarkRunner {
           expectedCapability: intent.groundTruthCapability,
           selectedCandidateId: b3Res.selectedCandidateId || null,
           status: (b3Res.success && isB3Match && !b3IsDecoy && intent.groundTruthCapability !== 'NONE') ? 'SUCCESS' : (b3IsDecoy ? 'DECOY_TRIGGERED' : (b3Res.success ? 'WRONG_TARGET' : 'FAILED')),
+          transitionValidated: false,
           causallyVerified: false,
           authorized: b3Res.success,
           latencyMs: Number(t_b3.toFixed(2)),
@@ -457,6 +539,7 @@ export class BenchmarkRunner {
           expectedCapability: intent.groundTruthCapability,
           selectedCandidateId: b4Res.navigatedUrl || null,
           status: (b4Res.success && intent.groundTruthCapability !== 'NONE') ? 'SUCCESS' : (b4Res.success ? 'FALSE_DISCOVERY' : 'FAILED'),
+          transitionValidated: false,
           causallyVerified: false,
           authorized: false,
           latencyMs: Number(t_b4.toFixed(2)),
@@ -533,10 +616,19 @@ export class BenchmarkRunner {
           expectedCapability: intent.groundTruthCapability,
           selectedCandidateId: ctx.selectedCandidate?.bindingHandle?.volatileId || ctx.selectedCandidate?.candidateId || null,
           status: (isMatch && executedOrConfirmed && isCandidateMatch && intent.groundTruthCapability !== 'NONE') ? 'SUCCESS' : ctx.currentState,
+          transitionValidated: ctx.verificationResult?.causallyVerified ?? false,
           causallyVerified: ctx.verificationResult?.causallyVerified ?? false,
           authorized: ctx.authorizationDecision?.status === 'AUTHORIZED',
           latencyMs: Number(t_b5.toFixed(2)),
         });
+        } finally {
+          if (freshDOM?.dom) {
+            try {
+              freshDOM.dom.window.close();
+            } catch {}
+          }
+          currentSiteDOM = null;
+        }
       }
     }
 
@@ -556,6 +648,7 @@ export class BenchmarkRunner {
         decoyRejectionRate: 1.0,
         falseDiscoveryRate: Number((counts.b1.falseDiscoveries / totalRuns).toFixed(4)),
         uiChangeRecoveryRate: Number((counts.b1.recovered / (driftedValidQueriesCount || 1)).toFixed(4)),
+        simulatedTransitionValidationRate: 0.0,
         causalVerificationRate: 0.0,
         unauthorizedHighRiskExecutions: 0,
         avgLatencyMs: Number(avg(counts.b1.latencies).toFixed(2)),
@@ -568,6 +661,7 @@ export class BenchmarkRunner {
         decoyRejectionRate: Number((counts.b2.decoyRejections / (counts.b2.decoysFaced || 1)).toFixed(4)),
         falseDiscoveryRate: Number((counts.b2.falseDiscoveries / totalRuns).toFixed(4)),
         uiChangeRecoveryRate: Number((counts.b2.recovered / (driftedValidQueriesCount || 1)).toFixed(4)),
+        simulatedTransitionValidationRate: 0.0,
         causalVerificationRate: 0.0,
         unauthorizedHighRiskExecutions: counts.b2.unauthorizedHighRisk,
         avgLatencyMs: Number(avg(counts.b2.latencies).toFixed(2)),
@@ -580,6 +674,7 @@ export class BenchmarkRunner {
         decoyRejectionRate: Number((counts.b3.decoyRejections / (counts.b3.decoysFaced || 1)).toFixed(4)),
         falseDiscoveryRate: Number((counts.b3.falseDiscoveries / totalRuns).toFixed(4)),
         uiChangeRecoveryRate: Number((counts.b3.recovered / (driftedValidQueriesCount || 1)).toFixed(4)),
+        simulatedTransitionValidationRate: 0.0,
         causalVerificationRate: 0.0,
         unauthorizedHighRiskExecutions: counts.b3.unauthorizedHighRisk,
         avgLatencyMs: Number(avg(counts.b3.latencies).toFixed(2)),
@@ -592,6 +687,7 @@ export class BenchmarkRunner {
         decoyRejectionRate: 0.0,
         falseDiscoveryRate: Number((counts.b4.falseDiscoveries / totalRuns).toFixed(4)),
         uiChangeRecoveryRate: 0.0,
+        simulatedTransitionValidationRate: 0.0,
         causalVerificationRate: 0.0,
         unauthorizedHighRiskExecutions: 0,
         avgLatencyMs: Number(avg(counts.b4.latencies).toFixed(2)),
@@ -604,12 +700,43 @@ export class BenchmarkRunner {
         decoyRejectionRate: Number((counts.b5.decoyRejections / (counts.b5.decoysFaced || 1)).toFixed(4)),
         falseDiscoveryRate: Number((counts.b5.falseDiscoveries / totalRuns).toFixed(4)),
         uiChangeRecoveryRate: Number((counts.b5.recovered / (driftedValidQueriesCount || 1)).toFixed(4)),
+        simulatedTransitionValidationRate: Number((counts.b5.verified / counts.b5.total).toFixed(4)),
         causalVerificationRate: Number((counts.b5.verified / counts.b5.total).toFixed(4)),
         unauthorizedHighRiskExecutions: counts.b5.unauthorizedHighRisk, // STRICTLY ZERO
         avgLatencyMs: Number(avg(counts.b5.latencies).toFixed(2)),
       },
     ];
 
-    return { metrics, records };
+    const memEnd = process.memoryUsage();
+    const cpuEnd = process.cpuUsage(cpuStart);
+    const totalTimeMs = performance.now() - startTime;
+
+    const startHeapMb = memStart.heapUsed / (1024 * 1024);
+    const endHeapMb = memEnd.heapUsed / (1024 * 1024);
+    const userCpuMs = cpuEnd.user / 1000;
+    const sysCpuMs = cpuEnd.system / 1000;
+
+    const telemetry: BenchmarkTelemetry = {
+      environment: 'CONTROLLED SIMULATED / JSDOM BENCHMARK',
+      platform: `${process.platform} ${process.arch}`,
+      nodeVersion: process.version,
+      totalElapsedMs: totalTimeMs,
+      memory: {
+        startHeapUsedMb: Number(startHeapMb.toFixed(1)),
+        endHeapUsedMb: Number(endHeapMb.toFixed(1)),
+        endHeapTotalMb: Number((memEnd.heapTotal / (1024 * 1024)).toFixed(1)),
+        endRssMb: Number((memEnd.rss / (1024 * 1024)).toFixed(1)),
+        deltaHeapUsedMb: Number((endHeapMb - startHeapMb).toFixed(1)),
+      },
+      cpu: {
+        userCpuMs: Number(userCpuMs.toFixed(1)),
+        systemCpuMs: Number(sysCpuMs.toFixed(1)),
+        totalCpuMs: Number((userCpuMs + sysCpuMs).toFixed(1)),
+      },
+      clicksSavedStatus: 'NOT_MEASURED',
+      clicksSavedReason: 'Single-page mock application architectures have flat DOM access with all controls co-located; measuring manual clicks saved requires assuming arbitrary user navigation depth baselines without ground-truth recordings.',
+    };
+
+    return { metrics, records, telemetry };
   }
 }

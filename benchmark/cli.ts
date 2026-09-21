@@ -18,7 +18,7 @@ async function main() {
 
   const datasetPath = path.resolve(__dirname, 'dataset/intents.json');
   const t0 = Date.now();
-  const { metrics, records } = await BenchmarkRunner.runBenchmark(datasetPath);
+  const { metrics, records, telemetry } = await BenchmarkRunner.runBenchmark(datasetPath);
   const elapsed = ((Date.now() - t0) / 1000).toFixed(2);
 
   console.log(`Executed ${records.length} total benchmark runs in ${elapsed}s.`);
@@ -44,12 +44,12 @@ async function main() {
   // 2. Summary JSON
   fs.writeFileSync(
     path.join(resultsDir, 'summary.json'),
-    JSON.stringify({ timestamp: Date.now(), totalRuns: records.length, metrics }, null, 2),
+    JSON.stringify({ timestamp: Date.now(), totalRuns: records.length, metrics, telemetry }, null, 2),
     'utf8'
   );
   fs.writeFileSync(
     path.join(resultsDir, 'benchmark_summary.json'),
-    JSON.stringify({ timestamp: Date.now(), totalRuns: records.length, metrics }, null, 2),
+    JSON.stringify({ timestamp: Date.now(), totalRuns: records.length, metrics, telemetry }, null, 2),
     'utf8'
   );
 
@@ -59,7 +59,7 @@ async function main() {
   fs.writeFileSync(path.join(resultsDir, 'benchmark_results.csv'), csv, 'utf8');
 
   // 4. Markdown Report
-  const mdReport = BenchmarkReporter.generateMarkdownReport(metrics, records);
+  const mdReport = BenchmarkReporter.generateMarkdownReport(metrics, records, telemetry);
   fs.writeFileSync(path.join(resultsDir, 'report.md'), mdReport, 'utf8');
 
   const docsDir = path.resolve(__dirname, '../docs');
@@ -76,7 +76,7 @@ async function main() {
   }
   fs.writeFileSync(
     path.join(experimentRunDir, 'metrics.json'),
-    JSON.stringify({ timestamp: Date.now(), totalRuns: records.length, metrics }, null, 2),
+    JSON.stringify({ timestamp: Date.now(), totalRuns: records.length, metrics, telemetry }, null, 2),
     'utf8'
   );
   fs.writeFileSync(

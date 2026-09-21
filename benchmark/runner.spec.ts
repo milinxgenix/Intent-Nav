@@ -1,6 +1,7 @@
+// @vitest-environment node
 /**
  * IntentNav-SCFR: Benchmark Test & Verification
- * Executes the full benchmark across 60 intents and 4 sites, generating empirical records
+ * Executes the full benchmark across 100 intents and 4 sites, generating empirical records
  */
 
 import { describe, it, expect } from 'vitest';
@@ -13,7 +14,7 @@ import { MetricValidator } from './metricValidator';
 describe('Empirical Benchmark Runner', () => {
   it('executes full comparative benchmark across baselines and writes reports', async () => {
     const datasetPath = path.resolve(__dirname, 'dataset/intents.json');
-    const { metrics, records } = await BenchmarkRunner.runBenchmark(datasetPath);
+    const { metrics, records, telemetry } = await BenchmarkRunner.runBenchmark(datasetPath);
 
     expect(metrics).toHaveLength(5);
     expect(records.length).toBeGreaterThanOrEqual(1000); // 60 intents * 4 sites * 5 systems = 1200 runs
@@ -51,13 +52,13 @@ describe('Empirical Benchmark Runner', () => {
 
     fs.writeFileSync(
       path.join(resultsDir, 'summary.json'),
-      JSON.stringify({ timestamp: Date.now(), totalRuns: records.length, metrics }, null, 2),
+      JSON.stringify({ timestamp: Date.now(), totalRuns: records.length, metrics, telemetry }, null, 2),
       'utf8'
     );
 
     fs.writeFileSync(
       path.join(resultsDir, 'benchmark_summary.json'),
-      JSON.stringify({ timestamp: Date.now(), totalRuns: records.length, metrics }, null, 2),
+      JSON.stringify({ timestamp: Date.now(), totalRuns: records.length, metrics, telemetry }, null, 2),
       'utf8'
     );
 
@@ -65,7 +66,7 @@ describe('Empirical Benchmark Runner', () => {
     fs.writeFileSync(path.join(resultsDir, 'results.csv'), csvContent, 'utf8');
     fs.writeFileSync(path.join(resultsDir, 'benchmark_results.csv'), csvContent, 'utf8');
 
-    const mdReport = BenchmarkReporter.generateMarkdownReport(metrics, records);
+    const mdReport = BenchmarkReporter.generateMarkdownReport(metrics, records, telemetry);
     fs.writeFileSync(path.join(resultsDir, 'report.md'), mdReport, 'utf8');
 
     const docsDir = path.resolve(__dirname, '../docs');
@@ -82,7 +83,7 @@ describe('Empirical Benchmark Runner', () => {
     }
     fs.writeFileSync(
       path.join(experimentRunDir, 'metrics.json'),
-      JSON.stringify({ timestamp: Date.now(), totalRuns: records.length, metrics }, null, 2),
+      JSON.stringify({ timestamp: Date.now(), totalRuns: records.length, metrics, telemetry }, null, 2),
       'utf8'
     );
     fs.writeFileSync(

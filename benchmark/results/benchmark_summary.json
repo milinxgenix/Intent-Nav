@@ -1,5 +1,5 @@
 {
-  "timestamp": 1789792802973,
+  "timestamp": 1789971688541,
   "totalRuns": 2000,
   "metrics": [
     {
@@ -10,6 +10,7 @@
       "decoyRejectionRate": 1,
       "falseDiscoveryRate": 0,
       "uiChangeRecoveryRate": 0,
+      "simulatedTransitionValidationRate": 0,
       "causalVerificationRate": 0,
       "unauthorizedHighRiskExecutions": 0,
       "avgLatencyMs": 0
@@ -22,6 +23,7 @@
       "decoyRejectionRate": 0.56,
       "falseDiscoveryRate": 0.145,
       "uiChangeRecoveryRate": 0.414,
+      "simulatedTransitionValidationRate": 0,
       "causalVerificationRate": 0,
       "unauthorizedHighRiskExecutions": 98,
       "avgLatencyMs": 0.01
@@ -34,9 +36,10 @@
       "decoyRejectionRate": 0.84,
       "falseDiscoveryRate": 0.0675,
       "uiChangeRecoveryRate": 0.3579,
+      "simulatedTransitionValidationRate": 0,
       "causalVerificationRate": 0,
       "unauthorizedHighRiskExecutions": 70,
-      "avgLatencyMs": 0.04
+      "avgLatencyMs": 0.05
     },
     {
       "systemName": "Baseline 4: Intent-to-Page Navigation",
@@ -46,21 +49,43 @@
       "decoyRejectionRate": 0,
       "falseDiscoveryRate": 0.04,
       "uiChangeRecoveryRate": 0,
+      "simulatedTransitionValidationRate": 0,
       "causalVerificationRate": 0,
       "unauthorizedHighRiskExecutions": 0,
-      "avgLatencyMs": 0.01
+      "avgLatencyMs": 0
     },
     {
       "systemName": "IntentNav-SCFR (Invention Prototype)",
       "totalQueries": 400,
-      "top1Accuracy": 0.3368,
-      "top3Accuracy": 0.3368,
+      "top1Accuracy": 0.5895,
+      "top3Accuracy": 0.6737,
       "decoyRejectionRate": 1,
       "falseDiscoveryRate": 0,
-      "uiChangeRecoveryRate": 0.3439,
-      "causalVerificationRate": 0.2625,
+      "uiChangeRecoveryRate": 0.5614,
+      "simulatedTransitionValidationRate": 0.285,
+      "causalVerificationRate": 0.285,
       "unauthorizedHighRiskExecutions": 0,
-      "avgLatencyMs": 7.14
+      "avgLatencyMs": 9.27
     }
-  ]
+  ],
+  "telemetry": {
+    "environment": "CONTROLLED SIMULATED / JSDOM BENCHMARK",
+    "platform": "darwin arm64",
+    "nodeVersion": "v20.17.0",
+    "totalElapsedMs": 6214.459334,
+    "memory": {
+      "startHeapUsedMb": 39.3,
+      "endHeapUsedMb": 586.4,
+      "endHeapTotalMb": 624.2,
+      "endRssMb": 680.8,
+      "deltaHeapUsedMb": 547.1
+    },
+    "cpu": {
+      "userCpuMs": 7826.4,
+      "systemCpuMs": 354,
+      "totalCpuMs": 8180.4
+    },
+    "clicksSavedStatus": "NOT_MEASURED",
+    "clicksSavedReason": "Single-page mock application architectures have flat DOM access with all controls co-located; measuring manual clicks saved requires assuming arbitrary user navigation depth baselines without ground-truth recordings."
+  }
 }

@@ -14,7 +14,8 @@ export interface BenchmarkMetrics {
   decoyRejectionRate: number;
   falseDiscoveryRate: number;
   uiChangeRecoveryRate: number;
-  causalVerificationRate: number;
+  simulatedTransitionValidationRate: number;
+  causalVerificationRate: number; // Retained for backwards compatibility
   unauthorizedHighRiskExecutions: number; // Target = 0
   avgLatencyMs: number;
 }
@@ -29,30 +30,62 @@ export interface ExperimentRunRecord {
   expectedCapability: string;
   selectedCandidateId: string | null;
   status: string;
+  transitionValidated: boolean;
   causallyVerified: boolean;
   authorized: boolean;
   latencyMs: number;
 }
 
+export interface BenchmarkTelemetry {
+  environment: string;
+  platform: string;
+  nodeVersion: string;
+  totalElapsedMs: number;
+  memory: {
+    startHeapUsedMb: number;
+    endHeapUsedMb: number;
+    endHeapTotalMb: number;
+    endRssMb: number;
+    deltaHeapUsedMb: number;
+  };
+  cpu: {
+    userCpuMs: number;
+    systemCpuMs: number;
+    totalCpuMs: number;
+  };
+  clicksSavedStatus: 'NOT_MEASURED';
+  clicksSavedReason: string;
+}
+
 export class BenchmarkReporter {
   /**
-   * Generates a comprehensive Markdown report from real benchmark runs
+   * Generates a comprehensive Markdown report from controlled benchmark runs
    */
-  public static generateMarkdownReport(metricsList: BenchmarkMetrics[], records: ExperimentRunRecord[]): string {
+  public static generateMarkdownReport(
+    metricsList: BenchmarkMetrics[],
+    records: ExperimentRunRecord[],
+    telemetry?: BenchmarkTelemetry
+  ): string {
     const lines: string[] = [];
 
-    lines.push('# IntentNav-SCFR: Empirical Benchmark Evaluation Report');
+    lines.push('# IntentNav-SCFR: Controlled Simulated / JSDOM Benchmark Evaluation Report');
     lines.push(`*Generated at: ${new Date().toISOString()}*`);
     lines.push('');
-    const distinctIntentsCount = new Set(records.map((r) => r.queryId)).size;
-    lines.push(`Comparative evaluation of **IntentNav-SCFR** against 4 alternative architectural baselines across Mock Sites A, B, C, and D over ${distinctIntentsCount} benchmark user intents:`);
+    lines.push('> [!NOTE]');
+    lines.push('> **Controlled Simulated JSDOM Benchmark**: This report evaluates comparative algorithmic disambiguation, invariant closure, and candidate ranking across simulated mock sites in a controlled JSDOM environment. Real browser execution evidence (including real Blink DOM mutations, live MV3 content scripts, CDP over WebSocket, and cryptographic authorization tokens) is separately evaluated and reported in `evidence/chromium_e2e_positive_evidence.json` and `evidence/chromium_e2e_negative_evidence.json`.');
+    lines.push('>');
+    lines.push('> **Scope Note on Simulated Transition Validation Rate**: This controlled JSDOM metric measures whether independently observed state/DOM changes match the expected capability delta. It does not constitute independent real-browser causal-transition verification.');
     lines.push('');
-    lines.push('| System / Baseline | Top-1 Accuracy | UI-Change Recovery | Decoy Rejection | Causal Verification | Unauthorized High-Risk | Avg Latency (ms) |');
+    const distinctIntentsCount = new Set(records.map((r) => r.queryId)).size;
+    lines.push(`Comparative evaluation of **IntentNav-SCFR** against 4 alternative architectural baselines across Mock Sites A, B, C, and D over ${distinctIntentsCount} benchmark user intents (${records.length} total trials):`);
+    lines.push('');
+    lines.push('| System / Baseline | Top-1 Accuracy | UI-Change Recovery | Decoy Rejection | Simulated Transition Validation | Unauthorized High-Risk | Avg Latency (ms) |');
     lines.push('| :--- | :---: | :---: | :---: | :---: | :---: | :---: |');
 
     for (const m of metricsList) {
+      const validationRate = m.simulatedTransitionValidationRate ?? m.causalVerificationRate ?? 0;
       lines.push(
-        `| **${m.systemName}** | ${(m.top1Accuracy * 100).toFixed(1)}% | ${(m.uiChangeRecoveryRate * 100).toFixed(1)}% | ${(m.decoyRejectionRate * 100).toFixed(1)}% | ${(m.causalVerificationRate * 100).toFixed(1)}% | **${m.unauthorizedHighRiskExecutions}** | ${m.avgLatencyMs.toFixed(1)}ms |`
+        `| **${m.systemName}** | ${(m.top1Accuracy * 100).toFixed(1)}% | ${(m.uiChangeRecoveryRate * 100).toFixed(1)}% | ${(m.decoyRejectionRate * 100).toFixed(1)}% | ${(validationRate * 100).toFixed(1)}% | **${m.unauthorizedHighRiskExecutions}** | ${m.avgLatencyMs.toFixed(1)}ms |`
       );
     }
 
@@ -62,16 +95,35 @@ export class BenchmarkReporter {
     lines.push('1. **Zero High-Risk Safety Violations**: IntentNav-SCFR achieved **0 unauthorized high-risk executions** due to the strict independence of Execution Authorization from Capability Confidence and the requirement for explicit evidence quorum.');
     lines.push('2. **100% Decoy Rejection via Invariant Closure**: On Mock Site D (Adversarial Decoys), semantic-only and keyword matching suffered false discovery rates up to 70%, selecting high-overlap destructive decoys. IntentNav-SCFR rejected 100% of functional decoys prior to candidate ranking.');
     lines.push('3. **Robustness to Volatile Identifiers**: On Mock Site C (random framework IDs and CSS classes), Fixed Selector Replay collapsed to 0% recovery, whereas IntentNav-SCFR maintained continuous functional recovery via relative structural invariant representations.');
-    lines.push('4. **Causal Transition Verification**: 100% of recovered routes underwent provisional quarantine and were promoted only after multi-class causal transition verification.');
+    lines.push('4. **Simulated Transition Validation Rate**: Evaluated candidate actions are validated against genuine observed DOM and mock application state deltas without synthetic delta injection. This controlled JSDOM metric measures whether independently observed state/DOM changes match the expected capability delta. It does not constitute independent real-browser causal-transition verification.');
     lines.push('');
-    lines.push(`## 3. Detailed Experiment Logs (${records.length} Total Runs)`);
+    lines.push('## 3. Resource & Interaction Telemetry');
+    lines.push('');
+    if (telemetry) {
+      lines.push('| Metric | Measured Value | Scope / Environment |');
+      lines.push('| :--- | :--- | :--- |');
+      lines.push(`| **Benchmark Duration** | ${telemetry.totalElapsedMs.toFixed(0)} ms | Node.js Test Harness (${telemetry.nodeVersion}) |`);
+      lines.push(`| **Process Peak RSS** | ${telemetry.memory.endRssMb.toFixed(1)} MB | OS Process Level (${telemetry.platform}) |`);
+      lines.push(`| **Process Heap Used (End)** | ${telemetry.memory.endHeapUsedMb.toFixed(1)} MB | V8 Heap Allocation |`);
+      lines.push(`| **Process Heap Delta** | ${telemetry.memory.deltaHeapUsedMb >= 0 ? '+' : ''}${telemetry.memory.deltaHeapUsedMb.toFixed(1)} MB | Net Heap Growth Across Trials |`);
+      lines.push(`| **Process CPU Time** | User: ${telemetry.cpu.userCpuMs.toFixed(0)}ms / Sys: ${telemetry.cpu.systemCpuMs.toFixed(0)}ms | Total: ${telemetry.cpu.totalCpuMs.toFixed(0)}ms |`);
+      lines.push(`| **Clicks Saved Metric** | \`NOT_MEASURED\` | ${telemetry.clicksSavedReason} |`);
+    } else {
+      lines.push('| Metric | Measured Value | Scope / Environment |');
+      lines.push('| :--- | :--- | :--- |');
+      lines.push('| **Clicks Saved Metric** | `NOT_MEASURED` | Single-page mock sites without multi-hop breadcrumb tracking |');
+      lines.push('| **CPU & Memory** | `NOT_MEASURED` | Telemetry capture not supplied |');
+    }
+    lines.push('');
+    lines.push(`## 4. Detailed Experiment Logs (${records.length} Total Runs)`);
     lines.push('');
     lines.push('First 10 sample runs:');
-    lines.push('| Run ID | System | Site | Query | Selected Candidate | Status | Verified | Authorized |');
+    lines.push('| Run ID | System | Site | Query | Selected Candidate | Status | Transition Validated | Authorized |');
     lines.push('| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |');
 
     records.slice(0, 10).forEach((r) => {
-      lines.push(`| ${r.experimentId} | ${r.systemName} | ${r.siteVersion} | "${r.queryText.slice(0, 25)}..." | \`${r.selectedCandidateId || 'none'}\` | ${r.status} | ${r.causallyVerified ? 'YES' : 'NO'} | ${r.authorized ? 'YES' : 'NO'} |`);
+      const isValidated = r.transitionValidated ?? r.causallyVerified ?? false;
+      lines.push(`| ${r.experimentId} | ${r.systemName} | ${r.siteVersion} | "${r.queryText.slice(0, 25)}..." | \`${r.selectedCandidateId || 'none'}\` | ${r.status} | ${isValidated ? 'YES' : 'NO'} | ${r.authorized ? 'YES' : 'NO'} |`);
     });
 
     return lines.join('\n');
@@ -91,6 +143,7 @@ export class BenchmarkReporter {
       'expectedCapability',
       'selectedCandidateId',
       'status',
+      'transitionValidated',
       'causallyVerified',
       'authorized',
       'latencyMs',
@@ -106,7 +159,8 @@ export class BenchmarkReporter {
       r.expectedCapability,
       r.selectedCandidateId || 'NONE',
       r.status,
-      r.causallyVerified,
+      r.transitionValidated ?? r.causallyVerified ?? false,
+      r.causallyVerified ?? r.transitionValidated ?? false,
       r.authorized,
       r.latencyMs,
     ]);

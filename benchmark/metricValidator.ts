@@ -111,11 +111,11 @@ export class MetricValidator {
           message: `Record ${r.experimentId || i} has invalid negative or non-numeric latencyMs: ${r.latencyMs}`,
         });
       }
-      if (typeof r.causallyVerified !== 'boolean' || typeof r.authorized !== 'boolean') {
+      if ((typeof r.causallyVerified !== 'boolean' && typeof r.transitionValidated !== 'boolean') || typeof r.authorized !== 'boolean') {
         issues.push({
           severity: 'ERROR',
           category: 'SCHEMA',
-          message: `Record ${r.experimentId || i} has non-boolean causallyVerified or authorized flag`,
+          message: `Record ${r.experimentId || i} has non-boolean transitionValidated/causallyVerified or authorized flag`,
         });
       }
     }
@@ -139,6 +139,7 @@ export class MetricValidator {
         'decoyRejectionRate',
         'falseDiscoveryRate',
         'uiChangeRecoveryRate',
+        'simulatedTransitionValidationRate',
         'causalVerificationRate',
       ];
 
