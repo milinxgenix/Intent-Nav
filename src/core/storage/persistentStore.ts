@@ -8,7 +8,7 @@
  */
 
 import { FunctionalCapabilityFingerprint } from '../../types/capability';
-import { CapabilityNode, InterfaceStateNode, RouteVersion } from '../../types/state';
+import { CapabilityNode, InterfaceStateNode, RouteVersion, GraphEdge } from '../../types/state';
 import { ContradictionEvidence } from '../../types/negativeEvidence';
 import { ValidationRecord } from '../../types/transition';
 import { TypedDriftVector } from '../../types/drift';
@@ -21,6 +21,7 @@ export interface PersistentStoreSchema {
   capabilities: Record<string, FunctionalCapabilityFingerprint>;
   capabilityNodes: Record<string, CapabilityNode>;
   interfaceStates: Record<string, InterfaceStateNode>;
+  graphEdges: GraphEdge[];
   routeVersions: Record<string, RouteVersion>;
   validationRecords: ValidationRecord[];
   negativeEvidence: ContradictionEvidence[];
@@ -50,6 +51,7 @@ export class PersistentCapabilityStore {
       capabilities: {},
       capabilityNodes: {},
       interfaceStates: {},
+      graphEdges: [],
       routeVersions: {},
       validationRecords: [],
       negativeEvidence: [],
@@ -104,6 +106,9 @@ export class PersistentCapabilityStore {
       }
     }
 
+    if (!Array.isArray(this.inMemoryCache.graphEdges)) {
+      this.inMemoryCache.graphEdges = [];
+    }
     this.isInitialized = true;
   }
 
@@ -235,18 +240,29 @@ export class PersistentCapabilityStore {
     return Object.values(this.inMemoryCache.interfaceStates);
   }
 
-  // --- Route Versions ---
-  public async saveRouteVersion(route: RouteVersion): Promise<void> {
-    this.inMemoryCache.routeVersions[route.routeId] = route;
-    const n = this.inMemoryCache.capabilityNodes[route.capabilityId];
-    if (n) {
-      n.routeVersions[route.routeId] = route;
-      if (route.status === 'ACTIVE_VALIDATED') {
-        n.activeRouteId = route.routeId;
-      }
+  // --- Graph Edges ---
+  public async saveGraphEdge(edge: GraphEdge): Promise<void> {
+    if (!Array.isArray(this.inMemoryCache.graphEdges)) {
+      this.inMemoryCache.graphEdges = [];
+    }
+    const existingIndex = this.inMemoryCache.graphEdges.findIndex((e) => e.id === edge.id);
+    if (existingIndex >= 0) {
+      this.inMemoryCache.graphEdges[existingIndex] = edge;
+    } else {
+      this.inMemoryCache.graphEdges.push(edge);
     }
     this.persistSync();
     await this.init();
+    await this.persist();
+  }
+
+  public async getAllGraphEdges(): Promise<GraphEdge[]> {
+    await this.init();
+    return [...(this.inMemoryCache.graphEdges || [])];
+  }
+
+  // --- Route Versions ---
+  public async saveRouteVersion(route: RouteVersion): Promise<void> {
     this.inMemoryCache.routeVersions[route.routeId] = route;
     // Also update capability node if present
     const node = this.inMemoryCache.capabilityNodes[route.capabilityId];
@@ -254,8 +270,26 @@ export class PersistentCapabilityStore {
       node.routeVersions[route.routeId] = route;
       if (route.status === 'ACTIVE_VALIDATED') {
         node.activeRouteId = route.routeId;
+        node.provisionalRouteIds = node.provisionalRouteIds.filter((id) => id !== route.routeId);
+      } else if (node.activeRouteId === route.routeId) {
+        node.activeRouteId = null;
+      }
+      if (route.status === 'QUARANTINED') {
+        if (!node.quarantinedRouteIds.includes(route.routeId)) {
+          node.quarantinedRouteIds.push(route.routeId);
+        }
+        node.provisionalRouteIds = node.provisionalRouteIds.filter((id) => id !== route.routeId);
+      }
+      if (route.status === 'DEMOTED') {
+        if (!node.demotedRouteIds.includes(route.routeId)) {
+          node.demotedRouteIds.push(route.routeId);
+        }
+        node.provisionalRouteIds = node.provisionalRouteIds.filter((id) => id !== route.routeId);
       }
     }
+    this.persistSync();
+    await this.init();
+    this.inMemoryCache.routeVersions[route.routeId] = route;
     await this.persist();
   }
 

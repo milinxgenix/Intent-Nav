@@ -165,6 +165,7 @@ export class RouteManager {
       rollbackRoute = eligibleRollbackRoutes[0];
       rollbackRoute.status = 'ACTIVE_VALIDATED';
       capability.activeRouteId = rollbackRoute.routeId;
+      this.graph.attachRouteVersion(capabilityId, rollbackRoute);
     }
 
     return { demotedRoute: route, rollbackRoute };
@@ -189,6 +190,10 @@ export class RouteManager {
     if (!capability.quarantinedRouteIds.includes(routeId)) {
       capability.quarantinedRouteIds.push(routeId);
     }
+    capability.provisionalRouteIds = capability.provisionalRouteIds.filter((id) => id !== routeId);
+
+    // Persist the updated quarantined route and capability node state
+    this.graph.attachRouteVersion(capabilityId, route);
 
     return route;
   }

@@ -35,9 +35,35 @@ export class CapabilityGraphEngine {
         if (route.status === 'ACTIVE_VALIDATED') {
           node.activeRouteId = route.routeId;
           node.provisionalRouteIds = node.provisionalRouteIds.filter((rId) => rId !== route.routeId);
+        } else if (node.activeRouteId === route.routeId) {
+          node.activeRouteId = null;
+        }
+        if (route.status === 'QUARANTINED') {
+          if (!node.quarantinedRouteIds.includes(route.routeId)) {
+            node.quarantinedRouteIds.push(route.routeId);
+          }
+          node.provisionalRouteIds = node.provisionalRouteIds.filter((rId) => rId !== route.routeId);
+        }
+        if (route.status === 'DEMOTED') {
+          if (!node.demotedRouteIds.includes(route.routeId)) {
+            node.demotedRouteIds.push(route.routeId);
+          }
+          node.provisionalRouteIds = node.provisionalRouteIds.filter((rId) => rId !== route.routeId);
         }
       }
     }
+    // Strict safety invariant: activeRouteId MUST only point to a strictly ACTIVE_VALIDATED route
+    for (const node of this.capabilityNodes.values()) {
+      if (node.activeRouteId) {
+        const active = node.routeVersions[node.activeRouteId];
+        if (!active || active.status !== 'ACTIVE_VALIDATED') {
+          node.activeRouteId = null;
+        }
+      }
+    }
+    // Reconstruct graph edges
+    const edges = await this.store.getAllGraphEdges();
+    this.edges = [...edges];
   }
 
   /**
@@ -76,10 +102,18 @@ export class CapabilityGraphEngine {
   }
 
   /**
-   * Adds a directional graph edge
+   * Adds a directional graph edge and persists it if store is present
    */
   public addEdge(edge: GraphEdge): void {
-    this.edges.push(edge);
+    const existingIdx = this.edges.findIndex((e) => e.id === edge.id);
+    if (existingIdx >= 0) {
+      this.edges[existingIdx] = edge;
+    } else {
+      this.edges.push(edge);
+    }
+    if (this.store) {
+      this.store.saveGraphEdge(edge).catch(() => {});
+    }
   }
 
   /**
@@ -97,15 +131,27 @@ export class CapabilityGraphEngine {
       if (!node.provisionalRouteIds.includes(route.routeId)) {
         node.provisionalRouteIds.push(route.routeId);
       }
+      if (node.activeRouteId === route.routeId) {
+        node.activeRouteId = null;
+      }
     } else if (route.status === 'ACTIVE_VALIDATED') {
       node.activeRouteId = route.routeId;
+      node.provisionalRouteIds = node.provisionalRouteIds.filter((id) => id !== route.routeId);
     } else if (route.status === 'QUARANTINED') {
       if (!node.quarantinedRouteIds.includes(route.routeId)) {
         node.quarantinedRouteIds.push(route.routeId);
       }
+      node.provisionalRouteIds = node.provisionalRouteIds.filter((id) => id !== route.routeId);
+      if (node.activeRouteId === route.routeId) {
+        node.activeRouteId = null;
+      }
     } else if (route.status === 'DEMOTED') {
       if (!node.demotedRouteIds.includes(route.routeId)) {
         node.demotedRouteIds.push(route.routeId);
+      }
+      node.provisionalRouteIds = node.provisionalRouteIds.filter((id) => id !== route.routeId);
+      if (node.activeRouteId === route.routeId) {
+        node.activeRouteId = null;
       }
     }
 

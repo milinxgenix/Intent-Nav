@@ -44,6 +44,11 @@ export interface GraphEdge {
   edgeType: EdgeType;
   actionRequired?: string;
   weight: number;
+  routeId?: string;
+  version?: number | string;
+  timestamp?: number;
+  transitionSignature?: TransitionSignature;
+  validationStatus?: string;
 }
 
 export interface RouteStep {

@@ -48,6 +48,7 @@ import {
   ActivationEventRecord,
   TransitionWitness,
   ValidationRecord,
+  TransitionSignature,
 } from '../../types/transition';
 import { ExecutionAuthorizationDecision } from '../../types/authorization';
 import { IntentNormalizer } from '../intent/normalizer';
@@ -966,6 +967,19 @@ export class IntentNavMachine {
   ): void {
     if (!this.context.resolvedCapability) return;
 
+    // Phase 21 & Prompt 7: Populate authoritative transition signature
+    const transitionSignature: TransitionSignature | null =
+      this.context.verificationResult?.signature ||
+      (this.context.resolvedCapability.transitionEvidence
+        ? {
+            preStateFingerprint: this.context.resolvedCapability.transitionEvidence.preStateFingerprint,
+            activationEventExpected: { eventType: 'click' },
+            expectedStateDelta: this.context.resolvedCapability.transitionEvidence.expectedDelta,
+            verificationWindowMs: this.context.resolvedCapability.transitionEvidence.verificationWindowMs,
+            postStateFingerprint: this.context.resolvedCapability.transitionEvidence.postStateFingerprint,
+          }
+        : null);
+
     const record: ValidationRecord = {
       recordId: `val_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
       timestamp: Date.now(),
@@ -981,7 +995,7 @@ export class IntentNavMachine {
       rankingComponents: this.context.selectedCandidate || null,
       routeVersion: this.context.activeRoute || this.context.provisionalRoute || null,
       activationEvent: this.context.activationEvent || null,
-      transitionSignature: null,
+      transitionSignature,
       transitionWitnesses: this.context.capturedWitnesses || [],
       causalVerificationResult: this.context.verificationResult || null,
       promotionState: this.context.activeRoute?.status || 'PROVISIONAL',
