@@ -487,7 +487,7 @@ describe('CausalTransitionVerifier & WitnessCollector', () => {
       postStateFingerprint: 'POST',
     };
 
-    it('accepts witnesses with null correlation ID (observer may not know eventId)', () => {
+    it('KO-CAUSAL-CORR-01: missing correlation ID yields insufficient evidence (rejects verification)', () => {
       const verifier = new CausalTransitionVerifier({ minWitnessClasses: 2 });
       const t0 = 2000;
       const activation: ActivationEventRecord = {
@@ -525,9 +525,11 @@ describe('CausalTransitionVerifier & WitnessCollector', () => {
       ];
 
       const result = verifier.verifyTransition(sig, activation, witnesses);
-      // null correlation IDs should NOT cause failure — temporal + delta checks decide
-      expect(result.causallyVerified).toBe(true);
-      expect(result.status).toBe('VERIFIED');
+      // Missing correlation ID MUST NOT be treated as positive evidence; it is insufficient evidence
+      expect(result.causallyVerified).toBe(false);
+      expect(result.status).toBe('FAILED_INSUFFICIENT_CORRELATION');
+      expect(result.failureReason).toBe('causal_relation_unproven');
+      expect(result.explanation.toLowerCase()).toContain('insufficient evidence');
     });
 
     it('rejects witness with incorrect (non-null) correlation ID pointing to a different event', () => {
@@ -716,6 +718,309 @@ describe('CausalTransitionVerifier & WitnessCollector', () => {
       // A correct correlationId is NOT sufficient to establish causality alone
       expect(result.causallyVerified).toBe(false);
       expect(['FAILED_PRE_EXISTING_STATE', 'FAILED_INSUFFICIENT_WITNESSES', 'FAILED_NO_CAUSAL_WITNESSES']).toContain(result.status);
+    });
+  });
+
+  describe('Prompt 6: KO Verification Suite (Causal Transition Verification)', () => {
+    const defaultSig: TransitionSignature = {
+      preStateFingerprint: 'PRE_STATE_ALPHA',
+      activationEventExpected: { eventType: 'click' },
+      expectedStateDelta: {
+        feature_enabled: true,
+        mode: 'advanced',
+      },
+      verificationWindowMs: 1500,
+      postStateFingerprint: 'POST_STATE_BETA',
+    };
+
+    const validAct: ActivationEventRecord = {
+      eventId: 'act_ko_100',
+      sequenceNumber: 1,
+      timestamp: 1000,
+      targetCandidateId: 'btn_toggle',
+      eventType: 'click',
+      initiatingCapabilityId: 'CAP_TOGGLE',
+    };
+
+    it('KO-CAUSAL-DELTA-01: one matching field + one mismatching field => reject (wrong_direction)', () => {
+      const verifier = new CausalTransitionVerifier({ minWitnessClasses: 2 });
+      // Witness 1 has matching feature_enabled (true) but mismatching mode ('basic' instead of 'advanced')
+      const w1: TransitionWitness = {
+        witnessId: 'w_delta_partial',
+        witnessClass: 'DOM_MUTATION',
+        sequenceNumber: 1,
+        timestamp: 1050,
+        observedDelta: {
+          feature_enabled: true,
+          mode: 'basic', // Mismatch!
+        },
+        correlatedActivationEventId: validAct.eventId,
+        temporalDeltaMs: 50,
+        isCausallyCorrelated: true,
+        correlationExplanation: 'partial match',
+      };
+      const w2: TransitionWitness = {
+        witnessId: 'w_delta_partial_2',
+        witnessClass: 'ACCESSIBILITY_STATE_MUTATION',
+        sequenceNumber: 2,
+        timestamp: 1070,
+        observedDelta: {
+          feature_enabled: true,
+          mode: 'basic', // Mismatch!
+        },
+        correlatedActivationEventId: validAct.eventId,
+        temporalDeltaMs: 70,
+        isCausallyCorrelated: true,
+        correlationExplanation: 'partial match 2',
+      };
+
+      // Direct method test
+      expect(verifier.isDeltaMatching(w1.observedDelta, defaultSig.expectedStateDelta)).toBe(false);
+
+      const res = verifier.verifyTransition(defaultSig, validAct, [w1, w2]);
+      expect(res.causallyVerified).toBe(false);
+      expect(res.status).toBe('FAILED_WRONG_STATE_DELTA');
+      expect(res.failureReason).toBe('wrong_direction');
+    });
+
+    it('KO-CAUSAL-DELTA-02: deep equal nested objects and arrays match correctly', () => {
+      const verifier = new CausalTransitionVerifier();
+      const nestedSig: TransitionSignature = {
+        preStateFingerprint: 'PRE_NESTED',
+        activationEventExpected: { eventType: 'click' },
+        expectedStateDelta: {
+          config: { nested: true, levels: [1, 2, 3] },
+        },
+        verificationWindowMs: 1500,
+        postStateFingerprint: 'POST_NESTED',
+      };
+
+      const matchingDelta = {
+        config: { nested: true, levels: [1, 2, 3] },
+      };
+      const mismatchingDelta = {
+        config: { nested: true, levels: [1, 2, 999] },
+      };
+
+      expect(verifier.isDeltaMatching(matchingDelta, nestedSig.expectedStateDelta)).toBe(true);
+      expect(verifier.isDeltaMatching(mismatchingDelta, nestedSig.expectedStateDelta)).toBe(false);
+    });
+
+    it('KO-CAUSAL-CORR-01: missing correlation ID => INSUFFICIENT_EVIDENCE (rejected)', () => {
+      const verifier = new CausalTransitionVerifier({ minWitnessClasses: 2 });
+      const w1: TransitionWitness = {
+        witnessId: 'w_missing_corr_1',
+        witnessClass: 'DOM_MUTATION',
+        sequenceNumber: 1,
+        timestamp: 1050,
+        observedDelta: { feature_enabled: true, mode: 'advanced' },
+        correlatedActivationEventId: null, // MISSING
+        temporalDeltaMs: 50,
+        isCausallyCorrelated: false,
+        correlationExplanation: 'missing correlation',
+      };
+      const w2: TransitionWitness = {
+        witnessId: 'w_missing_corr_2',
+        witnessClass: 'ACCESSIBILITY_STATE_MUTATION',
+        sequenceNumber: 2,
+        timestamp: 1080,
+        observedDelta: { feature_enabled: true, mode: 'advanced' },
+        correlatedActivationEventId: null, // MISSING
+        temporalDeltaMs: 80,
+        isCausallyCorrelated: false,
+        correlationExplanation: 'missing correlation',
+      };
+
+      const res = verifier.verifyTransition(defaultSig, validAct, [w1, w2]);
+      expect(res.causallyVerified).toBe(false);
+      expect(res.status).toBe('FAILED_INSUFFICIENT_CORRELATION');
+      expect(res.failureReason).toBe('causal_relation_unproven');
+      expect(res.explanation.toLowerCase()).toContain('insufficient evidence');
+    });
+
+    it('KO-CAUSAL-CORR-02: wrong correlation ID => reject (FAILED_UNRELATED_MUTATION)', () => {
+      const verifier = new CausalTransitionVerifier({ minWitnessClasses: 2 });
+      const w1: TransitionWitness = {
+        witnessId: 'w_wrong_corr_1',
+        witnessClass: 'DOM_MUTATION',
+        sequenceNumber: 1,
+        timestamp: 1050,
+        observedDelta: { feature_enabled: true, mode: 'advanced' },
+        correlatedActivationEventId: 'act_WRONG_999', // WRONG
+        temporalDeltaMs: 50,
+        isCausallyCorrelated: false,
+        correlationExplanation: 'wrong correlation',
+      };
+      const w2: TransitionWitness = {
+        witnessId: 'w_wrong_corr_2',
+        witnessClass: 'ACCESSIBILITY_STATE_MUTATION',
+        sequenceNumber: 2,
+        timestamp: 1080,
+        observedDelta: { feature_enabled: true, mode: 'advanced' },
+        correlatedActivationEventId: 'act_WRONG_999', // WRONG
+        temporalDeltaMs: 80,
+        isCausallyCorrelated: false,
+        correlationExplanation: 'wrong correlation',
+      };
+
+      const res = verifier.verifyTransition(defaultSig, validAct, [w1, w2]);
+      expect(res.causallyVerified).toBe(false);
+      expect(res.status).toBe('FAILED_UNRELATED_MUTATION');
+      expect(res.failureReason).toBe('invalid_transition');
+    });
+
+    it('KO-CAUSAL-POST-01: changed-but-wrong post-state => reject (FAILED_POST_STATE_MISMATCH)', () => {
+      const verifier = new CausalTransitionVerifier({ minWitnessClasses: 2 });
+      const w1: TransitionWitness = {
+        witnessId: 'w_post_1',
+        witnessClass: 'DOM_MUTATION',
+        sequenceNumber: 1,
+        timestamp: 1050,
+        observedDelta: { feature_enabled: true, mode: 'advanced' },
+        correlatedActivationEventId: validAct.eventId,
+        temporalDeltaMs: 50,
+        isCausallyCorrelated: true,
+        correlationExplanation: 'dom',
+      };
+      const w2: TransitionWitness = {
+        witnessId: 'w_post_2',
+        witnessClass: 'ACCESSIBILITY_STATE_MUTATION',
+        sequenceNumber: 2,
+        timestamp: 1080,
+        observedDelta: { feature_enabled: true, mode: 'advanced' },
+        correlatedActivationEventId: validAct.eventId,
+        temporalDeltaMs: 80,
+        isCausallyCorrelated: true,
+        correlationExplanation: 'a11y',
+      };
+
+      // Current post-state changed from PRE ('PRE_STATE_ALPHA'), but reached unexpected state ('POST_STATE_WRONG_GAMMA')
+      const res = verifier.verifyTransition(
+        defaultSig,
+        validAct,
+        [w1, w2],
+        'POST_STATE_WRONG_GAMMA'
+      );
+      expect(res.causallyVerified).toBe(false);
+      expect(res.status).toBe('FAILED_POST_STATE_MISMATCH');
+      expect(res.failureReason).toBe('post_state_mismatch');
+      expect(res.explanation).toContain('POST_STATE_WRONG_GAMMA');
+      expect(res.explanation).toContain('POST_STATE_BETA');
+    });
+
+    it('KO-CAUSAL-TIME-01: pre-existing witness (t_witness <= t_activation) => reject (FAILED_PRE_EXISTING_STATE)', () => {
+      const verifier = new CausalTransitionVerifier();
+      // Witness at exactly t_act (1000)
+      const wConcurrent: TransitionWitness = {
+        witnessId: 'w_concurrent',
+        witnessClass: 'DOM_MUTATION',
+        sequenceNumber: 1,
+        timestamp: validAct.timestamp, // 1000 === 1000
+        observedDelta: { feature_enabled: true, mode: 'advanced' },
+        correlatedActivationEventId: validAct.eventId,
+        temporalDeltaMs: 0,
+        isCausallyCorrelated: false,
+        correlationExplanation: 'concurrent',
+      };
+
+      const res = verifier.verifyTransition(defaultSig, validAct, [wConcurrent]);
+      expect(res.causallyVerified).toBe(false);
+      expect(res.status).toBe('FAILED_PRE_EXISTING_STATE');
+      expect(res.failureReason).toBe('stale_witness');
+    });
+
+    it('KO-CAUSAL-WINDOW-01: out-of-window witness (t_witness > t_act + windowMs) => reject (FAILED_WINDOW_TIMEOUT)', () => {
+      const verifier = new CausalTransitionVerifier();
+      // Window is 1500ms -> t_act = 1000 -> expires at 2500
+      const wLate: TransitionWitness = {
+        witnessId: 'w_late',
+        witnessClass: 'DOM_MUTATION',
+        sequenceNumber: 1,
+        timestamp: 2501, // 1501ms > 1500ms
+        observedDelta: { feature_enabled: true, mode: 'advanced' },
+        correlatedActivationEventId: validAct.eventId,
+        temporalDeltaMs: 1501,
+        isCausallyCorrelated: false,
+        correlationExplanation: 'late',
+      };
+
+      const res = verifier.verifyTransition(defaultSig, validAct, [wLate]);
+      expect(res.causallyVerified).toBe(false);
+      expect(res.status).toBe('FAILED_WINDOW_TIMEOUT');
+      expect(res.failureReason).toBe('outside_window');
+    });
+
+    it('KO-CAUSAL-QUORUM-01: insufficient witness classes (< 2 independent classes) => reject (FAILED_INSUFFICIENT_WITNESS_CLASSES)', () => {
+      const verifier = new CausalTransitionVerifier({ minWitnessClasses: 2 });
+      const w1: TransitionWitness = {
+        witnessId: 'w_dup_1',
+        witnessClass: 'DOM_MUTATION',
+        sequenceNumber: 1,
+        timestamp: 1050,
+        observedDelta: { feature_enabled: true, mode: 'advanced' },
+        correlatedActivationEventId: validAct.eventId,
+        temporalDeltaMs: 50,
+        isCausallyCorrelated: true,
+        correlationExplanation: 'dom1',
+      };
+      const w2: TransitionWitness = {
+        witnessId: 'w_dup_2',
+        witnessClass: 'DOM_MUTATION', // Same class!
+        sequenceNumber: 2,
+        timestamp: 1080,
+        observedDelta: { feature_enabled: true, mode: 'advanced' },
+        correlatedActivationEventId: validAct.eventId,
+        temporalDeltaMs: 80,
+        isCausallyCorrelated: true,
+        correlationExplanation: 'dom2',
+      };
+
+      const res = verifier.verifyTransition(defaultSig, validAct, [w1, w2]);
+      expect(res.causallyVerified).toBe(false);
+      expect(res.status).toBe('FAILED_INSUFFICIENT_WITNESS_CLASSES');
+      expect(res.failureReason).toBe('insufficient_independence');
+    });
+
+    it('SUCCESS: valid transition generates SHA-256 cryptographic verification token', () => {
+      const verifier = new CausalTransitionVerifier({ minWitnessClasses: 2 });
+      const w1: TransitionWitness = {
+        witnessId: 'w_ok_1',
+        witnessClass: 'DOM_MUTATION',
+        sequenceNumber: 1,
+        timestamp: 1050,
+        observedDelta: { feature_enabled: true, mode: 'advanced' },
+        correlatedActivationEventId: validAct.eventId,
+        temporalDeltaMs: 50,
+        isCausallyCorrelated: true,
+        correlationExplanation: 'dom ok',
+      };
+      const w2: TransitionWitness = {
+        witnessId: 'w_ok_2',
+        witnessClass: 'ACCESSIBILITY_STATE_MUTATION',
+        sequenceNumber: 2,
+        timestamp: 1080,
+        observedDelta: { ariaChecked: 'true' },
+        correlatedActivationEventId: validAct.eventId,
+        temporalDeltaMs: 80,
+        isCausallyCorrelated: true,
+        correlationExplanation: 'a11y ok',
+      };
+
+      const res = verifier.verifyTransition(
+        defaultSig,
+        validAct,
+        [w1, w2],
+        'POST_STATE_BETA',
+        'route_test_100'
+      );
+      expect(res.causallyVerified).toBe(true);
+      expect(res.status).toBe('VERIFIED');
+      expect(res.verificationToken).toBeDefined();
+      expect(res.verificationToken?.signatureHash).toMatch(/^tok_[0-9a-f]+$/);
+      expect(res.verificationToken?.verifiedWitnessClasses).toEqual([
+        'DOM_MUTATION',
+        'ACCESSIBILITY_STATE_MUTATION',
+      ]);
     });
   });
 });

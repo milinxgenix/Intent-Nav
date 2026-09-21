@@ -71,7 +71,8 @@ export type CausalFailureReason =
   | 'invalid_transition'
   | 'insufficient_independence'
   | 'post_state_mismatch'
-  | 'causal_relation_unproven';
+  | 'causal_relation_unproven'
+  | 'insufficient_evidence';
 
 export type CausalVerificationStatus =
   | 'VERIFIED'
@@ -83,7 +84,8 @@ export type CausalVerificationStatus =
   | 'FAILED_WINDOW_TIMEOUT'
   | 'FAILED_CONTRADICTORY_WITNESS'
   | 'FAILED_POST_STATE_MISMATCH'
-  | 'FAILED_ACTIVATION_MISSING';
+  | 'FAILED_ACTIVATION_MISSING'
+  | 'FAILED_INSUFFICIENT_CORRELATION';
 
 export type WitnessCausalCategory =
   | 'PRE_EXISTING'

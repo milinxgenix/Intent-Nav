@@ -46,13 +46,13 @@ export class WitnessCollector {
     if (this.activeActivationEvent) {
       temporalDeltaMs = timestamp - this.activeActivationEvent.timestamp;
 
-      // Causality check: witness MUST occur AFTER activation event
-      if (temporalDeltaMs >= 0) {
+      // Strict temporal precedence: witness MUST occur strictly AFTER activation event (t_act < t_witness)
+      if (temporalDeltaMs > 0) {
         correlatedActivationEventId = this.activeActivationEvent.eventId;
         isCausallyCorrelated = true;
         correlationExplanation = `Correlated with activation event ${this.activeActivationEvent.eventId} (+${temporalDeltaMs}ms)`;
       } else {
-        correlationExplanation = `REJECTED: Pre-existing event occurred before activation (${temporalDeltaMs}ms)`;
+        correlationExplanation = `REJECTED: Pre-existing or concurrent event occurred before or at activation (${temporalDeltaMs}ms)`;
       }
     } else {
       correlationExplanation = 'REJECTED: Unrelated event observed without prior activation event';

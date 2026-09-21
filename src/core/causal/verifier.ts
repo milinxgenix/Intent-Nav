@@ -24,6 +24,7 @@ import {
   CausalFailureReason,
   WitnessClass,
   TransitionVerificationToken,
+  ClassifiedWitnessRecord,
 } from '../../types/transition';
 
 export interface CausalVerifierOptions {
@@ -35,7 +36,9 @@ export class CausalTransitionVerifier {
   constructor(private options: CausalVerifierOptions = {}) {}
 
   /**
-   * Generates a deterministic signature hash for the verification token
+   * Generates a deterministic signature hash for the verification token.
+   * NOTE: This is a deterministic structural hash for runtime identity and tamper
+   * tracking across route versions, not a public-key or HMAC cryptographic digital signature.
    */
   private static generateTokenSignature(
     routeId: string,
@@ -50,6 +53,62 @@ export class CausalTransitionVerifier {
       hash |= 0;
     }
     return `tok_${Math.abs(hash).toString(16)}`;
+  }
+
+  /**
+   * Performs deep equality comparison supporting primitives, nested objects,
+   * arrays, and string-to-boolean equivalence (e.g. 'true' === true).
+   */
+  public deepEqual(a: unknown, b: unknown): boolean {
+    if (a === b) return true;
+
+    // Handle boolean vs string boolean ('true' / true, 'false' / false)
+    if (typeof a === 'boolean' && typeof b === 'string') {
+      const bLower = b.toLowerCase().trim();
+      if (bLower === 'true' || bLower === 'false') {
+        return a === (bLower === 'true');
+      }
+    }
+    if (typeof a === 'string' && typeof b === 'boolean') {
+      const aLower = a.toLowerCase().trim();
+      if (aLower === 'true' || aLower === 'false') {
+        return (aLower === 'true') === b;
+      }
+    }
+
+    if (a === null || a === undefined || b === null || b === undefined) {
+      return a === b;
+    }
+
+    if (typeof a !== 'object' || typeof b !== 'object') {
+      return false;
+    }
+
+    if (Array.isArray(a) !== Array.isArray(b)) {
+      return false;
+    }
+
+    if (Array.isArray(a) && Array.isArray(b)) {
+      if (a.length !== b.length) return false;
+      for (let i = 0; i < a.length; i++) {
+        if (!this.deepEqual(a[i], b[i])) return false;
+      }
+      return true;
+    }
+
+    const aObj = a as Record<string, unknown>;
+    const bObj = b as Record<string, unknown>;
+    const aKeys = Object.keys(aObj);
+    const bKeys = Object.keys(bObj);
+
+    if (aKeys.length !== bKeys.length) return false;
+
+    for (const key of aKeys) {
+      if (!Object.prototype.hasOwnProperty.call(bObj, key)) return false;
+      if (!this.deepEqual(aObj[key], bObj[key])) return false;
+    }
+
+    return true;
   }
 
   /**
@@ -80,7 +139,7 @@ export class CausalTransitionVerifier {
     const expected = expectedDelta || {};
     const observed = observedDelta || {};
     const expectedKeys = Object.keys(expected);
-    if (expectedKeys.length === 0) return true; // If delta is empty, any non-empty delta or transition is relevant
+    if (expectedKeys.length === 0) return true;
     if (expectedKeys.some((key) => key in observed)) return true;
     // Standard accessibility & route transition properties
     const standardChannels = [
@@ -104,22 +163,28 @@ export class CausalTransitionVerifier {
   }
 
   /**
-   * Evaluates whether the observed delta satisfies expected state changes
+   * Evaluates whether the observed delta satisfies ALL required expected state changes.
+   * Does NOT accept partial matches unless expected delta is empty.
    */
-  private isDeltaMatching(
+  public isDeltaMatching(
     observedDelta: Record<string, unknown> | undefined | null,
     expectedDelta: Record<string, unknown> | undefined | null
   ): boolean {
     const expected = expectedDelta || {};
     const observed = observedDelta || {};
+    const expectedKeys = Object.keys(expected);
+    if (expectedKeys.length === 0) return true;
+    if (!observedDelta || Object.keys(observed).length === 0) return false;
+
     for (const [key, expectedVal] of Object.entries(expected)) {
-      if (key in observed) {
-        if (observed[key] === expectedVal) {
-          return true;
-        }
+      if (!(key in observed)) {
+        return false;
+      }
+      if (!this.deepEqual(observed[key], expectedVal)) {
+        return false;
       }
     }
-    return false;
+    return true;
   }
 
   /**
@@ -170,31 +235,34 @@ export class CausalTransitionVerifier {
 
     const preExistingWitnesses: TransitionWitness[] = [];
     const timedOutWitnesses: TransitionWitness[] = [];
-    const unrelatedWitnesses: TransitionWitness[] = [];
+    const missingCorrWitnesses: TransitionWitness[] = [];
+    const wrongCorrWitnesses: TransitionWitness[] = [];
+    const unrelatedDeltaWitnesses: TransitionWitness[] = [];
     const contradictoryWitnesses: TransitionWitness[] = [];
     const relevantCausalWitnesses: TransitionWitness[] = [];
-    const classifiedWitnesses: import('../../types/transition').ClassifiedWitnessRecord[] = [];
+    const classifiedWitnesses: ClassifiedWitnessRecord[] = [];
 
     // Temporal & Causal Sorting: activationEvent.timestamp < witness.timestamp
     for (const w of witnesses) {
-      // 1. Check pre-existing state anomaly: mutation occurred BEFORE or AT activation
+      // 1. Check strict temporal precedence: t_activation < t_witness
+      // Mutation occurred BEFORE or AT activation event timestamp
       if (w.timestamp <= startTime) {
         preExistingWitnesses.push(w);
         classifiedWitnesses.push({
           witness: w,
           category: 'PRE_EXISTING',
-          reason: `Witness timestamp (${w.timestamp}) occurred before or at activation event timestamp (${startTime}).`,
+          reason: `Witness timestamp (${w.timestamp}) occurred before or at activation event timestamp (${startTime}). Strict temporal precedence (t_activation < t_witness) violated.`,
         });
         continue;
       }
 
-      // 2. Check window timeout
+      // 2. Check window timeout: t_witness <= t_activation + windowMs
       if (w.timestamp - startTime > windowMs) {
         timedOutWitnesses.push(w);
         classifiedWitnesses.push({
           witness: w,
           category: 'TIMED_OUT',
-          reason: `Witness timestamp (${w.timestamp}) arrived after verification window (${windowMs}ms).`,
+          reason: `Witness timestamp (${w.timestamp}) arrived after verification window (${windowMs}ms). Bounded verification interval exceeded.`,
         });
         continue;
       }
@@ -210,25 +278,44 @@ export class CausalTransitionVerifier {
         continue;
       }
 
-      // 4. Independent Causal Relevance Derivation (Do NOT trust isCausallyCorrelated flag)
-      const isCorrelatedWithEvent =
-        !w.correlatedActivationEventId || w.correlatedActivationEventId === activationEvent.eventId;
+      // 4. Delta Relevance Evaluation (Filter out unrelated DOM/state mutations first)
       const isRelevantDelta =
         this.isDeltaRelevant(w.observedDelta, signature.expectedStateDelta, w.witnessClass);
 
-      if (!isCorrelatedWithEvent || !isRelevantDelta) {
-        unrelatedWitnesses.push(w);
+      if (!isRelevantDelta) {
+        unrelatedDeltaWitnesses.push(w);
         classifiedWitnesses.push({
           witness: w,
           category: 'UNRELATED',
-          reason: !isCorrelatedWithEvent
-            ? `Witness correlated event ID '${w.correlatedActivationEventId}' does not match activation ID '${activationEvent.eventId}'.`
-            : `Witness delta ${JSON.stringify(w.observedDelta)} is unrelated to expected delta ${JSON.stringify(signature.expectedStateDelta)}.`,
+          reason: `Witness delta ${JSON.stringify(w.observedDelta)} is unrelated to expected delta ${JSON.stringify(signature.expectedStateDelta)}. Unrelated mutations cannot satisfy causal verification.`,
         });
         continue;
       }
 
-      // Witness is temporally and contextually relevant
+      // 5. Independent Causal Relevance Derivation (Do NOT trust isCausallyCorrelated flag)
+      // Missing correlation ID constitutes INSUFFICIENT_EVIDENCE
+      if (!w.correlatedActivationEventId) {
+        missingCorrWitnesses.push(w);
+        classifiedWitnesses.push({
+          witness: w,
+          category: 'UNRELATED',
+          reason: `Witness delta is relevant, but missing correlatedActivationEventId. Missing correlation ID constitutes insufficient evidence of causality.`,
+        });
+        continue;
+      }
+
+      // Wrong or stale correlation ID fails
+      if (w.correlatedActivationEventId !== activationEvent.eventId) {
+        wrongCorrWitnesses.push(w);
+        classifiedWitnesses.push({
+          witness: w,
+          category: 'UNRELATED',
+          reason: `Witness correlated event ID '${w.correlatedActivationEventId}' does not match activation ID '${activationEvent.eventId}'. Wrong or stale correlation ID rejected.`,
+        });
+        continue;
+      }
+
+      // Witness is temporally, causally, and contextually valid
       const isDeltaMatch = this.isDeltaMatching(w.observedDelta, signature.expectedStateDelta);
       relevantCausalWitnesses.push(w);
       classifiedWitnesses.push({
@@ -272,8 +359,9 @@ export class CausalTransitionVerifier {
       };
     }
 
-    // Check for Unrelated Mutation Only (Property 4) -> invalid_transition
-    if (relevantCausalWitnesses.length === 0 && unrelatedWitnesses.length > 0) {
+    // Check for Unrelated / Wrong Correlation Mutations -> invalid_transition
+    if (relevantCausalWitnesses.length === 0 && (wrongCorrWitnesses.length > 0 || unrelatedDeltaWitnesses.length > 0)) {
+      const firstUnrelated = wrongCorrWitnesses[0] || unrelatedDeltaWitnesses[0];
       return {
         signature,
         activationEvent,
@@ -283,8 +371,24 @@ export class CausalTransitionVerifier {
         status: 'FAILED_UNRELATED_MUTATION',
         failureReason: 'invalid_transition',
         causallyVerified: false,
-        durationMs: unrelatedWitnesses[0]!.timestamp - startTime,
-        explanation: `Transition rejected: Mutations occurred within window, but none matched expected delta. Unrelated mutations cannot satisfy causal verification.`,
+        durationMs: firstUnrelated ? firstUnrelated.timestamp - startTime : 0,
+        explanation: `Transition rejected: Mutations occurred within window, but none matched expected delta or event correlation. Unrelated mutations cannot satisfy causal verification.`,
+      };
+    }
+
+    // Check for Missing Correlation Witnesses -> causal_relation_unproven / insufficient evidence
+    if (relevantCausalWitnesses.length === 0 && missingCorrWitnesses.length > 0) {
+      return {
+        signature,
+        activationEvent,
+        observedWitnesses: witnesses,
+        classifiedWitnesses,
+        verifiedWitnessClasses: [],
+        status: 'FAILED_INSUFFICIENT_CORRELATION',
+        failureReason: 'causal_relation_unproven',
+        causallyVerified: false,
+        durationMs: missingCorrWitnesses[0]!.timestamp - startTime,
+        explanation: 'Transition rejected: Missing correlation ID on observed witnesses. Insufficient evidence to establish causal relationship with activation event.',
       };
     }
 
@@ -313,9 +417,32 @@ export class CausalTransitionVerifier {
     if (Object.keys(signature.expectedStateDelta).length === 0) {
       deltaMatched = true;
     } else {
+      // 1. Direct match by individual witness
       deltaMatched = relevantCausalWitnesses.some((w) =>
         this.isDeltaMatching(w.observedDelta, signature.expectedStateDelta)
       );
+
+      // 2. Combined match across independent relevant witnesses without contradictions
+      if (!deltaMatched && relevantCausalWitnesses.length > 1) {
+        const combinedDelta: Record<string, unknown> = {};
+        let contradictionFound = false;
+        for (const w of relevantCausalWitnesses) {
+          if (!w.observedDelta) continue;
+          for (const [k, v] of Object.entries(w.observedDelta)) {
+            if (k in signature.expectedStateDelta) {
+              if (k in combinedDelta && !this.deepEqual(combinedDelta[k], v)) {
+                contradictionFound = true;
+                break;
+              }
+              combinedDelta[k] = v;
+            }
+          }
+          if (contradictionFound) break;
+        }
+        if (!contradictionFound && this.isDeltaMatching(combinedDelta, signature.expectedStateDelta)) {
+          deltaMatched = true;
+        }
+      }
     }
 
     if (!deltaMatched) {
@@ -333,8 +460,9 @@ export class CausalTransitionVerifier {
       };
     }
 
-    // Post-State Fingerprint Verification -> post_state_mismatch
-    if (currentPostStateFingerprint && signature.postStateFingerprint) {
+    // Direct Post-State Verification -> post_state_mismatch
+    // Compare observed post-state against expected post-state directly (do not merely check post !== pre)
+    if (currentPostStateFingerprint !== undefined) {
       if (currentPostStateFingerprint === signature.preStateFingerprint) {
         return {
           signature,
@@ -347,6 +475,20 @@ export class CausalTransitionVerifier {
           causallyVerified: false,
           durationMs: relevantCausalWitnesses[relevantCausalWitnesses.length - 1]!.timestamp - startTime,
           explanation: 'Transition rejected: Post-state fingerprint identical to pre-state; no actual state progression occurred.',
+        };
+      }
+      if (signature.postStateFingerprint && currentPostStateFingerprint !== signature.postStateFingerprint) {
+        return {
+          signature,
+          activationEvent,
+          observedWitnesses: relevantCausalWitnesses,
+          classifiedWitnesses,
+          verifiedWitnessClasses: [],
+          status: 'FAILED_POST_STATE_MISMATCH',
+          failureReason: 'post_state_mismatch',
+          causallyVerified: false,
+          durationMs: relevantCausalWitnesses[relevantCausalWitnesses.length - 1]!.timestamp - startTime,
+          explanation: `Transition rejected: Observed post-state fingerprint '${currentPostStateFingerprint}' does not match expected post-state fingerprint '${signature.postStateFingerprint}'.`,
         };
       }
     }
