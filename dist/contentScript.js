@@ -630,6 +630,208 @@
     }
   };
 
+  // src/browser/eventDispatcher.ts
+  function canElementReceiveActivation(el, eventType) {
+    if (!el || typeof el !== "object") {
+      return { allowed: false, reason: "Target element is null or not a valid DOM node." };
+    }
+    const tagName = (el.tagName || "").toLowerCase();
+    const role = (el.getAttribute("role") || "").toLowerCase().trim();
+    switch (eventType) {
+      case "click":
+        return { allowed: true };
+      case "keydown": {
+        const isInteractiveTag = [
+          "button",
+          "input",
+          "select",
+          "textarea",
+          "a",
+          "summary",
+          "details"
+        ].includes(tagName);
+        const hasTabIndex = el.hasAttribute("tabindex");
+        const isContentEditable = Boolean(el.isContentEditable);
+        const interactiveRoles = [
+          "button",
+          "switch",
+          "checkbox",
+          "radio",
+          "textbox",
+          "searchbox",
+          "combobox",
+          "link",
+          "menuitem",
+          "menuitemcheckbox",
+          "menuitemradio",
+          "tab",
+          "slider",
+          "spinbutton",
+          "treeitem"
+        ];
+        const hasInteractiveRole = interactiveRoles.includes(role);
+        if (isInteractiveTag || hasTabIndex || isContentEditable || hasInteractiveRole) {
+          return { allowed: true };
+        }
+        return {
+          allowed: false,
+          reason: `Target element <${tagName}> is not focusable or interactive and cannot legitimately receive 'keydown' events.`
+        };
+      }
+      case "change": {
+        const isInputTag = ["input", "select", "textarea"].includes(tagName);
+        const isContentEditable = Boolean(el.isContentEditable);
+        const mutableRoles = [
+          "switch",
+          "checkbox",
+          "radio",
+          "combobox",
+          "slider",
+          "spinbutton",
+          "listbox"
+        ];
+        const hasMutableRole = mutableRoles.includes(role);
+        const hasStateAttributes = el.hasAttribute("aria-checked") || el.hasAttribute("aria-selected") || el.hasAttribute("aria-valuenow");
+        if (isInputTag || isContentEditable || hasMutableRole || hasStateAttributes) {
+          return { allowed: true };
+        }
+        return {
+          allowed: false,
+          reason: `Target element <${tagName}> does not possess mutable value or state and cannot legitimately receive a 'change' event.`
+        };
+      }
+      case "submit": {
+        const isFormTag = tagName === "form";
+        const isSubmitInput = tagName === "input" && ["submit", "image"].includes((el.type || "").toLowerCase());
+        const isButtonTag = tagName === "button";
+        const isButtonRole = role === "button";
+        const isInsideForm = Boolean(el.closest("form"));
+        if (isFormTag || isSubmitInput || isButtonTag || isButtonRole || isInsideForm) {
+          return { allowed: true };
+        }
+        return {
+          allowed: false,
+          reason: `Target element <${tagName}> is not a <form> or submission control and cannot legitimately receive a 'submit' event.`
+        };
+      }
+      default:
+        return {
+          allowed: false,
+          reason: `Unsupported activation event type: '${eventType}'.`
+        };
+    }
+  }
+  function dispatchDOMActivation(targetEl, characteristics, win) {
+    const effectiveWin = win || targetEl.ownerDocument?.defaultView || window;
+    const eventType = characteristics?.eventType || "click";
+    const receiptCheck = canElementReceiveActivation(targetEl, eventType);
+    if (!receiptCheck.allowed) {
+      return {
+        success: false,
+        eventDispatched: false,
+        eventType,
+        reason: receiptCheck.reason
+      };
+    }
+    const bubbles = characteristics?.bubbles !== false;
+    const cancelable = characteristics?.cancelable !== false;
+    const winAny = effectiveWin;
+    try {
+      switch (eventType) {
+        case "click": {
+          const MouseEventCtor = winAny.MouseEvent || MouseEvent;
+          const mouseEvt = new MouseEventCtor("click", {
+            bubbles,
+            cancelable,
+            view: effectiveWin
+          });
+          targetEl.dispatchEvent(mouseEvt);
+          return { success: true, eventDispatched: true, eventType: "click" };
+        }
+        case "keydown": {
+          const key = characteristics?.key || "Enter";
+          const code = characteristics?.code || (key === " " ? "Space" : key === "Enter" ? "Enter" : `Key${key.toUpperCase()}`);
+          const keyCode = characteristics?.keyCode || (key === "Enter" ? 13 : key === " " ? 32 : key.charCodeAt(0) || 0);
+          if (typeof targetEl.focus === "function") {
+            try {
+              targetEl.focus();
+            } catch {
+            }
+          }
+          const KeyboardEventCtor = winAny.KeyboardEvent || KeyboardEvent;
+          const keyboardEvt = new KeyboardEventCtor("keydown", {
+            key,
+            code,
+            keyCode,
+            which: keyCode,
+            bubbles,
+            cancelable,
+            view: effectiveWin
+          });
+          targetEl.dispatchEvent(keyboardEvt);
+          return { success: true, eventDispatched: true, eventType: "keydown" };
+        }
+        case "change": {
+          if (targetEl.tagName.toLowerCase() === "input") {
+            const inputEl = targetEl;
+            if (inputEl.type === "checkbox") {
+              inputEl.checked = !inputEl.checked;
+            }
+          }
+          const EventCtor = winAny.Event || Event;
+          const changeEvt = new EventCtor("change", {
+            bubbles,
+            cancelable: characteristics?.cancelable ?? false
+          });
+          targetEl.dispatchEvent(changeEvt);
+          return { success: true, eventDispatched: true, eventType: "change" };
+        }
+        case "submit": {
+          const form = targetEl.tagName.toLowerCase() === "form" ? targetEl : targetEl.form || targetEl.closest("form");
+          const EventCtor = winAny.Event || Event;
+          if (form) {
+            let submitEvt;
+            try {
+              if (typeof winAny.SubmitEvent === "function") {
+                submitEvt = new winAny.SubmitEvent("submit", {
+                  bubbles: true,
+                  cancelable: true,
+                  submitter: targetEl
+                });
+              } else {
+                submitEvt = new EventCtor("submit", { bubbles: true, cancelable: true });
+              }
+            } catch {
+              submitEvt = new EventCtor("submit", { bubbles: true, cancelable: true });
+            }
+            form.dispatchEvent(submitEvt);
+          } else {
+            const submitEvt = new EventCtor("submit", {
+              bubbles,
+              cancelable
+            });
+            targetEl.dispatchEvent(submitEvt);
+          }
+          return { success: true, eventDispatched: true, eventType: "submit" };
+        }
+        default:
+          return {
+            success: false,
+            eventDispatched: false,
+            eventType,
+            reason: `Unknown event type '${eventType}'`
+          };
+      }
+    } catch (err) {
+      return {
+        success: false,
+        eventDispatched: false,
+        eventType,
+        reason: `DOM event dispatch threw error: ${err?.message || err}`
+      };
+    }
+  }
+
   // src/browser/contentScript.ts
   var observer = new InterfaceObserver();
   var witnessSequenceCounter = 0;
@@ -788,22 +990,31 @@
             if (Date.now() <= actTimestamp) {
               await new Promise((resolve) => setTimeout(resolve, 2));
             }
-            const eventType = payload.eventType || "click";
+            const characteristics = payload.eventCharacteristics || {
+              eventType: payload.eventType || "click",
+              bubbles: true,
+              cancelable: true
+            };
+            const dispatchResult = dispatchDOMActivation(targetEl, characteristics, window);
+            if (!dispatchResult.success) {
+              sendResponse({
+                success: false,
+                reason: dispatchResult.reason || `Failed to dispatch ${characteristics.eventType} event.`
+              });
+              break;
+            }
             const activationEvent = {
               eventId: payload.activationEventId,
               sequenceNumber: 1,
               timestamp: actTimestamp,
               targetCandidateId: payload.bindingHandle.handleId,
-              eventType,
+              eventType: dispatchResult.eventType,
               bindingHandle: payload.bindingHandle,
-              initiatingCapabilityId: payload.capabilityId
+              initiatingCapabilityId: payload.capabilityId,
+              key: characteristics.key,
+              code: characteristics.code,
+              keyCode: characteristics.keyCode
             };
-            const clickEvent = new MouseEvent("click", {
-              bubbles: true,
-              cancelable: true,
-              view: window
-            });
-            targetEl.dispatchEvent(clickEvent);
             sendResponse({
               success: true,
               activationEvent,

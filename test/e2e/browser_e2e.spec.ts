@@ -13,10 +13,11 @@ import fs from 'fs';
 import path from 'path';
 import { IntentNavMachine, ExecutionDispatcher } from '../../src/core/stateMachine/machine';
 import { CandidateGenerator } from '../../src/core/candidate/generator';
-import { FunctionalCapabilityFingerprint, BindingHandle } from '../../src/types/capability';
+import { FunctionalCapabilityFingerprint, BindingHandle, ActivationEventCharacteristics } from '../../src/types/capability';
 import { TransitionWitness } from '../../src/types/transition';
 import { PersistentCapabilityStore } from '../../src/core/storage/persistentStore';
 import { AUTHORITATIVE_CAPABILITY_CATALOG } from '../../src/core/capability/catalog';
+import { dispatchDOMActivation } from '../../src/browser/eventDispatcher';
 
 // Load mock site files
 function setupMockDOM(siteDir: string): { window: any; document: Document } {
@@ -1248,6 +1249,113 @@ describe('IntentNav-SCFR: Browser E2E Test Suite (Real DOM Execution)', () => {
     expect(ctx.currentState).toBe('EXECUTED');
     expect(ctx.verificationResult?.causallyVerified).toBe(true);
     expect(ctx.activeRoute).toBeDefined();
+    expect(marketingBtn.getAttribute('aria-checked')).toBe('false');
+  });
+
+  // 17. Declared Event Type Dispatch & Non-Click Execution (Keyboard Space activation on switch)
+  it('E2E Scenario 17: Dispatches declared non-click event (keydown Space) to toggle switch with causal verification', async () => {
+    const { window, document } = setupMockDOM('site-a');
+    const marketingBtn = document.getElementById('btn-disable-marketing')!;
+    expect(marketingBtn.getAttribute('aria-checked')).toBe('true');
+
+    // Configure marketing capability on machine with declared keydown (Space) activation
+    const keyboardMarketingCap: FunctionalCapabilityFingerprint = {
+      ...MARKETING_CAP,
+      transitionEvidence: {
+        ...MARKETING_CAP.transitionEvidence,
+        activationEventCharacteristics: {
+          eventType: 'keydown',
+          key: ' ',
+          code: 'Space',
+          keyCode: 32,
+          bubbles: true,
+          cancelable: true,
+        },
+      },
+    };
+    machine.registerCapability(keyboardMarketingCap);
+
+    const candidates = CandidateGenerator.generateFromDOM(document);
+
+    let recordedActivationEvent: any = null;
+    let actTimestamp = 0;
+
+    const liveDispatcher: ExecutionDispatcher = {
+      async dispatchActivation(activationEventId, candidate, capabilityId, activationCharacteristics) {
+        const el = resolveElement(document, candidate.bindingHandle, candidate.candidateId);
+        if (!el) {
+          return { success: false, reason: 'Element not found' };
+        }
+
+        const chars: ActivationEventCharacteristics = activationCharacteristics || {
+          eventType: 'click',
+          bubbles: true,
+          cancelable: true,
+        };
+        const dispatchResult = dispatchDOMActivation(el, chars, window);
+        if (!dispatchResult.success) {
+          return { success: false, reason: dispatchResult.reason };
+        }
+
+        actTimestamp = Date.now();
+        recordedActivationEvent = {
+          eventId: activationEventId,
+          sequenceNumber: 1,
+          timestamp: actTimestamp,
+          targetCandidateId: candidate.candidateId,
+          eventType: dispatchResult.eventType,
+          initiatingCapabilityId: capabilityId,
+          key: chars.key,
+          code: chars.code,
+          keyCode: chars.keyCode,
+        };
+
+        return {
+          success: true,
+          activationEvent: recordedActivationEvent,
+        };
+      },
+      async collectWitnesses() {
+        return [
+          {
+            witnessId: 'wit_key_1',
+            witnessClass: 'DOM_MUTATION',
+            sequenceNumber: 1,
+            timestamp: actTimestamp + 15,
+            observedDelta: { checked: false, marketing_emails_enabled: false },
+            correlatedActivationEventId: recordedActivationEvent?.eventId || 'unknown',
+            temporalDeltaMs: 15,
+            isCausallyCorrelated: true,
+            correlationExplanation: 'DOM mutation triggered by keydown Space',
+          },
+          {
+            witnessId: 'wit_key_2',
+            witnessClass: 'ACCESSIBILITY_STATE_MUTATION',
+            sequenceNumber: 2,
+            timestamp: actTimestamp + 25,
+            observedDelta: { checked: false, marketing_emails_enabled: false },
+            correlatedActivationEventId: recordedActivationEvent?.eventId || 'unknown',
+            temporalDeltaMs: 25,
+            isCausallyCorrelated: true,
+            correlationExplanation: 'A11y state mutation triggered by keydown Space',
+          },
+        ];
+      },
+    };
+
+    const ctx = await machine.processIntent(
+      'Turn off promotional emails',
+      { tag: 'body', observedActionType: 'VIEW', observedTargetEntity: 'UNKNOWN' },
+      candidates,
+      false,
+      liveDispatcher
+    );
+
+    expect(ctx.currentState).toBe('EXECUTED');
+    expect(ctx.verificationResult?.causallyVerified).toBe(true);
+    expect(recordedActivationEvent.eventType).toBe('keydown');
+    expect(recordedActivationEvent.key).toBe(' ');
+    // Live DOM script was triggered by keydown Space and updated aria-checked to false
     expect(marketingBtn.getAttribute('aria-checked')).toBe('false');
   });
 });

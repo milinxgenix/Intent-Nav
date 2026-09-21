@@ -233,6 +233,26 @@ export class CausalTransitionVerifier {
       };
     }
 
+    // 0c. Activation Event Type Match (Prompt 8)
+    if (
+      signature.activationEventExpected?.eventType &&
+      activationEvent.eventType &&
+      signature.activationEventExpected.eventType !== activationEvent.eventType
+    ) {
+      return {
+        signature,
+        activationEvent,
+        observedWitnesses: witnesses || [],
+        classifiedWitnesses: [],
+        verifiedWitnessClasses: [],
+        status: 'FAILED_WRONG_STATE_DELTA',
+        failureReason: 'invalid_transition',
+        causallyVerified: false,
+        durationMs: 0,
+        explanation: `Transition rejected: Dispatched activation event type '${activationEvent.eventType}' does not match expected signature event type '${signature.activationEventExpected.eventType}'.`,
+      };
+    }
+
     const preExistingWitnesses: TransitionWitness[] = [];
     const timedOutWitnesses: TransitionWitness[] = [];
     const missingCorrWitnesses: TransitionWitness[] = [];

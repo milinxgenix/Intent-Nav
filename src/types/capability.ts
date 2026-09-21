@@ -115,6 +115,9 @@ export interface ActivationEventCharacteristics {
   bubbles: boolean;
   cancelable: boolean;
   requiredModifiers?: string[];
+  key?: string;
+  code?: string;
+  keyCode?: number;
 }
 
 export interface SemanticEvidence {

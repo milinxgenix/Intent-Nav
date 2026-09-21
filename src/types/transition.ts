@@ -32,6 +32,9 @@ export interface ActivationEventRecord {
   targetSelector?: string;
   bindingHandle?: BindingHandle;
   initiatingCapabilityId: string;
+  key?: string;
+  code?: string;
+  keyCode?: number;
 }
 
 // Alias for first-class ActivationEvent entity
@@ -55,6 +58,9 @@ export interface TransitionSignature {
   preStateFingerprint: string;
   activationEventExpected: {
     eventType: 'click' | 'keydown' | 'change' | 'submit';
+    key?: string;
+    code?: string;
+    keyCode?: number;
   };
   expectedStateDelta: Record<string, unknown>;
   verificationWindowMs: number; // e.g. 1500ms

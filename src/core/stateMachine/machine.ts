@@ -38,7 +38,7 @@
  */
 
 import { NormalizedIntent } from '../../types/intent';
-import { FunctionalCapabilityFingerprint } from '../../types/capability';
+import { FunctionalCapabilityFingerprint, ActivationEventCharacteristics } from '../../types/capability';
 import { InterfaceStateNode, RouteVersion } from '../../types/state';
 import { TypedDriftVector, DriftLocalizationResult } from '../../types/drift';
 import { InvariantClosureResult } from '../../types/invariant';
@@ -96,7 +96,8 @@ export interface ExecutionDispatcher {
   dispatchActivation(
     activationEventId: string,
     candidate: CandidateEvaluationContext,
-    capabilityId: string
+    capabilityId: string,
+    activationCharacteristics?: ActivationEventCharacteristics
   ): Promise<{
     success: boolean;
     elementFound?: boolean;
@@ -571,6 +572,13 @@ export class IntentNavMachine {
     let activationEvent: ActivationEventRecord;
     let collectedWitnesses: TransitionWitness[] = [];
 
+    const actCharacteristics: ActivationEventCharacteristics =
+      matchedCap.transitionEvidence?.activationEventCharacteristics || {
+        eventType: 'click',
+        bubbles: true,
+        cancelable: true,
+      };
+
     if (isDispatcher) {
       const dispatcher = effectiveDispatcherOrWitnesses as ExecutionDispatcher;
       this.state = 'ACTIVATION_DISPATCHED';
@@ -578,7 +586,8 @@ export class IntentNavMachine {
       const dispatchResult = await dispatcher.dispatchActivation(
         activationEventId,
         candidateToExecute,
-        matchedCap.capabilityId
+        matchedCap.capabilityId,
+        actCharacteristics
       );
 
       // Gate only on dispatch mechanics: did we find the element and fire the event?
@@ -609,8 +618,11 @@ export class IntentNavMachine {
         sequenceNumber: 1,
         timestamp: Date.now(),
         targetCandidateId: candidateToExecute.candidateId,
-        eventType: 'click',
+        eventType: actCharacteristics.eventType,
         initiatingCapabilityId: matchedCap.capabilityId,
+        key: actCharacteristics.key,
+        code: actCharacteristics.code,
+        keyCode: actCharacteristics.keyCode,
       };
 
       if (!activationEvent.bindingHandle && candidateToExecute.bindingHandle) {
@@ -635,9 +647,12 @@ export class IntentNavMachine {
         sequenceNumber: 1,
         timestamp: minWitnessTimestamp - 50,
         targetCandidateId: candidateToExecute.candidateId,
-        eventType: 'click',
+        eventType: actCharacteristics.eventType,
         initiatingCapabilityId: matchedCap.capabilityId,
         bindingHandle: candidateToExecute.bindingHandle,
+        key: actCharacteristics.key,
+        code: actCharacteristics.code,
+        keyCode: actCharacteristics.keyCode,
       };
       collectedWitnesses = effectiveDispatcherOrWitnesses as TransitionWitness[];
     }
@@ -651,7 +666,12 @@ export class IntentNavMachine {
     const verificationResult = this.causalVerifier.verifyTransition(
       {
         preStateFingerprint: matchedCap.transitionEvidence.preStateFingerprint,
-        activationEventExpected: { eventType: 'click' },
+        activationEventExpected: {
+          eventType: actCharacteristics.eventType,
+          key: actCharacteristics.key,
+          code: actCharacteristics.code,
+          keyCode: actCharacteristics.keyCode,
+        },
         expectedStateDelta: matchedCap.transitionEvidence.expectedDelta,
         verificationWindowMs: matchedCap.transitionEvidence.verificationWindowMs,
         postStateFingerprint: matchedCap.transitionEvidence.postStateFingerprint,
@@ -967,13 +987,19 @@ export class IntentNavMachine {
   ): void {
     if (!this.context.resolvedCapability) return;
 
-    // Phase 21 & Prompt 7: Populate authoritative transition signature
+    // Phase 21 & Prompt 7 & Prompt 8: Populate authoritative transition signature
+    const actCharacteristics = this.context.resolvedCapability.transitionEvidence?.activationEventCharacteristics;
     const transitionSignature: TransitionSignature | null =
       this.context.verificationResult?.signature ||
       (this.context.resolvedCapability.transitionEvidence
         ? {
             preStateFingerprint: this.context.resolvedCapability.transitionEvidence.preStateFingerprint,
-            activationEventExpected: { eventType: 'click' },
+            activationEventExpected: {
+              eventType: actCharacteristics?.eventType || 'click',
+              key: actCharacteristics?.key,
+              code: actCharacteristics?.code,
+              keyCode: actCharacteristics?.keyCode,
+            },
             expectedStateDelta: this.context.resolvedCapability.transitionEvidence.expectedDelta,
             verificationWindowMs: this.context.resolvedCapability.transitionEvidence.verificationWindowMs,
             postStateFingerprint: this.context.resolvedCapability.transitionEvidence.postStateFingerprint,

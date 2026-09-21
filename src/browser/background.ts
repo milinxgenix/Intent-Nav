@@ -6,6 +6,7 @@
 import { IntentNavMachine, ExecutionDispatcher } from '../core/stateMachine/machine';
 import { ExtensionMessage } from '../types/messages';
 import { AUTHORITATIVE_CAPABILITY_CATALOG } from '../core/capability/catalog';
+import { ActivationEventCharacteristics } from '../types/capability';
 
 const machine = new IntentNavMachine();
 
@@ -19,7 +20,8 @@ class BrowserExecutionDispatcher implements ExecutionDispatcher {
   async dispatchActivation(
     activationEventId: string,
     candidate: any,
-    capabilityId: string
+    capabilityId: string,
+    activationCharacteristics?: ActivationEventCharacteristics
   ): Promise<{ success: boolean; activationEvent?: any; reason?: string }> {
     try {
       const actTimestamp = Date.now();
@@ -30,6 +32,8 @@ class BrowserExecutionDispatcher implements ExecutionDispatcher {
           activationTimestamp: actTimestamp,
           bindingHandle: candidate.bindingHandle,
           capabilityId,
+          eventType: activationCharacteristics?.eventType || 'click',
+          eventCharacteristics: activationCharacteristics,
         },
         timestamp: actTimestamp,
         messageId: `act_${actTimestamp}`,

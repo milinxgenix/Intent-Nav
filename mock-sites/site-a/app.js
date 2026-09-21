@@ -34,7 +34,7 @@ const feedback = document.getElementById('live-feedback');
 // 1. Marketing Notifications Toggle
 const marketingBtn = document.getElementById('btn-disable-marketing');
 if (marketingBtn) {
-  marketingBtn.addEventListener('click', () => {
+  const toggleMarketing = () => {
     const isChecked = marketingBtn.getAttribute('aria-checked') === 'true';
     const newChecked = !isChecked;
     marketingBtn.setAttribute('aria-checked', String(newChecked));
@@ -42,6 +42,13 @@ if (marketingBtn) {
     dispatchMockStateChange('marketing_notifications_enabled', newChecked);
     dispatchMockStateChange('marketing_emails_enabled', newChecked);
     if (feedback) feedback.textContent = `Marketing emails state: ${newChecked ? 'ENABLED' : 'DISABLED'}`;
+  };
+  marketingBtn.addEventListener('click', toggleMarketing);
+  marketingBtn.addEventListener('change', toggleMarketing);
+  marketingBtn.addEventListener('keydown', (e) => {
+    if (e.key === ' ' || e.key === 'Enter' || e.code === 'Space' || e.code === 'Enter') {
+      toggleMarketing();
+    }
   });
 }
 
@@ -113,12 +120,19 @@ if (revokeBtn) {
 // 7. Dark Mode Toggle
 const darkModeBtn = document.getElementById('btn-toggle-dark-mode');
 if (darkModeBtn) {
-  darkModeBtn.addEventListener('click', () => {
+  const toggleDarkMode = () => {
     const isChecked = darkModeBtn.getAttribute('aria-checked') === 'true';
     const newChecked = !isChecked;
     darkModeBtn.setAttribute('aria-checked', String(newChecked));
     dispatchMockStateChange('dark_mode_enabled', newChecked);
     if (feedback) feedback.textContent = `Theme: ${newChecked ? 'DARK' : 'LIGHT'}`;
+  };
+  darkModeBtn.addEventListener('click', toggleDarkMode);
+  darkModeBtn.addEventListener('change', toggleDarkMode);
+  darkModeBtn.addEventListener('keydown', (e) => {
+    if (e.key === ' ' || e.key === 'Enter' || e.code === 'Space' || e.code === 'Enter') {
+      toggleDarkMode();
+    }
   });
 }
 

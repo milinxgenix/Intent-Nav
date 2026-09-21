@@ -26,7 +26,8 @@ import {
   TransitionWitness,
   WitnessClass,
 } from '../types/transition';
-import { BindingHandle } from '../types/capability';
+import { BindingHandle, ActivationEventCharacteristics } from '../types/capability';
+import { dispatchDOMActivation } from './eventDispatcher';
 import { AuditLogExport } from '../types/audit';
 
 export interface ExecuteIntentResult {
@@ -185,7 +186,8 @@ class LiveChromiumExecutionDispatcher implements ExecutionDispatcher {
   async dispatchActivation(
     activationEventId: string,
     candidate: CandidateEvaluationContext,
-    capabilityId: string
+    capabilityId: string,
+    activationCharacteristics?: ActivationEventCharacteristics
   ): Promise<{
     success: boolean;
     elementFound?: boolean;
@@ -204,32 +206,45 @@ class LiveChromiumExecutionDispatcher implements ExecutionDispatcher {
       };
     }
 
+    const characteristics: ActivationEventCharacteristics =
+      activationCharacteristics || {
+        eventType: 'click',
+        bubbles: true,
+        cancelable: true,
+      };
+
+    const dispatchResult = dispatchDOMActivation(targetEl, characteristics, window);
+
+    if (!dispatchResult.success) {
+      return {
+        success: false,
+        elementFound: true,
+        eventDispatched: false,
+        reason: dispatchResult.reason || `Failed to dispatch ${characteristics.eventType} event.`,
+      };
+    }
+
     const tAct = Date.now();
     const activationEvent: ActivationEventRecord = {
       eventId: activationEventId,
       sequenceNumber: 1,
       timestamp: tAct,
       targetCandidateId: candidate.candidateId,
-      eventType: 'click',
+      eventType: dispatchResult.eventType,
       initiatingCapabilityId: capabilityId,
       bindingHandle: candidate.bindingHandle,
+      key: characteristics.key,
+      code: characteristics.code,
+      keyCode: characteristics.keyCode,
     };
 
     this.currentActivationEvent = activationEvent;
     this.capturedWitnesses.length = 0; // Clear previous scenario witnesses
 
-    // Dispatch real browser synthetic MouseEvent to the live Blink DOM node
-    const clickEvent = new MouseEvent('click', {
-      bubbles: true,
-      cancelable: true,
-      view: window,
-    });
-    targetEl.dispatchEvent(clickEvent);
-
     // NOTE: We do NOT include stateChanged in this return value.
     // Whether the application actually changed state is determined by causal transition
     // verification and post-state observation downstream — NOT by the act of dispatching
-    // a MouseEvent. Conflating dispatch with state change is a protocol violation.
+    // an event. Conflating dispatch with state change is a protocol violation.
     return {
       success: true,
       elementFound: true,

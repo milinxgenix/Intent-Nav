@@ -16,7 +16,8 @@ import { InterfaceObserver } from './observer/interfaceObserver';
 import { CandidateGenerator } from '../core/candidate/generator';
 import { ExtensionMessage } from '../types/messages';
 import { WitnessClass, TransitionWitness, ActivationEventRecord } from '../types/transition';
-import { BindingHandle } from '../types/capability';
+import { BindingHandle, ActivationEventCharacteristics } from '../types/capability';
+import { dispatchDOMActivation } from './eventDispatcher';
 
 const observer = new InterfaceObserver();
 let witnessSequenceCounter = 0;
@@ -202,7 +203,8 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
             activationEventId: string;
             activationTimestamp?: number;
             bindingHandle: BindingHandle;
-            eventType?: string;
+            eventType?: 'click' | 'keydown' | 'change' | 'submit';
+            eventCharacteristics?: ActivationEventCharacteristics;
             capabilityId: string;
           };
 
@@ -226,24 +228,35 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
             await new Promise((resolve) => setTimeout(resolve, 2));
           }
 
-          const eventType = payload.eventType || 'click';
+          const characteristics: ActivationEventCharacteristics =
+            payload.eventCharacteristics || {
+              eventType: (payload.eventType as any) || 'click',
+              bubbles: true,
+              cancelable: true,
+            };
+
+          const dispatchResult = dispatchDOMActivation(targetEl, characteristics, window);
+
+          if (!dispatchResult.success) {
+            sendResponse({
+              success: false,
+              reason: dispatchResult.reason || `Failed to dispatch ${characteristics.eventType} event.`,
+            });
+            break;
+          }
+
           const activationEvent: ActivationEventRecord = {
             eventId: payload.activationEventId,
             sequenceNumber: 1,
             timestamp: actTimestamp,
             targetCandidateId: payload.bindingHandle.handleId,
-            eventType: eventType as any,
+            eventType: dispatchResult.eventType,
             bindingHandle: payload.bindingHandle,
             initiatingCapabilityId: payload.capabilityId,
+            key: characteristics.key,
+            code: characteristics.code,
+            keyCode: characteristics.keyCode,
           };
-
-          // Dispatch actual browser synthetic event
-          const clickEvent = new MouseEvent('click', {
-            bubbles: true,
-            cancelable: true,
-            view: window,
-          });
-          targetEl.dispatchEvent(clickEvent);
 
           sendResponse({
             success: true,
