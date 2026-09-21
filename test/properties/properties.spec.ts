@@ -433,9 +433,9 @@ describe('Formal Machine Safety Properties (1 through 15)', () => {
             sequenceNumber: 1,
             timestamp: 1050,
             observedDelta: { two_factor_enabled: false },
-            correlatedActivationEventId: null,
+            correlatedActivationEventId: 'act_live_1',
             temporalDeltaMs: 50,
-            isCausallyCorrelated: false,
+            isCausallyCorrelated: true,
             correlationExplanation: 'DOM mutated',
           },
           {
@@ -444,9 +444,9 @@ describe('Formal Machine Safety Properties (1 through 15)', () => {
             sequenceNumber: 2,
             timestamp: 1100,
             observedDelta: { two_factor_enabled: false },
-            correlatedActivationEventId: null,
+            correlatedActivationEventId: 'act_live_1',
             temporalDeltaMs: 100,
-            isCausallyCorrelated: false,
+            isCausallyCorrelated: true,
             correlationExplanation: 'App state updated',
           },
         ];
