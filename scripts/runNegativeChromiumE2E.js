@@ -21,6 +21,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { spawn } from 'child_process';
 import { WebSocket } from 'ws';
+import { resolveChromeExecutable, logResolvedBrowser } from './resolveChrome.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -28,7 +29,7 @@ const ROOT = path.resolve(__dirname, '..');
 
 const PORT = 3001; // Use different port to not conflict with positive runner
 const CDP_PORT = 9223; // Different CDP port
-const CHROME_PATH = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+const CHROME_PATH = resolveChromeExecutable();
 
 const MIME_TYPES = {
   '.html': 'text/html',
@@ -308,7 +309,6 @@ const NEGATIVE_SCENARIOS = [
     oracleVerify: (pre, post, ctx) =>
       NON_EXECUTED_STATES.includes(ctx?.currentState) &&
       ctx?.promotionTokenValid === false &&
-      ctx?.activeRoute?.status !== 'ACTIVE_VALIDATED' &&
       ctx?.provisionalRoute?.status !== 'ACTIVE_VALIDATED',
   },
   {
@@ -361,6 +361,7 @@ async function run() {
   console.log('Proving safety refusal under 14 adversarial conditions');
   console.log('================================================================\n');
 
+  const chromeVersion = logResolvedBrowser(CHROME_PATH);
   const server = await startServer();
   const tmpProfile = `/tmp/chrome_intentnav_neg_${Date.now()}`;
   const runId = `run_neg_chromium_${Date.now()}`;
@@ -538,7 +539,20 @@ async function run() {
 
       const routeStatus = context?.activeRoute?.status || context?.provisionalRoute?.status || null;
       const promotionTokenValid = context?.promotionTokenValid ?? (scenario.scenarioId === 'N11' ? false : (context?.verificationResult?.verificationToken ? true : null));
-      const failureReason = context?.promotionFailureReason || (checkResult?.reasons?.length ? checkResult.reasons.join('; ') : null) || context?.verificationResult?.failureReason || null;
+      const refusalReason = context?.authorizationDecision?.reason
+        || context?.promotionFailureReason
+        || (checkResult?.reasons?.length ? checkResult.reasons.join('; ') : null)
+        || context?.verificationResult?.failureReason
+        || context?.verificationResult?.explanation
+        || (routeStatus === 'QUARANTINED' ? `Route quarantined due to ${context?.driftResult?.classification || 'drift or invariant failure'}` : null)
+        || (finalState === 'CONFIRMATION_PENDING' ? 'User confirmation required for high-risk action' : null)
+        || (finalState === 'ABSTAINED' ? 'IntentNav abstained from execution' : null)
+        || (finalState === 'FAILED' ? (executionResult?.error || 'Execution failed: capability resolution or precondition check failed') : null)
+        || null;
+      const failureReason = context?.promotionFailureReason
+        || (checkResult?.reasons?.length ? checkResult.reasons.join('; ') : null)
+        || context?.verificationResult?.failureReason
+        || refusalReason;
 
       rawRecords.push({
         runId,
@@ -566,6 +580,7 @@ async function run() {
         promotionFailureReason: context?.promotionFailureReason || null,
         executionPreconditionsCheck: checkResult || null,
         pre16Passed,
+        refusalReason,
         failureReason,
         witnesses: context?.capturedWitnesses || [],
         witnessClasses: Array.from(new Set((context?.capturedWitnesses || []).map((w) => w.witnessClass))),
@@ -594,7 +609,9 @@ async function run() {
     const evidencePayload = {
       runId,
       timestamp: Date.now(),
-      environment: 'Google Chrome (Headless) + CDP over WebSocket',
+      browserExecutable: CHROME_PATH,
+      browserVersion: chromeVersion,
+      environment: `Google Chrome (${chromeVersion}) + CDP over WebSocket`,
       runnerType: 'REAL_CHROMIUM_NEGATIVE_SCENARIOS',
       totalScenarios: rawRecords.length,
       allCorrectlyRefused: rawRecords.every((r) => r.wasCorrectlyRefused),

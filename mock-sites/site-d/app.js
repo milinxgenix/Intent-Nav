@@ -20,8 +20,25 @@ window.IntentNavMockState = {
   all_data_wiped: false,
 };
 
+function syncStateToDOM() {
+  if (typeof document === 'undefined') return;
+  let el = document.getElementById('app-state');
+  if (!el && document.body) {
+    el = document.createElement('div');
+    el.id = 'app-state';
+    el.style.display = 'none';
+    el.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(el);
+  }
+  if (el) {
+    el.setAttribute('data-state', JSON.stringify(window.IntentNavMockState));
+  }
+}
+syncStateToDOM();
+
 function dispatchMockStateChange(property, value) {
   window.IntentNavMockState[property] = value;
+  syncStateToDOM();
   window.dispatchEvent(
     new CustomEvent('intentnav:mock-state-change', {
       detail: {

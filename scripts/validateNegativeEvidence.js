@@ -52,6 +52,12 @@ function validate() {
   // Check top-level metadata
   if (!data.runId || typeof data.runId !== 'string') errors.push('Top-level runId missing');
   if (!data.timestamp || typeof data.timestamp !== 'number') errors.push('Top-level timestamp missing');
+  if (!data.browserExecutable || typeof data.browserExecutable !== 'string') {
+    errors.push('Top-level browserExecutable missing or invalid');
+  }
+  if (!data.browserVersion || typeof data.browserVersion !== 'string') {
+    errors.push('Top-level browserVersion missing or invalid');
+  }
   if (data.runnerType !== 'REAL_CHROMIUM_NEGATIVE_SCENARIOS') {
     errors.push(`Expected runnerType 'REAL_CHROMIUM_NEGATIVE_SCENARIOS', got '${data.runnerType}'`);
   }
@@ -61,7 +67,9 @@ function validate() {
     process.exit(1);
   }
 
-  console.log(`Found ${data.scenarios.length} negative scenarios in run ${data.runId}\n`);
+  console.log(`Found ${data.scenarios.length} negative scenarios in run ${data.runId}`);
+  console.log(`Browser Executable: ${data.browserExecutable || 'N/A'}`);
+  console.log(`Browser Version: ${data.browserVersion || 'N/A'}\n`);
 
   const scenarioMap = new Map();
   for (const s of data.scenarios) {
@@ -93,6 +101,14 @@ function validate() {
         `[${sid}] SAFETY FAILURE: Machine reached EXECUTED state in a negative scenario that requires refusal! ` +
         `Expected one of: ABSTAINED, FAILED, QUARANTINED, CONFIRMATION_PENDING. Got: EXECUTED`
       );
+    }
+
+    // Exact refusal / quarantine reason must be recorded
+    if (mustRefuse) {
+      const reason = s.refusalReason || s.failureReason;
+      if (!reason || typeof reason !== 'string' || reason.trim().length === 0) {
+        errors.push(`[${sid}] Negative evidence missing exact refusalReason/failureReason`);
+      }
     }
 
     // For EXECUTED-acceptable scenarios, oracle must still pass
@@ -180,7 +196,7 @@ function validate() {
         if (s.promotionTokenValid !== false) {
           errors.push(`[N11] Expected promotionTokenValid === false, got ${s.promotionTokenValid}`);
         }
-        if (s.activeRoute?.status === 'ACTIVE_VALIDATED' || s.provisionalRoute?.status === 'ACTIVE_VALIDATED') {
+        if (s.provisionalRoute?.status === 'ACTIVE_VALIDATED' || (s.activeRoute && s.activeRoute.routeId === s.provisionalRoute?.routeId && s.activeRoute.status === 'ACTIVE_VALIDATED')) {
           errors.push(`[N11] Route was incorrectly promoted to ACTIVE_VALIDATED with invalid token`);
         }
         break;

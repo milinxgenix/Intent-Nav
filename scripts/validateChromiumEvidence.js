@@ -42,6 +42,7 @@ const REQUIRED_FIELDS = [
   'driftClassification',
   'invariantResults',
   'rankingResults',
+  'routeId',
   'routeVersion',
   'routeStateBefore',
   'routeStateAfter',
@@ -51,6 +52,7 @@ const REQUIRED_FIELDS = [
   'activationTimestamp',
   'witnesses',
   'witnessClasses',
+  'transitionSignature',
   'causalVerificationResult',
   'postStateBefore',
   'postStateAfter',
@@ -101,6 +103,12 @@ function validate() {
   // Check top-level metadata
   if (!data.runId || typeof data.runId !== 'string') errors.push('Top-level runId missing or invalid');
   if (!data.timestamp || typeof data.timestamp !== 'number') errors.push('Top-level timestamp missing');
+  if (!data.browserExecutable || typeof data.browserExecutable !== 'string') {
+    errors.push('Top-level browserExecutable missing or invalid');
+  }
+  if (!data.browserVersion || typeof data.browserVersion !== 'string') {
+    errors.push('Top-level browserVersion missing or invalid');
+  }
   if (data.runnerType !== 'REAL_CHROMIUM_INTENTNAV_CLOSED_LOOP') {
     errors.push(`Expected runnerType 'REAL_CHROMIUM_INTENTNAV_CLOSED_LOOP', got '${data.runnerType}'`);
   }
@@ -115,15 +123,18 @@ function validate() {
   }
 
   console.log(`Found ${data.scenarios.length} scenarios in run ${data.runId}`);
+  console.log(`Browser Executable: ${data.browserExecutable || 'N/A'}`);
+  console.log(`Browser Version: ${data.browserVersion || 'N/A'}`);
   console.log(`Environment: ${data.environment}\n`);
 
   const scenarioMap = new Map();
+  const capabilityFingerprintMap = new Map();
 
   for (const s of data.scenarios) {
     const sid = s.scenarioId || 'UNKNOWN';
     scenarioMap.set(sid, s);
 
-    // 1. Check all 30 required schema fields
+    // 1. Check all required schema fields
     for (const field of REQUIRED_FIELDS) {
       if (s[field] === undefined) {
         errors.push(`[${sid}] Missing required schema field: '${field}'`);
@@ -136,8 +147,17 @@ function validate() {
     if (!s.resolvedCapabilityId || !s.resolvedCapabilityId.startsWith('CAP_')) {
       errors.push(`[${sid}] Invalid resolvedCapabilityId: '${s.resolvedCapabilityId}'`);
     }
-    if (!s.capabilityFingerprintHash || typeof s.capabilityFingerprintHash !== 'string' || !s.capabilityFingerprintHash.startsWith('fph_')) {
+    if (!s.capabilityFingerprintHash || typeof s.capabilityFingerprintHash !== 'string' || !/^fph_[a-f0-9]{8,}$/.test(s.capabilityFingerprintHash)) {
       errors.push(`[${sid}] Invalid capabilityFingerprintHash: '${s.capabilityFingerprintHash}' (must be a valid non-empty fph_ hash)`);
+    } else {
+      if (capabilityFingerprintMap.has(s.resolvedCapabilityId)) {
+        const expectedHash = capabilityFingerprintMap.get(s.resolvedCapabilityId);
+        if (expectedHash !== s.capabilityFingerprintHash) {
+          errors.push(`[${sid}] Capability fingerprint hash instability for ${s.resolvedCapabilityId}: expected ${expectedHash}, got ${s.capabilityFingerprintHash}`);
+        }
+      } else {
+        capabilityFingerprintMap.set(s.resolvedCapabilityId, s.capabilityFingerprintHash);
+      }
     }
 
     // 3. Candidate Discovery & Selection
@@ -180,6 +200,11 @@ function validate() {
       if (tAct >= minWitnessTime) {
         errors.push(`[${sid}] Chronological precedence violation: activationTimestamp (${tAct}) >= minWitnessTime (${minWitnessTime})`);
       }
+      for (const w of s.witnesses) {
+        if (!w.correlatedActivationEventId || w.correlatedActivationEventId !== s.activationEvent?.eventId) {
+          errors.push(`[${sid}] Witness ${w.witnessId} correlatedActivationEventId '${w.correlatedActivationEventId}' does not match activation eventId '${s.activationEvent?.eventId}'`);
+        }
+      }
     }
 
     // 8. Multi-Class Witness Quorum
@@ -192,6 +217,14 @@ function validate() {
     const uniqueWitnessClasses = new Set(s.witnessClasses);
     if (uniqueWitnessClasses.size !== (s.witnessClasses?.length || 0)) {
       errors.push(`[${sid}] witnessClasses contains duplicate entries — each class must appear only once (de-duplicate by class)`);
+    }
+
+    // 8b. Transition Signature & Route Identification
+    if (!s.routeId || typeof s.routeId !== 'string') {
+      errors.push(`[${sid}] routeId missing or invalid`);
+    }
+    if (!s.transitionSignature || typeof s.transitionSignature !== 'object') {
+      errors.push(`[${sid}] transitionSignature missing or invalid`);
     }
 
     // 9. Causal Verification & Post-State

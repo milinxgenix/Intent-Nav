@@ -28,6 +28,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { spawn } from 'child_process';
 import { WebSocket } from 'ws';
+import { resolveChromeExecutable, logResolvedBrowser } from './resolveChrome.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,7 +36,7 @@ const ROOT = path.resolve(__dirname, '..');
 
 const PORT = 3000;
 const CDP_PORT = 9222;
-const CHROME_PATH = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+const CHROME_PATH = resolveChromeExecutable();
 const DIST_DIR = path.resolve(ROOT, 'dist');
 
 const MIME_TYPES = {
@@ -273,6 +274,7 @@ async function run() {
   console.log('Closed-Loop Natural-Language Control Pipeline with Zero Injected IDs');
   console.log('================================================================\n');
 
+  const chromeVersion = logResolvedBrowser(CHROME_PATH);
   const server = await startServer();
   const tmpProfile = `/tmp/chrome_intentnav_e2e_${Date.now()}`;
   const runId = `run_chromium_${Date.now()}`;
@@ -394,6 +396,7 @@ async function run() {
         driftClassification: context?.driftResult?.classification || 'NONE',
         invariantResults: context?.invariantResults || {},
         rankingResults: context?.rankedScores || [],
+        routeId: context?.activeRoute?.routeId || context?.provisionalRoute?.routeId || '',
         routeVersion: context?.activeRoute?.version || 1,
         routeStateBefore: context?.provisionalRoute ? 'PROVISIONAL' : 'ACTIVE_VALIDATED',
         routeStateAfter: context?.activeRoute?.status || 'UNKNOWN',
@@ -403,10 +406,17 @@ async function run() {
         activationTimestamp: context?.activationEvent?.timestamp || 0,
         witnesses: context?.capturedWitnesses || [],
         witnessClasses: Array.from(new Set((context?.capturedWitnesses || []).map((w) => w.witnessClass))),
+        transitionSignature:
+          context?.validationRecord?.transitionSignature ||
+          context?.verificationResult?.signature ||
+          context?.verificationResult?.verificationToken?.transitionSignature ||
+          context?.verificationResult?.transitionSignature ||
+          context?.activeRoute?.transitionSignature ||
+          null,
         causalVerificationResult: context?.verificationResult || null,
         postStateBefore: preState,
         postStateAfter: oracleStateAfter,
-        postStateVerified: context?.postStateVerified === true,
+        postStateVerified: context?.postStateVerified === true && oraclePassed === true,
         promotionTokenState: context?.verificationResult?.verificationToken?.verifiedStatus || 'NONE',
         finalMachineState: context?.currentState || 'FAILED',
         failureReason: context?.verificationResult?.status !== 'VERIFIED' ? context?.verificationResult?.explanation || 'Unknown' : null,
@@ -444,7 +454,9 @@ async function run() {
     const evidencePayload = {
       runId,
       timestamp: Date.now(),
-      environment: 'Google Chrome (Headless) + CDP over WebSocket',
+      browserExecutable: CHROME_PATH,
+      browserVersion: chromeVersion,
+      environment: `Google Chrome (${chromeVersion}) + CDP over WebSocket`,
       runnerType: 'REAL_CHROMIUM_INTENTNAV_CLOSED_LOOP',
       totalScenarios: rawRecords.length,
       allPassed: rawRecords.every((r) => r.finalMachineState === 'EXECUTED'),

@@ -9,6 +9,8 @@ window.IntentNavMockState = {
   analytics_tracking_enabled: true,
   account_deleted: false,
   access_tokens_revoked: false,
+  account_active: true,
+  active_session_count: 3,
 };
 
 function syncStateToDOM() {
