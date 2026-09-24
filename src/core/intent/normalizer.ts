@@ -9,8 +9,9 @@ import { ActionType, TargetEntity } from '../../types/capability';
 export class IntentNormalizer {
   /**
    * Normalizes a raw user goal string into a strongly-typed NormalizedIntent
+   * Optionally matches against a set of known target entities from registered capabilities.
    */
-  public static normalize(rawGoal: string): NormalizedIntent {
+  public static normalize(rawGoal: string, knownTargetEntities?: string[]): NormalizedIntent {
     const input = rawGoal.toLowerCase().trim();
     const constraints: IntentConstraint[] = [];
     const sensitivityHints: SensitivityHint[] = [];
@@ -53,9 +54,23 @@ export class IntentNormalizer {
 
     // 2. Determine TargetEntity
     let targetEntity: TargetEntity = 'UNKNOWN';
-    if (/all notification|every notification|all alert|all account notification|indiscriminately|turn off all/i.test(input)) {
-      targetEntity = 'ALL_NOTIFICATIONS';
-    } else if (/all security|every security|all account security/i.test(input)) {
+
+    // Check dynamically registered/known capability target entities first
+    if (knownTargetEntities && knownTargetEntities.length > 0) {
+      for (const known of knownTargetEntities) {
+        if (!known || known === 'UNKNOWN') continue;
+        const tokens = known.toLowerCase().split(/[_\s-]+/).filter((t) => t.length > 2);
+        if (tokens.length > 0 && tokens.every((t) => input.includes(t))) {
+          targetEntity = known;
+          break;
+        }
+      }
+    }
+
+    if (targetEntity === 'UNKNOWN') {
+      if (/all notification|every notification|all alert|all account notification|indiscriminately|turn off all/i.test(input)) {
+        targetEntity = 'ALL_NOTIFICATIONS';
+      } else if (/all security|every security|all account security/i.test(input)) {
       targetEntity = 'ALL_SECURITY';
     } else if (/all data|wipe all|erase all personal|every file/i.test(input)) {
       targetEntity = 'ALL_DATA';
@@ -82,6 +97,7 @@ export class IntentNormalizer {
     } else if (/notification|alert|email|push/i.test(input)) {
       targetEntity = 'MARKETING_NOTIFICATIONS';
     }
+  }
 
     // 3. Extract Sensitivity Hints
     if (actionType === 'DELETE' || targetEntity === 'ACCOUNT_STATUS') {

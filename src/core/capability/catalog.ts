@@ -1,9 +1,15 @@
 /**
- * IntentNav-SCFR: Authoritative Serializable 9-Capability Catalog
+ * IntentNav-SCFR: Benchmark Test Fixture Catalog & Generic Capability Factory
  *
- * Defines the canonical specifications for all 9 benchmark capabilities.
- * Every capability uses DeclarativeInvariantPredicate definitions to ensure 100%
- * lossless JSON / chrome.storage.local serialization and hydration.
+ * Defines the canonical test fixture specifications for the 9 evaluation and benchmark
+ * capabilities (Sites A–D).
+ *
+ * ARCHITECTURAL SEPARATION:
+ * - Generic Pipeline: Operates on arbitrary FunctionalCapabilityFingerprint entities
+ *   (action, target, preconditions, allowed delta, expected post-state, context, forbidden predicates, risk).
+ * - Test Catalog: The 9 capabilities below serve as a controlled evaluation ontology for
+ *   regression testing and empirical benchmarking. Production pipelines consume capability
+ *   registrations dynamically rather than assuming a closed website vocabulary.
  */
 
 import { FunctionalCapabilityFingerprint } from '../../types/capability';
@@ -863,5 +869,100 @@ export function getAuthoritativeCapability(capabilityId: string): FunctionalCapa
 
 export function getAllAuthoritativeCapabilities(): FunctionalCapabilityFingerprint[] {
   return [...AUTHORITATIVE_CAPABILITY_CATALOG];
+}
+
+/**
+ * Creates and finger-hashes a generic FunctionalCapabilityFingerprint outside the benchmark catalog.
+ * Conforms strictly to the generic capability schema.
+ */
+export function createFunctionalCapability(
+  spec: Partial<FunctionalCapabilityFingerprint> & {
+    capabilityId: string;
+    canonicalFunction: string;
+    actionType: import('../../types/capability').ActionType;
+    targetEntity: import('../../types/capability').TargetEntity;
+  }
+): FunctionalCapabilityFingerprint {
+  const cap: FunctionalCapabilityFingerprint = {
+    capabilityId: spec.capabilityId,
+    canonicalFunction: spec.canonicalFunction,
+    actionType: spec.actionType,
+    targetEntity: spec.targetEntity,
+    mandatoryPreStatePredicates: spec.mandatoryPreStatePredicates || [],
+    allowedStateDelta: spec.allowedStateDelta || [],
+    expectedPostState: spec.expectedPostState || [],
+    requiredContextPredicates: spec.requiredContextPredicates || [],
+    forbiddenContextPredicates: spec.forbiddenContextPredicates || [],
+    semanticEvidence: spec.semanticEvidence || {
+      canonicalLabel: spec.canonicalFunction,
+      semanticSynonyms: [],
+      accessibleName: spec.canonicalFunction,
+      role: 'button',
+      visibleLabel: spec.canonicalFunction,
+      sectionMeaning: 'General',
+      actionDescription: spec.canonicalFunction,
+    },
+    contextEvidence: spec.contextEvidence || {
+      ancestorRelationships: [],
+      nearbyText: [],
+      surroundingLabels: [],
+      containerSemantics: [],
+      menuPanelRelationships: [],
+      relativeStructuralRelationships: [],
+    },
+    transitionEvidence: spec.transitionEvidence || {
+      preStateFingerprint: 'STATE_PRE_GENERIC',
+      activationEventCharacteristics: { eventType: 'click', bubbles: true, cancelable: true },
+      expectedDelta: {},
+      postStateFingerprint: 'STATE_POST_GENERIC',
+      historicalTransitionObservations: 1,
+      witnessClasses: ['DOM_MUTATION', 'ACCESSIBILITY_STATE_MUTATION'],
+      verificationWindowMs: 2500,
+    },
+    riskMetadata: spec.riskMetadata || {
+      riskClass: 'REVERSIBLE',
+      reversible: true,
+      financial: false,
+      security: false,
+      destructive: false,
+      requiresConfirmation: false,
+    },
+    provenance: spec.provenance || {
+      source: 'INITIAL_SPEC',
+      creationTimestamp: Date.now(),
+      validationTimestamp: Date.now(),
+      routeVersion: 'v1.0.0',
+      validationHistory: [],
+    },
+    confidence: spec.confidence || {
+      capabilityConfidence: 0.95,
+      routeConfidence: 0.90,
+    },
+    negativeEvidence: spec.negativeEvidence || {
+      rejectedCandidateIdentities: [],
+      contradictionPredicates: [],
+      failedInvariantPredicates: [],
+      failedTransitionWitnesses: [],
+      decoyRelationships: [],
+      rejectionReasons: [],
+    },
+  };
+
+  if (!cap.fingerprintHash) {
+    cap.fingerprintHash = FingerprintConstructor.computeFingerprintHash({
+      canonicalFunction: cap.canonicalFunction,
+      actionType: cap.actionType,
+      targetEntity: cap.targetEntity,
+      role: cap.semanticEvidence?.role || 'button',
+      riskClass: cap.riskMetadata?.riskClass,
+      mandatoryPreStatePredicates: cap.mandatoryPreStatePredicates,
+      allowedStateDelta: cap.allowedStateDelta,
+      expectedPostState: cap.expectedPostState,
+      requiredContextPredicates: cap.requiredContextPredicates,
+      forbiddenContextPredicates: cap.forbiddenContextPredicates,
+    });
+  }
+
+  return cap;
 }
 

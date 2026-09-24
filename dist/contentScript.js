@@ -532,7 +532,10 @@
           }
         }
         let observedTargetEntity = "UNKNOWN";
-        if (/all notification|global alert|every alert|indiscriminately|entire platform|all account notification/i.test(combinedContext)) {
+        const explicitTarget = el.getAttribute("data-target-entity") || el.getAttribute("data-target") || el.getAttribute("data-capability-target");
+        if (explicitTarget) {
+          observedTargetEntity = explicitTarget.toUpperCase().replace(/[-\s]/g, "_");
+        } else if (/all notification|global alert|every alert|indiscriminately|entire platform|all account notification/i.test(combinedContext)) {
           observedTargetEntity = "ALL_NOTIFICATIONS";
         } else if (/all security|entire security|wipe security|all account security/i.test(combinedContext)) {
           observedTargetEntity = "ALL_SECURITY";

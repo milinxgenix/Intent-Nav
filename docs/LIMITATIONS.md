@@ -68,3 +68,14 @@ If an application undergoes an architectural redesign that completely removes a 
 - **Impact**: Invariant closure will correctly reject existing candidates to prevent accidental misexecution.
 - **Mitigation**: Rather than hallucinating a target, IntentNav-SCFR safely aborts the active route, flags the capability as `UNRESOLVABLE_DRIFT`, logs the event to the audit trail, and alerts the operator to record a new baseline route $V_{k+1}$.
 
+---
+
+## 7. Capability Taxonomy & Autonomous Scope Boundary
+
+### Constraint
+IntentNav-SCFR is designed as an invariant-gated, deterministic navigation and drift recovery engine, **not** an unbounded, general-purpose open-world autonomous web crawler or conversational web agent.
+
+### Impact & Mitigation
+- **Scope & Ontology**: The production architecture operates from a strongly typed, generic capability schema (`actionType`, `targetEntity`, `preconditions`, `allowedStateDelta`, `expectedPostState`, `contextPredicates`, `riskMetadata`, `functionalFingerprint`). While the architecture is domain-agnostic and does not depend on hardcoded site vocabularies for its invariant closure and causal verification pipelines, capability specifications must be registered, declared by the application/component, or configured as target capabilities.
+- **No Unbounded Discovery Claim**: IntentNav-SCFR does not claim arbitrary autonomous capability discovery across completely unknown, unmodeled web platforms without declared or registered functional capability definitions.
+

@@ -35,7 +35,17 @@ export class CapabilityIntentResolver {
         cap.actionType === intent.actionType ||
         (cap.actionType === 'TOGGLE' && (intent.actionType === 'MODIFY_PREFERENCE' || intent.actionType === 'REVOKE_ACCESS')) ||
         (cap.actionType === 'REVOKE_ACCESS' && (intent.actionType === 'TOGGLE' || intent.actionType === 'MODIFY_PREFERENCE'));
-      const isTargetMatched = cap.targetEntity === intent.targetEntity;
+      // Direct target entity match OR semantic target match against capability target entity
+      const targetTokens = cap.targetEntity.toLowerCase().split(/[_\s-]+/).filter((t) => t.length > 2);
+      const rawLower = intent.rawGoal.toLowerCase();
+      const goalTokens = rawLower.split(/[^a-z0-9]+/).filter(Boolean);
+      const isTargetEntityInGoal =
+        targetTokens.length > 0 &&
+        targetTokens.some((t) => goalTokens.includes(t) || rawLower.includes(t));
+
+      const isTargetMatched =
+        cap.targetEntity === intent.targetEntity ||
+        (intent.targetEntity === 'UNKNOWN' && isTargetEntityInGoal);
 
       const reasons: string[] = [];
       const matchedSynonyms: string[] = [];

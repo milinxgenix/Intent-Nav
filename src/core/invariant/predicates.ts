@@ -126,7 +126,15 @@ export class InvariantPredicates {
       passed = observedTarget === target;
     } else {
       const label = (context.observedLabel || '').toLowerCase();
+      // Generic match: check if candidate label or context contains target entity keywords/tokens
+      const targetTokens = target.split(/[_\s-]+/).filter((t) => t.length > 2);
+      const labelTokens = label.split(/[^a-z0-9]+/).filter(Boolean);
+      const matchesTargetTokens =
+        targetTokens.length > 0 &&
+        targetTokens.some((t) => labelTokens.includes(t) || label.includes(t));
+
       passed =
+        matchesTargetTokens ||
         (target === 'marketing_notifications' && label.includes('marketing')) ||
         (target === 'two_factor_auth' && (label.includes('2fa') || label.includes('multi-factor') || label.includes('mfa'))) ||
         (target === 'personal_data_export' && (label.includes('export') || label.includes('download')));

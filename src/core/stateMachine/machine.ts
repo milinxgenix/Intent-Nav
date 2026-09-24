@@ -251,7 +251,8 @@ export class IntentNavMachine {
     };
 
     // 1. INTENT_NORMALIZATION
-    const normalizedIntent = IntentNormalizer.normalize(rawGoal);
+    const knownTargets = Array.from(new Set(Array.from(this.capabilities.values()).map((c) => c.targetEntity)));
+    const normalizedIntent = IntentNormalizer.normalize(rawGoal, knownTargets);
     this.context.normalizedIntent = normalizedIntent;
     this.state = 'INTENT_NORMALIZED';
 
