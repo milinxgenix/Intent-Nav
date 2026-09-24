@@ -14,7 +14,7 @@ The IntentNav-SCFR repository has achieved complete technical and empirical veri
 3. **Real Manifest V3 Extension Execution:** Production MV3 extension bundle (`dist/`) loaded directly into real Google Chrome (`Chrome/153.0.8010.52`) via CDP `Extensions.loadUnpacked`. Zero page-context code injection (`e2eController.js` is not injected into web pages).
 4. **Positive Empirical Validation (Scenarios A–J):** 10/10 scenarios executed end-to-end through natural-language intent resolution, candidate generation from live DOM, 5D drift analysis, invariant closure, execution authorization, live click dispatch, multi-class witness capture, causal verification, and route promotion. Validated 100% compliant with the 30-field schema by `scripts/validateChromiumEvidence.js`.
 5. **Adversarial Negative Validation (Scenarios N1–N14):** 14/14 adversarial failure conditions correctly refused execution or safely resolved (invariant violation, semantic decoy rejection, stale volatile ID re-resolution, missing witnesses, single witness class, contradictory witness delta, stale/pre-existing witness, unrelated witness, post-state failure, causal failure, invalid promotion token, unresolved quarantine, and unconfirmed high-risk operations). Validated 100% compliant by `scripts/validateNegativeEvidence.js`.
-6. **Reproducible Test Suite:** 20 test files, exactly 155 unit and integration tests passing cleanly with zero TypeScript errors.
+6. **Reproducible Test Suite:** 25 test files, exactly 271 unit and integration tests passing cleanly with zero TypeScript errors.
 
 ---
 
@@ -31,7 +31,7 @@ The IntentNav-SCFR repository has achieved complete technical and empirical veri
 | 7 | **Volatile Binding Handle Isolation** | **COMPLETE** | Volatile execution handles (`BindingHandle`) are isolated from capability identity; volatile IDs omitted from hash computation. Content script resolves via structural and semantic paths. | Verified in `test/unit/binding_handle.spec.ts` and Scenario N3 in Chromium E2E. |
 | 8 | **PersistentCapabilityStore Serialization/Hydration** | **COMPLETE** | `PersistentCapabilityStore` serializes and hydratres fingerprints using `DeclarativeInvariantPredicate` without closures. | Verified in `test/unit/persistence.spec.ts` across round-trip serialization tests. |
 | 9 | **NegativeEvidenceStore** | **COMPLETE** | Stores rejected candidates keyed by composite fingerprint, functional evidence hash, and interface evidence hash, allowing reconsideration upon material UI shifts. | Verified in `test/unit/persistence.spec.ts` and `src/core/storage/persistentStore.ts`. |
-| 10 | **RouteManager Quarantine/Promotion/Rollback** | **COMPLETE** | Strict cryptographic binding in `TransitionVerificationToken` (`capabilityId` + `routeId`). Provisional routes promoted to `ACTIVE_VALIDATED` only with valid matching token. | Verified in `test/unit/quarantine.spec.ts` and negative Scenario N11 in Chromium E2E. |
+| 10 | **RouteManager Quarantine/Promotion/Rollback** | **COMPLETE** | Strict tamper-evident token binding in `TransitionVerificationToken` (`capabilityId` + `routeId`). Provisional routes promoted to `ACTIVE_VALIDATED` only with valid matching token. | Verified in `test/unit/quarantine.spec.ts` and negative Scenario N11 in Chromium E2E. |
 | 11 | **ExecutionAuthorizationController Risk Gating** | **COMPLETE** | Decouples capability confidence from execution authorization; requires explicit evidence quorum and user confirmation for `HIGH_RISK` / `IRREVERSIBLE` actions. | Verified in `test/unit/authorization.spec.ts` and negative Scenarios N13–N14 in Chromium E2E. |
 | 12 | **Mock Sites A–D Capability Coverage** | **COMPLETE** | All mock sites feature dynamic controls with realistic DOM structures, accessible state attributes, and observable handlers. Documented in `docs/SITE_CAPABILITY_COVERAGE.md`. | Verified in positive Scenarios A–J and negative Scenarios N1–N14. |
 | 13 | **ContentScript/Background Message Contract** | **COMPLETE** | Asynchronous messaging protocol (`EXECUTE_ACTIVATION`, `OBSERVE_POST_STATE`, `GET_OBSERVED_WITNESSES`, `DISCOVER_CANDIDATES`, `PING`) operating cleanly across MV3 boundaries. | Verified in live extension execution via CDP. |
@@ -49,5 +49,5 @@ The IntentNav-SCFR repository has achieved complete technical and empirical veri
 - **Negative Chromium E2E Evidence:** `evidence/chromium_e2e_negative_evidence.json` (Run ID: `run_neg_chromium_1789835194762`)
 - **Positive Validator:** `scripts/validateChromiumEvidence.js` -> 10/10 passed (30-field schema compliant)
 - **Negative Validator:** `scripts/validateNegativeEvidence.js` -> 14/14 passed (all failure modes correctly refused)
-- **Unit & Integration Suite:** 20 test files, 155 tests passing (`vitest run test/`)
+- **Unit & Integration Suite:** 25 test files, 271 tests passing (`npm test`)
 - **Type Checking:** `npx tsc --noEmit` -> 0 errors

@@ -2,7 +2,7 @@
 *Generated at: 2026-09-21T06:21:28.544Z*
 
 > [!NOTE]
-> **Controlled Simulated JSDOM Benchmark**: This report evaluates comparative algorithmic disambiguation, invariant closure, and candidate ranking across simulated mock sites in a controlled JSDOM environment. Real browser execution evidence (including real Blink DOM mutations, live MV3 content scripts, CDP over WebSocket, and cryptographic authorization tokens) is separately evaluated and reported in `evidence/chromium_e2e_positive_evidence.json` and `evidence/chromium_e2e_negative_evidence.json`.
+> **Controlled Simulated JSDOM Benchmark**: This report evaluates comparative algorithmic disambiguation, invariant closure, and candidate ranking across simulated mock sites in a controlled JSDOM environment. Real browser execution evidence (including real Blink DOM mutations, live MV3 content scripts, CDP over WebSocket, and verified deterministic authorization tokens) is separately evaluated and reported in `evidence/chromium_e2e_evidence.json` and `evidence/chromium_e2e_negative_evidence.json`.
 >
 > **Scope Note on Simulated Transition Validation Rate**: This controlled JSDOM metric measures whether independently observed state/DOM changes match the expected capability delta. It does not constitute independent real-browser causal-transition verification.
 

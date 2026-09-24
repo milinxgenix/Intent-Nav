@@ -21,21 +21,21 @@ The benchmark suite deploys four isolated web environments running via a local H
 
 | Environment | Host Port | Architectural Characteristics & Perturbations |
 | :--- | :--- | :--- |
-| **Site A: Original Portal** | `http://localhost:8080/site-a/` | Clean semantic DOM, stable IDs, hierarchical navigation (Settings, Privacy, Security, Notifications, Account). Represents initial deployment state $V_1$. |
-| **Site B: Lexical & Hierarchy Drift** | `http://localhost:8080/site-b/` | Terminology drifted to enterprise synonyms ("Privacy & Safety" $\to$ "Data Governance", "2FA" $\to$ "Multi-Factor Protection"); restructured DOM trees; reordered menus. |
-| **Site C: Scrambled Hash & Modal Drift** | `http://localhost:8080/site-c/` | Framework-generated IDs (`btn_jsx_8f912`), dynamic utility CSS (`flex py-2 w-full`), intermediate confirmation dialogs, transient DOM elements. |
-| **Site D: Adversarial Decoy & Honeypots** | `http://localhost:8080/site-d/` | Semantic decoys ("Disable All Notifications" with high lexical similarity to "Notification Preferences"), destructive trap buttons, disguised input fields. |
+| **Site A: Original Portal** | `http://localhost:3000/mock-sites/site-a/` | Clean semantic DOM, stable IDs, hierarchical navigation (Settings, Privacy, Security, Notifications, Account). Represents initial deployment state $V_1$. |
+| **Site B: Lexical & Hierarchy Drift** | `http://localhost:3000/mock-sites/site-b/` | Terminology drifted to enterprise synonyms ("Privacy & Safety" $\to$ "Data Governance", "2FA" $\to$ "Multi-Factor Protection"); restructured DOM trees; reordered menus. |
+| **Site C: Scrambled Hash & Modal Drift** | `http://localhost:3000/mock-sites/site-c/` | Framework-generated IDs (`btn_jsx_8f912`), dynamic utility CSS (`flex py-2 w-full`), intermediate confirmation dialogs, transient DOM elements. |
+| **Site D: Adversarial Decoy & Honeypots** | `http://localhost:3000/mock-sites/site-d/` | Semantic decoys ("Disable All Notifications" with high lexical similarity to "Notification Preferences"), destructive trap buttons, disguised input fields. |
 
 ---
 
 ## 3. Dataset Specification
 
-The evaluation utilizes `benchmark/dataset/intents.json`, containing 60 version-controlled evaluation intents across 5 functional categories:
-1. **Account & Identity Management** (12 intents): Password rotation, email updates, profile editing, 2FA configuration.
-2. **Privacy & Data Governance** (12 intents): Telemetry toggles, data export, cookie consent, tracking permissions.
-3. **Security & Access Control** (12 intents): Active sessions, API key creation, passkey enrollment, audit export.
-4. **Notification & Channel Preferences** (12 intents): Email alerts, push digests, frequency throttling, quiet hours.
-5. **High-Risk & Destructive Actions** (12 intents): Account closure, session revocation, factory reset, data erasure.
+The evaluation utilizes `benchmark/dataset/intents.json`, containing 100 version-controlled evaluation intents across 5 functional categories (20 intents per category):
+1. **Account & Identity Management** (20 intents): Password rotation, email updates, profile editing, 2FA configuration.
+2. **Privacy & Data Governance** (20 intents): Telemetry toggles, data export, cookie consent, tracking permissions.
+3. **Security & Access Control** (20 intents): Active sessions, API key creation, passkey enrollment, audit export.
+4. **Notification & Channel Preferences** (20 intents): Email alerts, push digests, frequency throttling, quiet hours.
+5. **High-Risk & Destructive Actions** (20 intents): Account closure, session revocation, factory reset, data erasure.
 
 Each intent specifies:
 - `intentId`: Canonical string identifier (e.g., `INT-001`).
@@ -50,10 +50,10 @@ Each intent specifies:
 ## 4. Execution Matrix & Experimental Procedure
 
 The full benchmark conducts an exhaustive factorial evaluation:
-$$\text{Total Runs} = 60 \text{ Intents} \times 4 \text{ Sites} \times 5 \text{ Systems} = 1,200 \text{ Runs}$$
+$$\text{Total Runs} = 100 \text{ Intents} \times 4 \text{ Sites} \times 5 \text{ Systems} = 2,000 \text{ Runs}$$
 
 ### Step-by-Step Procedure
-1. **Server Initialization**: The local mock server is started (`node scripts/serveMocks.js`), hosting Sites A–D on port 8080.
+1. **Server Initialization**: The local mock server is started (`node scripts/serveMocks.js`), hosting Sites A–D on port 3000.
 2. **Harness Setup**: The automated runner (`benchmark/runner.ts`) initializes clean isolated browser contexts for each trial to eliminate cross-run state pollution.
 3. **Baseline Evaluation**:
    - For each intent and each site, the 4 baseline agents execute their standard candidate resolution.
@@ -62,7 +62,7 @@ $$\text{Total Runs} = 60 \text{ Intents} \times 4 \text{ Sites} \times 5 \text{ 
    - Executes the complete pipeline: Observe $\to$ 5D Drift Localization $\to$ Candidate Generation $\to$ Invariant Closure Gate $\to$ Negative Contradiction Check $\to$ Multi-Factor Post-Gate Ranking $\to$ Causal Transition Verification $\to$ Risk-Gated Authorization.
    - Emits an append-only audit event per run.
 5. **Data Export**:
-   - Results are compiled into `benchmark/results/benchmark_summary.json`.
+   - Results are compiled into `benchmark/results/summary.json`.
    - Raw per-trial records are written to `benchmark/results/benchmark_results.csv`.
    - Summary markdown is published to `docs/BENCHMARKS.md`.
 

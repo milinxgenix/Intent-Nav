@@ -31,30 +31,34 @@ npm test
 
 Expected test execution output:
 ```text
- ✓ test/adversarial/matrix.spec.ts (26 tests)
- ✓ test/e2e/browser_e2e.spec.ts (16 tests)
- ✓ test/properties/properties.spec.ts (15 tests)
- ✓ test/unit/audit.spec.ts (1 test)
- ✓ test/unit/authorization.spec.ts (4 tests)
- ✓ test/unit/binding_handle.spec.ts (2 tests)
- ✓ test/unit/causal.spec.ts (8 tests)
- ✓ test/unit/drift.spec.ts (4 tests)
- ✓ test/unit/false_success.spec.ts (9 tests)
- ✓ test/unit/fingerprint.spec.ts (2 tests)
- ✓ test/unit/graph.spec.ts (3 tests)
- ✓ test/unit/intent.spec.ts (4 tests)
- ✓ test/unit/invariant.spec.ts (4 tests)
- ✓ test/unit/ordering.spec.ts (2 tests)
- ✓ test/unit/persistence.spec.ts (7 tests)
- ✓ test/unit/presentation_drift.spec.ts (1 test)
- ✓ test/unit/quarantine.spec.ts (3 tests)
- ✓ test/unit/security_privacy.spec.ts (3 tests)
- ✓ test/unit/semantic_precedence.spec.ts (1 test)
- ✓ test/unit/suppression.spec.ts (3 tests)
- ✓ benchmark/runner.spec.ts (1 test)
+ ✓ test/adversarial/matrix.spec.ts (26)
+ ✓ test/e2e/browser_e2e.spec.ts (17)
+ ✓ test/properties/properties.spec.ts (15)
+ ✓ test/unit/activation_events.spec.ts (12)
+ ✓ test/unit/audit.spec.ts (1)
+ ✓ test/unit/authorization.spec.ts (4)
+ ✓ test/unit/binding_handle.spec.ts (2)
+ ✓ test/unit/causal.spec.ts (31)
+ ✓ test/unit/drift.spec.ts (4)
+ ✓ test/unit/drift_matrix.spec.ts (21)
+ ✓ test/unit/false_success.spec.ts (32)
+ ✓ test/unit/fingerprint.spec.ts (7)
+ ✓ test/unit/generic_capability.spec.ts (7)
+ ✓ test/unit/graph.spec.ts (3)
+ ✓ test/unit/intent.spec.ts (4)
+ ✓ test/unit/invariant.spec.ts (25)
+ ✓ test/unit/invariant_closure_verification.spec.ts (24)
+ ✓ test/unit/ordering.spec.ts (2)
+ ✓ test/unit/persistence.spec.ts (14)
+ ✓ test/unit/presentation_drift.spec.ts (1)
+ ✓ test/unit/quarantine.spec.ts (3)
+ ✓ test/unit/ranking_verification.spec.ts (9)
+ ✓ test/unit/security_privacy.spec.ts (3)
+ ✓ test/unit/semantic_precedence.spec.ts (1)
+ ✓ test/unit/suppression.spec.ts (3)
 
-Test Files  21 passed (21)
-     Tests  119 passed (119)
+Test Files  25 passed (25)
+     Tests  271 passed (271)
 ```
 
 ---
@@ -85,18 +89,19 @@ node scripts/runChromiumE2E.js
    - **Scenario H**: Asynchronous completion verification via acknowledgement channel.
    - **Scenario I**: 2FA/approval quorum workflow on high-risk mutations.
    - **Scenario J**: Multi-step graph navigation across sequential DOM states.
-5. Emits raw cryptographic evidence with timestamps, event IDs, and execution trace to:
+5. Emits raw empirical browser evidence with timestamps, event IDs, and execution trace to:
    - `evidence/chromium_e2e_evidence.json`
+   - `evidence/chromium_e2e_negative_evidence.json`
 
 ---
 
 ## 4. Running the Benchmark Suite
 
-To execute the full empirical benchmark comparing IntentNav-SCFR against Baselines 1–3 across 100 intents and 4 mock environments (1,200 trials total):
+To execute the full empirical benchmark comparing IntentNav-SCFR against Baselines 1–4 across 100 intents and 4 mock environments (2,000 trials total):
 
 ```bash
-# Run the benchmark runner via local vitest harness
-npm run benchmark
+# Run the benchmark runner via local tsx harness
+npx tsx benchmark/runner.ts
 ```
 
 The benchmark runner executes actual DOM evaluations via `CandidateGenerator.generateFromDOM()` inside loaded JSDOM window environments for all 4 sites, performing real event dispatch, state mutation inspection, and multi-channel witness collection. All trial outcomes and summary statistics are validated by `MetricValidator.validate()` to guarantee mathematical reconciliation between raw runs and aggregated summaries without synthetic multipliers.
@@ -135,20 +140,21 @@ To inspect and test the interactive extension UI:
 3. Click the **Load unpacked** button.
 4. Select the `dist/` directory inside this project: `/Users/kumarmilind/Desktop/Navigation/dist`.
 5. The extension **IntentNav-SCFR** will appear in the toolbar.
-6. Open any test site (e.g. `http://localhost:8080/site-a/` or `site-b/`).
+6. Open any test site (e.g. `http://localhost:3000/mock-sites/site-a/` or `site-b/`).
 7. Click the IntentNav-SCFR icon to open the popup:
    - **User Mode**: Enter natural language intents (e.g., `"Change my password"`).
-   - **Research / Debug Mode**: Inspect live 5D drift vectors ($[P, C, S, Cap, T]$), invariant gate results, witness correlation counters, and download append-only cryptographic audit logs.
+   - **Research / Debug Mode**: Inspect live 5D drift vectors ($[P, C, S, Cap, T]$), invariant gate results, witness correlation counters, and download append-only structured audit logs.
 
 ---
 
 ## 7. Audit & Evidence Verification
 
-The project includes cryptographic audit evidence packages in `evidence/`:
-- `evidence/claim_1_evidence.json` through `evidence/claim_17_evidence.json`
+The project includes empirical browser audit evidence packages in `evidence/`:
+- `evidence/chromium_e2e_evidence.json` (Positive scenarios A through J)
+- `evidence/chromium_e2e_negative_evidence.json` (Negative scenarios N1 through N14)
 - Full test log outputs and property verification proofs.
 
-To verify that all 17 claims and 10 formal safety properties hold:
+To verify formal safety properties and component test suites:
 ```bash
 npx vitest run test/properties/properties.spec.ts test/adversarial/matrix.spec.ts
 ```

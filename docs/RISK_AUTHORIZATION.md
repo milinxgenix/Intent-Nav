@@ -36,7 +36,7 @@ The authorization subsystem requires an **Evidence Quorum** composed of distinct
 2. **Negative Evidence Verification**: Proof that the target candidate does not match any known contradictory or decoy pattern in the negative evidence store.
 3. **Route History Verification**: Confirmation that the navigation trajectory leading to this capability is an active, non-demoted route ($V_k$) or an approved provisional route.
 4. **Transition Precedence Witness**: Pre-execution snapshot establishing baseline UI state before event dispatch.
-5. **Human Explicit Authorization**: For `HIGH` and `CRITICAL` risk tiers, a cryptographic or UI confirmation token from the user interface.
+5. **Human Explicit Authorization**: For `HIGH` and `CRITICAL` risk tiers, a tamper-evident confirmation token or explicit UI confirmation from the user interface.
 
 If any required quorum item is absent, `ExecutionAuthorizationController.evaluate()` returns `DENIED` or `CONFIRMATION_REQUIRED`, halting the pipeline immediately.
 
@@ -47,7 +47,7 @@ If any required quorum item is absent, `ExecutionAuthorizationController.evaluat
 For actions flagged as `IRREVERSIBLE`, the controller enforces:
 - Strict lockout of autonomous single-click execution.
 - Display of an immutable pre-execution impact summary in the IntentNav-SCFR extension panel detailing the exact DOM mutations and side effects predicted.
-- An append-only pre-execution audit event emitted to the cryptographic audit trail prior to confirmation request.
+- An append-only pre-execution audit event emitted to the audit trail prior to confirmation request.
 
 ---
 
@@ -55,5 +55,5 @@ For actions flagged as `IRREVERSIBLE`, the controller enforces:
 
 The authorization subsystem is formally validated by automated property tests in `test/properties/properties.spec.ts`:
 - **Property 5 (Decoupled Confidence)**: A test fixture with $S_{\text{match}} = 0.999$ on a `DELETE_ACCOUNT` capability is fed to the engine. The engine returns `status: "CONFIRMATION_REQUIRED"`, `canExecute: false`.
-- **Property 6 (Zero Unauthorized High-Risk Actions)**: Across 1,200 benchmark runs spanning 4 mock sites (including Site D with adversarial decoys and destructive traps), exactly **0** high-risk actions executed without authorization.
+- **Property 6 (Zero Unauthorized High-Risk Actions)**: Across 2,000 controlled simulated benchmark runs spanning 4 mock sites (including Site D with adversarial decoys and destructive traps), exactly **0** high-risk actions executed without authorization.
 

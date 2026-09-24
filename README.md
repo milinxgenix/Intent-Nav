@@ -3,7 +3,7 @@
 > **A Self-Adaptive Functional Capability Identity, Drift-Localized Invariant Re-Binding, Causal Transition Verification, and Risk-Gated Navigation System for Dynamic Web Interfaces**
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
-[![Tests](https://img.shields.io/badge/tests-129%2F129%20passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-271%2F271%20passing-brightgreen.svg)]()
 [![Manifest](https://img.shields.io/badge/Manifest-V3%20Chromium-blue.svg)]()
 [![Patent Claims](https://img.shields.io/badge/Claims-1--20%20Implemented-success.svg)]()
 [![Local First](https://img.shields.io/badge/security-local--first%20zero--exfiltration-purple.svg)]()
@@ -58,7 +58,7 @@ INDEPENDENT RISK-GATED EXECUTION AUTHORIZATION (Confidence ≠ Authorization)
 ## 3. Benchmark Results (Controlled Simulation: 2,000 Empirical Trials)
 
 > [!NOTE]
-> **Controlled Simulated / JSDOM Benchmark**: The metrics below represent comparative evaluation across simulated mock sites in a controlled Node/JSDOM harness (100 benchmark intents × 4 mock sites × 5 system paradigms = 2,000 total trials). Real browser execution evidence (including real Blink DOM mutations, live MV3 content scripts, CDP over WebSocket, and cryptographic authorization tokens) is separately verified and reported in `evidence/chromium_e2e_positive_evidence.json` and `evidence/chromium_e2e_negative_evidence.json`.
+> **Controlled Simulated / JSDOM Benchmark**: The metrics below represent comparative evaluation across simulated mock sites in a controlled Node/JSDOM harness (100 benchmark intents × 4 mock sites × 5 system paradigms = 2,000 total trials). Real browser execution evidence (including real Blink DOM mutations, live MV3 content scripts, CDP over WebSocket, and verified deterministic authorization tokens) is separately verified and reported in `evidence/chromium_e2e_evidence.json` and `evidence/chromium_e2e_negative_evidence.json`.
 >
 > **Scope Note on Simulated Transition Validation Rate**: This controlled JSDOM metric measures whether independently observed state/DOM changes match the expected capability delta. It does not constitute independent real-browser causal-transition verification.
 
@@ -93,26 +93,26 @@ For complete trial-by-trial logs and resource telemetry, see [docs/BENCHMARKS.md
 .
 ├── benchmark/
 │   ├── baselines/          # Implementation of Baselines 1–4
-│   ├── dataset/            # 60 version-controlled test intents (intents.json)
-│   ├── results/            # benchmark_summary.json & benchmark_results.csv
+│   ├── dataset/            # 100 version-controlled test intents (intents.json)
+│   ├── results/            # summary.json & benchmark_results.csv
 │   ├── failureInjection.ts # Adversarial perturbation harness
-│   └── runner.ts           # 1,200-trial benchmark execution engine
+│   └── runner.ts           # 2,000-trial benchmark execution engine
 ├── dist/                   # Compiled Manifest V3 Chromium Extension
 ├── docs/                   # Complete Technical Documentation & Figures
 │   ├── FIGURES/            # 10 Mermaid architectural diagrams
 │   ├── ARCHITECTURE.md     # Full architectural specification
 │   ├── BENCHMARKS.md       # Comprehensive scientific benchmark report
-│   ├── CLAIM_COVERAGE_MATRIX.md # Detailed mapping for Claims 1–17
+│   ├── CLAIM_COVERAGE_MATRIX.md # Detailed mapping for Claims 1–20
 │   ├── FINAL_TECHNICAL_AUDIT.md # Technical audit & property proofs
 │   ├── RISK_AUTHORIZATION.md # Independent execution authorization
 │   ├── SECURITY.md         # Manifest V3 security & local-first posture
 │   ├── EXPERIMENT_PROTOCOL.md # Scientific protocol & statistical methods
 │   ├── REPRODUCIBILITY.md  # Step-by-step reproduction instructions
 │   └── LIMITATIONS.md      # Boundary conditions and operational limits
-├── evidence/               # Cryptographic claim evidence packages (1–17)
+├── evidence/               # Empirical browser evidence packages (Scenarios A–J, N1–N14)
 ├── mock-sites/             # Standalone test sites (Sites A, B, C, D)
 ├── scripts/
-│   └── serveMocks.js       # Local HTTP server for mock sites (port 8080)
+│   └── serveMocks.js       # Local HTTP server for mock sites (port 3000)
 ├── src/
 │   ├── browser/            # Content script, background service worker, observer
 │   ├── core/               # Fingerprint, graph, drift, invariants, ranking,
@@ -159,7 +159,7 @@ npm install
 # Build the Chromium Manifest V3 extension bundle & in-browser controller
 npm run build
 
-# Run all 21 automated test suites (129 unit, causal, adversarial, and property tests)
+# Run all 25 automated test suites (271 unit, causal, adversarial, and property tests)
 npm test
 ```
 
