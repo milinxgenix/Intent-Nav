@@ -1,21 +1,21 @@
 # IntentNav-SCFR: Final Evidence Index
 
-**Version:** 2.0 (Authoritative Verification Baseline)  
-**Status:** Authoritative — fully verified against real Google Chrome runtime.  
+**Version:** 2.0 (Authoritative Verification Baseline)
+**Status:** FINAL POST-FIX VERIFICATION COMPLETED — BASELINE READY FOR FREEZE REVIEW
 **Governing Standard:** `docs/CLAIM_RECONCILIATION.md` v2.0 + `v6.docx` priority.  
-**Git Revision:** `109a7c711afedc4e27673e754b82e047d9cb10dd`  
-**Execution Environment:** Google Chrome `Chrome/153.0.8010.52` (Headless) + CDP over WebSocket  
-**Positive E2E Run ID:** `run_chromium_1789835153914` (10/10 scenarios EXECUTED and VERIFIED)  
-**Negative E2E Run ID:** `run_neg_chromium_1789835194762` (14/14 scenarios REFUSED/SAFELY RESOLVED — zero safety failures)  
-**Extension Packaging:** Unpacked MV3 loaded via CDP `Extensions.loadUnpacked` with zero webpage script injection  
+**Git Revision:** `ebcdb3b` (HEAD on branch `post-audit-fixes`)
+**Execution Environment:** Google Chrome `Google Chrome 153.0.8010.53` (Headless) + CDP over WebSocket
+**Positive E2E Run ID:** `run_chromium_1790270497220` (10/10 scenarios EXECUTED and VERIFIED)
+**Negative E2E Run ID:** `run_neg_chromium_1790270587593` (14/14 scenarios REFUSED/SAFELY RESOLVED — zero safety failures)
+**Extension Packaging:** Unpacked MV3 loaded via CDP `Extensions.loadUnpacked` with zero webpage script injection (Extension ID: `inieeohgmebogmomdhdpabieolhdfdme`)
 
 ### Verification Sequence Timestamps (Rebuilt and Regenerated Post-Build)
-1. **Source Code Finalized:** 2026-09-19T16:25:00Z
-2. **Production Build Completed (`npm run build`):** 2026-09-19T16:25:15Z
-3. **Dist Finalized (`dist/background.js`, `dist/contentScript.js`):** 2026-09-19T16:25:15.457Z
-4. **Positive A–J Evidence Generated (`evidence/chromium_e2e_evidence.json`):** 2026-09-19T16:26:08.655Z
-5. **Negative N1–N14 Evidence Generated (`evidence/chromium_e2e_negative_evidence.json`):** 2026-09-19T16:26:55.187Z
-6. **Validators Executed (`validateChromiumEvidence.js`, `validateNegativeEvidence.js`):** 2026-09-19T16:27:27Z
+1. **Source Code Finalized:** 2026-09-24T17:15:00Z
+2. **Production Build Completed (`npm run build`):** 2026-09-24T17:20:53Z
+3. **Automated Test Suite (25 files, 271 tests passing):** 2026-09-24T17:21:01Z
+4. **Positive A–J Evidence Generated (`evidence/chromium_e2e_evidence.json`):** 2026-09-24T17:21:51Z
+5. **Negative N1–N14 Evidence Generated (`evidence/chromium_e2e_negative_evidence.json`):** 2026-09-24T17:23:54Z
+6. **Validators Executed (`validateChromiumEvidence.js`, `validateNegativeEvidence.js`):** 2026-09-24T17:23:55Z
 
 > [!IMPORTANT]
 > This document distinguishes what the code **implements**, what unit/integration tests **prove**, what real Chromium execution **demonstrates**, what controlled benchmarks **measure**, and what has **NOT been demonstrated**. Every row maps to reproducible, auditable evidence.
@@ -37,6 +37,9 @@
 ---
 
 ## Positive Evidence — Scenarios A–J (Real Chromium)
+
+> [!NOTE]
+> **Claim 1 Scope Note:** Browser E2E / empirical demonstration is limited to the executed Scenarios A–J on the tested mock-site environment; this is not a universal proof across arbitrary websites.
 
 | Scenario | Claim/Req | What Is Demonstrated | Test Command | Evidence File | Result | Level |
 |:---:|:---:|:---|:---:|:---:|:---:|:---:|
@@ -78,16 +81,32 @@
 
 | Test File | What It Proves | Count | Test Command | Level |
 |:---|:---|:---:|:---:|:---:|
-| `test/unit/false_success.spec.ts` | False-success scenarios fail safely; 17 individual precondition knockout tests (one per PRE); volatile ID regression | 25+ | `npm test` | `INTEGRATION_TESTED` |
-| `test/unit/causal.spec.ts` | Causal verifier: temporal ordering, pre-existing rejection, window timeout, contradiction, quorum; 5 forged/missing/incorrect correlation ID tests | 30+ | `npm test` | `UNIT_TESTED` |
-| `test/unit/suppression.spec.ts` | Volatile feature suppression (generated IDs, transient classes) | 8+ | `npm test` | `UNIT_TESTED` |
-| `test/unit/invariant.spec.ts` | Invariant closure: positive/negative predicates, PASS/FAIL/CONTRADICTED | 12+ | `npm test` | `UNIT_TESTED` |
-| `test/unit/authorization.spec.ts` | Authorization gate: quorum, risk class, confirmation | 10+ | `npm test` | `UNIT_TESTED` |
-| `test/unit/drift.spec.ts` | 5D typed drift vector detection and classification | 8+ | `npm test` | `UNIT_TESTED` |
-| `test/unit/ordering.spec.ts` | Ranking pipeline: post-gate, contradiction penalty | 8+ | `npm test` | `UNIT_TESTED` |
-| `test/unit/quarantine.spec.ts` | Route quarantine, promotion, demotion lifecycle | 10+ | `npm test` | `UNIT_TESTED` |
-| `test/adversarial/matrix.spec.ts` | 26 adversarial scenarios across the full pipeline | 26+ | `npm test` | `INTEGRATION_TESTED` |
-| `test/e2e/browser_e2e.spec.ts` | JSDOM-level E2E integration tests for all 4 sites | 20+ | `npm test` | `INTEGRATION_TESTED` |
+| `test/unit/generic_capability.spec.ts` | Extensible generic capability schema, dynamic target entities, invariant gating, closed loop | 7 | `npm test` | `UNIT_TESTED` |
+| `test/unit/fingerprint.spec.ts` | Deterministic fingerprint hash computation based strictly on functional primitives | 7 | `npm test` | `UNIT_TESTED` |
+| `test/unit/security_privacy.spec.ts` | Local browser execution boundary, sanitization of sensitive values, zero transmission | 3 | `npm test` | `UNIT_TESTED` |
+| `test/unit/semantic_precedence.spec.ts` | Invariant gating takes absolute precedence over semantic similarity | 1 | `npm test` | `UNIT_TESTED` |
+| `test/unit/drift.spec.ts` | 5D typed interface-drift vector detection and classification | 4 | `npm test` | `UNIT_TESTED` |
+| `test/unit/drift_matrix.spec.ts` | Comprehensive 5D drift test matrix across all orthogonal dimensions | 21 | `npm test` | `UNIT_TESTED` |
+| `test/unit/presentation_drift.spec.ts` | Presentation-only drift does not invalidate functional routes | 1 | `npm test` | `UNIT_TESTED` |
+| `test/unit/quarantine.spec.ts` | Route quarantine, provisional storage, promotion, demotion lifecycle | 3 | `npm test` | `UNIT_TESTED` |
+| `test/unit/authorization.spec.ts` | Authorization gate: quorum, risk class, confirmation token requirements | 4 | `npm test` | `UNIT_TESTED` |
+| `test/unit/binding_handle.spec.ts` | DOM binding handle resolution and volatile ID independence | 2 | `npm test` | `UNIT_TESTED` |
+| `test/unit/ordering.spec.ts` | Ranking pipeline: post-gate ordering, contradiction penalty | 2 | `npm test` | `UNIT_TESTED` |
+| `test/unit/ranking_verification.spec.ts` | Multi-dimensional evidence-driven candidate ranking | 9 | `npm test` | `UNIT_TESTED` |
+| `test/unit/graph.spec.ts` | Capability-state graph topology and route version management | 3 | `npm test` | `UNIT_TESTED` |
+| `test/unit/intent.spec.ts` | Intent normalization, classification, and dynamic target entity resolution | 4 | `npm test` | `UNIT_TESTED` |
+| `test/unit/suppression.spec.ts` | Volatile feature suppression (generated IDs, transient classes) | 3 | `npm test` | `UNIT_TESTED` |
+| `test/unit/audit.spec.ts` | Structured audit record generation | 1 | `npm test` | `UNIT_TESTED` |
+| `test/unit/activation_events.spec.ts` | Preservation of declared browser activation event types (`click`, `input`, `change`, `submit`) | 12 | `npm test` | `UNIT_TESTED` |
+| `test/unit/persistence.spec.ts` | Persistent storage engine: schema versioning, checksum validation, migration | 14 | `npm test` | `UNIT_TESTED` |
+| `test/unit/invariant.spec.ts` | Invariant closure: positive/negative predicates, PASS/FAIL/CONTRADICTED | 25 | `npm test` | `UNIT_TESTED` |
+| `test/unit/invariant_closure_verification.spec.ts` | Preconditions PRE_1 through PRE_16 gating execution state entry | 24 | `npm test` | `UNIT_TESTED` |
+| `test/unit/causal.spec.ts` | Causal verifier: temporal ordering, pre-existing rejection, window timeout, contradiction, quorum | 31 | `npm test` | `UNIT_TESTED` |
+| `test/unit/false_success.spec.ts` | False-success scenarios fail safely; 17 individual precondition knockout tests (one per PRE) | 32 | `npm test` | `INTEGRATION_TESTED` |
+| `test/adversarial/matrix.spec.ts` | 26 adversarial scenarios across the full pipeline | 26 | `npm test` | `INTEGRATION_TESTED` |
+| `test/properties/properties.spec.ts` | Mathematical and safety invariant properties across the state machine | 15 | `npm test` | `UNIT_TESTED` |
+| `test/e2e/browser_e2e.spec.ts` | JSDOM-level E2E integration tests for all 4 mock sites | 17 | `npm test` | `INTEGRATION_TESTED` |
+| **Total Test Suite** | **25 Passed Test Files** | **271 Passed Tests** | `npm test` | **100% PASS** |
 
 ---
 
@@ -108,7 +127,9 @@
 | Gap | Status | Notes |
 |:---|:---:|:---|
 | Generalization to commercial websites (beyond 4 mock sites) | NOT_VERIFIED | Evidence is limited to Sites A–D under controlled conditions |
-| Robustness across all major browser versions (only Chrome/153) | NOT_VERIFIED | Only tested on `Chrome/153.0.8010.52` headless |
+| Robustness across all major browser versions (only Chrome/153) | NOT_VERIFIED | Only tested on `Google Chrome 153.0.8010.53` headless |
+| Simultaneous live verification of all six witness classes | NOT_VERIFIED | Positive Chromium E2E specifically records DOM and Application State mutations to satisfy the $\ge 2$ quorum; remaining classes are supported in implementation and unit-tested |
+| Independent external network trace for Claim 11 | NOT_VERIFIED | Local execution boundary and credential sanitization are verified in unit tests; no independent CDP Network domain trace was recorded |
 | High-load / concurrency behavior | NOT_VERIFIED | Single-threaded sequential test runs only |
 | Cross-tab / multi-frame navigation | NOT_VERIFIED | Single page context only |
 | Performance benchmarks in real Chrome (latency, memory) | NOT_VERIFIED | Only JSDOM timing; no real Chrome profiling |
