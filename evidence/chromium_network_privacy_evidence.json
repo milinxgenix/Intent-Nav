@@ -1,0 +1,382 @@
+{
+  "runId": "run_privacy_1790425129535",
+  "timestamp": 1790425144795,
+  "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "browserVersion": "Google Chrome 153.0.8010.53",
+  "environment": "Google Chrome (Google Chrome 153.0.8010.53) + CDP over WebSocket",
+  "runnerType": "REAL_CHROMIUM_NETWORK_PRIVACY_E2E",
+  "claimReference": "Patent Claim 11 — Offline / Local-Only Execution Model",
+  "assertions": {
+    "totalRequestsIntercepted": 20,
+    "categorizedEndpoints": {
+      "localMockSiteRequests": 20,
+      "extensionInternalResources": 0,
+      "localInMemoryRequests": 0,
+      "externalTelemetryEndpoints": 0,
+      "externalInferenceEndpoints": 0,
+      "externalCloudRoutes": 0,
+      "externalOtherEndpoints": 0
+    },
+    "externalRequestsCount": 0,
+    "externalTelemetryCount": 0,
+    "externalInferenceCount": 0,
+    "externalCloudRoutesCount": 0,
+    "zeroDataLeftLocalhost": true,
+    "zeroCredentialsTransmitted": true,
+    "privacyVerified": true
+  },
+  "scenariosExecuted": [
+    {
+      "scenarioId": "Scenario A",
+      "site": "Site B",
+      "intent": "Stop commercial bulletins",
+      "verified": true,
+      "requestsCount": 2,
+      "requestUrls": [
+        "http://localhost:3000/mock-sites/site-b/index.html",
+        "http://localhost:3000/mock-sites/site-b/app.js"
+      ]
+    },
+    {
+      "scenarioId": "Scenario B",
+      "site": "Site B",
+      "intent": "Download personal information",
+      "verified": true,
+      "requestsCount": 2,
+      "requestUrls": [
+        "http://localhost:3000/mock-sites/site-b/index.html",
+        "http://localhost:3000/mock-sites/site-b/app.js"
+      ]
+    },
+    {
+      "scenarioId": "Scenario C",
+      "site": "Site A",
+      "intent": "Turn off marketing emails",
+      "verified": true,
+      "requestsCount": 2,
+      "requestUrls": [
+        "http://localhost:3000/mock-sites/site-a/index.html",
+        "http://localhost:3000/mock-sites/site-a/app.js"
+      ]
+    },
+    {
+      "scenarioId": "Scenario D",
+      "site": "Site B",
+      "intent": "Turn off multi-factor auth",
+      "verified": true,
+      "requestsCount": 2,
+      "requestUrls": [
+        "http://localhost:3000/mock-sites/site-b/index.html",
+        "http://localhost:3000/mock-sites/site-b/app.js"
+      ]
+    },
+    {
+      "scenarioId": "Scenario E",
+      "site": "Site C",
+      "intent": "Turn off marketing notifications",
+      "verified": true,
+      "requestsCount": 2,
+      "requestUrls": [
+        "http://localhost:3000/mock-sites/site-c/index.html",
+        "http://localhost:3000/mock-sites/site-c/app.js"
+      ]
+    },
+    {
+      "scenarioId": "Scenario F",
+      "site": "Site C",
+      "intent": "Toggle dark display styling",
+      "verified": true,
+      "requestsCount": 2,
+      "requestUrls": [
+        "http://localhost:3000/mock-sites/site-c/index.html",
+        "http://localhost:3000/mock-sites/site-c/app.js"
+      ]
+    },
+    {
+      "scenarioId": "Scenario G",
+      "site": "Site C",
+      "intent": "Turn off 2FA",
+      "verified": true,
+      "requestsCount": 2,
+      "requestUrls": [
+        "http://localhost:3000/mock-sites/site-c/index.html",
+        "http://localhost:3000/mock-sites/site-c/app.js"
+      ]
+    },
+    {
+      "scenarioId": "Scenario H",
+      "site": "Site A",
+      "intent": "Disable tracking",
+      "verified": true,
+      "requestsCount": 2,
+      "requestUrls": [
+        "http://localhost:3000/mock-sites/site-a/index.html",
+        "http://localhost:3000/mock-sites/site-a/app.js"
+      ]
+    },
+    {
+      "scenarioId": "Scenario I",
+      "site": "Site A",
+      "intent": "Revoke active login sessions",
+      "verified": true,
+      "requestsCount": 2,
+      "requestUrls": [
+        "http://localhost:3000/mock-sites/site-a/index.html",
+        "http://localhost:3000/mock-sites/site-a/app.js"
+      ]
+    },
+    {
+      "scenarioId": "Scenario J",
+      "site": "Site D",
+      "intent": "Turn off marketing emails",
+      "verified": true,
+      "requestsCount": 2,
+      "requestUrls": [
+        "http://localhost:3000/mock-sites/site-d/index.html",
+        "http://localhost:3000/mock-sites/site-d/app.js"
+      ]
+    }
+  ],
+  "allRequests": [
+    {
+      "requestId": "0232FC7B73ED71F3BF7F27C265672FA5",
+      "target": "page",
+      "method": "GET",
+      "url": "http://localhost:3000/mock-sites/site-b/index.html",
+      "resourceType": "Document",
+      "initiatorType": "other",
+      "classification": "LOCAL_MOCK_ASSET",
+      "postDataSize": 0,
+      "encodedDataLength": 156,
+      "timestamp": 273196.566053
+    },
+    {
+      "requestId": "85534.6",
+      "target": "page",
+      "method": "GET",
+      "url": "http://localhost:3000/mock-sites/site-b/app.js",
+      "resourceType": "Script",
+      "initiatorType": "parser",
+      "classification": "LOCAL_MOCK_ASSET",
+      "postDataSize": 0,
+      "encodedDataLength": 162,
+      "timestamp": 273196.577638
+    },
+    {
+      "requestId": "5BB60542DA11D97DCF81D031DD952148",
+      "target": "page",
+      "method": "GET",
+      "url": "http://localhost:3000/mock-sites/site-b/index.html",
+      "resourceType": "Document",
+      "initiatorType": "other",
+      "classification": "LOCAL_MOCK_ASSET",
+      "postDataSize": 0,
+      "encodedDataLength": 156,
+      "timestamp": 273197.904648
+    },
+    {
+      "requestId": "85534.9",
+      "target": "page",
+      "method": "GET",
+      "url": "http://localhost:3000/mock-sites/site-b/app.js",
+      "resourceType": "Script",
+      "initiatorType": "parser",
+      "classification": "LOCAL_MOCK_ASSET",
+      "postDataSize": 0,
+      "encodedDataLength": 162,
+      "timestamp": 273197.911368
+    },
+    {
+      "requestId": "BFFFE2E9656E800BB77D0906AB7962BE",
+      "target": "page",
+      "method": "GET",
+      "url": "http://localhost:3000/mock-sites/site-a/index.html",
+      "resourceType": "Document",
+      "initiatorType": "other",
+      "classification": "LOCAL_MOCK_ASSET",
+      "postDataSize": 0,
+      "encodedDataLength": 156,
+      "timestamp": 273199.162095
+    },
+    {
+      "requestId": "85534.12",
+      "target": "page",
+      "method": "GET",
+      "url": "http://localhost:3000/mock-sites/site-a/app.js",
+      "resourceType": "Script",
+      "initiatorType": "parser",
+      "classification": "LOCAL_MOCK_ASSET",
+      "postDataSize": 0,
+      "encodedDataLength": 162,
+      "timestamp": 273199.167309
+    },
+    {
+      "requestId": "51A17F0FE4D4BBF65A9829C932668799",
+      "target": "page",
+      "method": "GET",
+      "url": "http://localhost:3000/mock-sites/site-b/index.html",
+      "resourceType": "Document",
+      "initiatorType": "other",
+      "classification": "LOCAL_MOCK_ASSET",
+      "postDataSize": 0,
+      "encodedDataLength": 156,
+      "timestamp": 273200.446938
+    },
+    {
+      "requestId": "85534.15",
+      "target": "page",
+      "method": "GET",
+      "url": "http://localhost:3000/mock-sites/site-b/app.js",
+      "resourceType": "Script",
+      "initiatorType": "parser",
+      "classification": "LOCAL_MOCK_ASSET",
+      "postDataSize": 0,
+      "encodedDataLength": 162,
+      "timestamp": 273200.452136
+    },
+    {
+      "requestId": "23B7C5A2C975C6DBE87C5B602311EEF2",
+      "target": "page",
+      "method": "GET",
+      "url": "http://localhost:3000/mock-sites/site-c/index.html",
+      "resourceType": "Document",
+      "initiatorType": "other",
+      "classification": "LOCAL_MOCK_ASSET",
+      "postDataSize": 0,
+      "encodedDataLength": 156,
+      "timestamp": 273201.73618
+    },
+    {
+      "requestId": "85534.18",
+      "target": "page",
+      "method": "GET",
+      "url": "http://localhost:3000/mock-sites/site-c/app.js",
+      "resourceType": "Script",
+      "initiatorType": "parser",
+      "classification": "LOCAL_MOCK_ASSET",
+      "postDataSize": 0,
+      "encodedDataLength": 162,
+      "timestamp": 273201.740627
+    },
+    {
+      "requestId": "249245B18EE27B5AE7DB8712800689E9",
+      "target": "page",
+      "method": "GET",
+      "url": "http://localhost:3000/mock-sites/site-c/index.html",
+      "resourceType": "Document",
+      "initiatorType": "other",
+      "classification": "LOCAL_MOCK_ASSET",
+      "postDataSize": 0,
+      "encodedDataLength": 156,
+      "timestamp": 273203.036026
+    },
+    {
+      "requestId": "85534.21",
+      "target": "page",
+      "method": "GET",
+      "url": "http://localhost:3000/mock-sites/site-c/app.js",
+      "resourceType": "Script",
+      "initiatorType": "parser",
+      "classification": "LOCAL_MOCK_ASSET",
+      "postDataSize": 0,
+      "encodedDataLength": 162,
+      "timestamp": 273203.041837
+    },
+    {
+      "requestId": "D76E59EF7A9C21C3F2C28C334D7C1233",
+      "target": "page",
+      "method": "GET",
+      "url": "http://localhost:3000/mock-sites/site-c/index.html",
+      "resourceType": "Document",
+      "initiatorType": "other",
+      "classification": "LOCAL_MOCK_ASSET",
+      "postDataSize": 0,
+      "encodedDataLength": 156,
+      "timestamp": 273204.328196
+    },
+    {
+      "requestId": "85534.24",
+      "target": "page",
+      "method": "GET",
+      "url": "http://localhost:3000/mock-sites/site-c/app.js",
+      "resourceType": "Script",
+      "initiatorType": "parser",
+      "classification": "LOCAL_MOCK_ASSET",
+      "postDataSize": 0,
+      "encodedDataLength": 162,
+      "timestamp": 273204.334014
+    },
+    {
+      "requestId": "0502B14DCE66D9A1A37BFB1A290A4C4F",
+      "target": "page",
+      "method": "GET",
+      "url": "http://localhost:3000/mock-sites/site-a/index.html",
+      "resourceType": "Document",
+      "initiatorType": "other",
+      "classification": "LOCAL_MOCK_ASSET",
+      "postDataSize": 0,
+      "encodedDataLength": 156,
+      "timestamp": 273205.630173
+    },
+    {
+      "requestId": "85534.27",
+      "target": "page",
+      "method": "GET",
+      "url": "http://localhost:3000/mock-sites/site-a/app.js",
+      "resourceType": "Script",
+      "initiatorType": "parser",
+      "classification": "LOCAL_MOCK_ASSET",
+      "postDataSize": 0,
+      "encodedDataLength": 162,
+      "timestamp": 273205.63409
+    },
+    {
+      "requestId": "46CF44994EE6D9EC27DF844BCC4A37BE",
+      "target": "page",
+      "method": "GET",
+      "url": "http://localhost:3000/mock-sites/site-a/index.html",
+      "resourceType": "Document",
+      "initiatorType": "other",
+      "classification": "LOCAL_MOCK_ASSET",
+      "postDataSize": 0,
+      "encodedDataLength": 156,
+      "timestamp": 273206.959751
+    },
+    {
+      "requestId": "85534.30",
+      "target": "page",
+      "method": "GET",
+      "url": "http://localhost:3000/mock-sites/site-a/app.js",
+      "resourceType": "Script",
+      "initiatorType": "parser",
+      "classification": "LOCAL_MOCK_ASSET",
+      "postDataSize": 0,
+      "encodedDataLength": 162,
+      "timestamp": 273206.964388
+    },
+    {
+      "requestId": "02DE7DC562482383246E9209B6E22791",
+      "target": "page",
+      "method": "GET",
+      "url": "http://localhost:3000/mock-sites/site-d/index.html",
+      "resourceType": "Document",
+      "initiatorType": "other",
+      "classification": "LOCAL_MOCK_ASSET",
+      "postDataSize": 0,
+      "encodedDataLength": 156,
+      "timestamp": 273208.254412
+    },
+    {
+      "requestId": "85534.33",
+      "target": "page",
+      "method": "GET",
+      "url": "http://localhost:3000/mock-sites/site-d/app.js",
+      "resourceType": "Script",
+      "initiatorType": "parser",
+      "classification": "LOCAL_MOCK_ASSET",
+      "postDataSize": 0,
+      "encodedDataLength": 162,
+      "timestamp": 273208.258169
+    }
+  ]
+}

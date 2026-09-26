@@ -54,6 +54,10 @@ if (mfaBtn) {
   mfaBtn.addEventListener('click', () => {
     dispatchMockStateChange('two_factor_enabled', false);
     mfaBtn.setAttribute('disabled', 'true');
+    if (window.history && window.history.pushState) {
+      window.history.pushState({ route: '/security/mfa-disabled' }, '', '#security/mfa-disabled');
+      window.dispatchEvent(new PopStateEvent('popstate', { state: { route: '/security/mfa-disabled' } }));
+    }
     window.dispatchEvent(
       new CustomEvent('intentnav:client-route-change', {
         detail: { route: '/security/mfa-disabled' },

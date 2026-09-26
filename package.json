@@ -15,8 +15,14 @@
     "serve:mocks": "node scripts/serveMocks.js",
     "test:e2e:chromium": "node scripts/runChromiumE2E.js",
     "test:e2e:chromium:neg": "node scripts/runNegativeChromiumE2E.js",
+    "test:e2e:chromium:privacy": "node scripts/runChromiumNetworkPrivacyE2E.js",
+    "test:e2e:chromium:rollback": "node scripts/runChromiumRouteRollbackE2E.js",
+    "test:e2e:chromium:witnesses": "node scripts/runChromiumWitnessClassE2E.js",
     "validate:evidence": "node scripts/validateChromiumEvidence.js",
-    "validate:evidence:neg": "node scripts/validateNegativeEvidence.js"
+    "validate:evidence:neg": "node scripts/validateNegativeEvidence.js",
+    "validate:network-privacy": "node scripts/validateChromiumNetworkPrivacyEvidence.js",
+    "validate:rollback": "node scripts/validateChromiumRouteRollbackEvidence.js",
+    "validate:witness-classes": "node scripts/validateChromiumWitnessClassEvidence.js"
   },
   "keywords": [
     "browser-extension",

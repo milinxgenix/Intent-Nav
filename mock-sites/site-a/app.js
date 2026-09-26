@@ -88,6 +88,10 @@ const twoFaBtn = document.getElementById('btn-disable-2fa');
 if (twoFaBtn) {
   twoFaBtn.addEventListener('click', () => {
     dispatchMockStateChange('two_factor_enabled', false);
+    if (window.history && window.history.pushState) {
+      window.history.pushState({ route: '/settings/security/mfa-off' }, '', '#settings/security/mfa-off');
+      window.dispatchEvent(new PopStateEvent('popstate', { state: { route: '/settings/security/mfa-off' } }));
+    }
     window.dispatchEvent(
       new CustomEvent('intentnav:client-route-change', {
         detail: { route: '/settings/security/mfa-off' },

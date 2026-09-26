@@ -1,0 +1,139 @@
+{
+  "runId": "run_rollback_1790425680909",
+  "timestamp": 1790425685568,
+  "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "browserVersion": "Google Chrome 153.0.8010.53",
+  "environment": "Google Chrome (Google Chrome 153.0.8010.53) + CDP over WebSocket",
+  "runnerType": "REAL_CHROMIUM_ROUTE_ROLLBACK_E2E",
+  "claimReference": "Patent Claim 10 — Provisional Route Lifecycle, Demotion, and Prior-Validated Rollback",
+  "scenarioId": "Scenario K",
+  "name": "Real-Browser Route Demotion and Rollback Lifecycle",
+  "capabilityId": "CAP_DISABLE_MARKETING",
+  "lifecycleEvents": [
+    {
+      "event": "ROUTE_V1_VERIFIED_AND_PROMOTED",
+      "routeId": "route_CAP_DISABLE_MARKETING_v1_1790425684018",
+      "capabilityId": "CAP_DISABLE_MARKETING",
+      "versionNumber": 1,
+      "status": "ACTIVE_VALIDATED",
+      "lastValidatedTimestamp": 1790425684187,
+      "timestamp": 1790425684215
+    },
+    {
+      "event": "ROUTE_V2_CREATED_PROVISIONAL",
+      "routeId": "route_CAP_DISABLE_MARKETING_v2_1790425684218",
+      "capabilityId": "CAP_DISABLE_MARKETING",
+      "versionNumber": 2,
+      "status": "PROVISIONAL",
+      "timestamp": 1790425684231
+    },
+    {
+      "event": "ROUTE_V2_VERIFIED_AND_PROMOTED",
+      "routeId": "route_CAP_DISABLE_MARKETING_v2_1790425684218",
+      "capabilityId": "CAP_DISABLE_MARKETING",
+      "versionNumber": 2,
+      "status": "ACTIVE_VALIDATED",
+      "lastValidatedTimestamp": 1790425684218,
+      "timestamp": 1790425684231
+    },
+    {
+      "event": "ROUTE_V2_RUNTIME_FAILURE_DETECTED",
+      "routeId": "route_CAP_DISABLE_MARKETING_v2_1790425684218",
+      "failureReason": "Runtime action execution failure: alternate target element missing from live DOM",
+      "timestamp": 1790425684231
+    },
+    {
+      "event": "ROUTE_V2_DEMOTED",
+      "routeId": "route_CAP_DISABLE_MARKETING_v2_1790425684218",
+      "versionNumber": 2,
+      "status": "DEMOTED",
+      "demotionReason": "Runtime action execution failure: alternate target element missing from live DOM",
+      "timestamp": 1790425684242
+    },
+    {
+      "event": "ROLLBACK_RESTORED_TO_V1",
+      "restoredRouteId": "route_CAP_DISABLE_MARKETING_v1_1790425684018",
+      "restoredVersion": 1,
+      "restoredStatus": "ACTIVE_VALIDATED",
+      "activeRouteId": "route_CAP_DISABLE_MARKETING_v1_1790425684018",
+      "timestamp": 1790425684242
+    },
+    {
+      "event": "REEXECUTION_UNDER_RESTORED_V1_SUCCEEDED",
+      "routeId": "route_CAP_DISABLE_MARKETING_v1_1790425684018",
+      "finalMachineState": "EXECUTED",
+      "postStateVerified": true,
+      "timestamp": 1790425685567
+    }
+  ],
+  "routeHistory": [
+    {
+      "routeId": "route_CAP_DISABLE_MARKETING_v1_1790425684018",
+      "versionNumber": 1,
+      "status": "ACTIVE_VALIDATED",
+      "lastValidatedTimestamp": 1790425684187
+    },
+    {
+      "routeId": "route_CAP_DISABLE_MARKETING_v2_1790425684218",
+      "versionNumber": 2,
+      "status": "DEMOTED",
+      "lastValidatedTimestamp": 1790425684218
+    }
+  ],
+  "stateSnapshots": {
+    "preState": {
+      "marketing_notifications_enabled": true,
+      "marketing_emails_enabled": true,
+      "two_factor_enabled": true,
+      "export_download_initiated": false,
+      "account_deactivated": false,
+      "account_active": true,
+      "analytics_tracking_enabled": true,
+      "active_session_count": 3,
+      "dark_mode_enabled": false,
+      "invoice_available": true,
+      "invoice_download_triggered": false,
+      "audit_logs_available": true,
+      "audit_logs_visible": false
+    },
+    "postStateInitialExecution": {
+      "marketing_notifications_enabled": false,
+      "marketing_emails_enabled": false,
+      "two_factor_enabled": true,
+      "export_download_initiated": false,
+      "account_deactivated": false,
+      "account_active": true,
+      "analytics_tracking_enabled": true,
+      "active_session_count": 3,
+      "dark_mode_enabled": false,
+      "invoice_available": true,
+      "invoice_download_triggered": false,
+      "audit_logs_available": true,
+      "audit_logs_visible": false
+    },
+    "postStateAfterRollbackExecution": {
+      "marketing_notifications_enabled": false,
+      "marketing_emails_enabled": false,
+      "two_factor_enabled": true,
+      "export_download_initiated": false,
+      "account_deactivated": false,
+      "account_active": true,
+      "analytics_tracking_enabled": true,
+      "active_session_count": 3,
+      "dark_mode_enabled": false,
+      "invoice_available": true,
+      "invoice_download_triggered": false,
+      "audit_logs_available": true,
+      "audit_logs_visible": false
+    }
+  },
+  "verificationSummary": {
+    "v1PromotedSuccessfully": true,
+    "v2PromotedSuccessfully": true,
+    "v2DemotedSuccessfully": true,
+    "rollbackRestoredV1": true,
+    "reexecutionWithV1Succeeded": true,
+    "zeroDemotedOrQuarantinedRestored": true,
+    "allAssertionsMet": true
+  }
+}

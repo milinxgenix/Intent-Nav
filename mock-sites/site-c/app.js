@@ -96,6 +96,10 @@ if (confirmModalBtn) {
   confirmModalBtn.addEventListener('click', () => {
     if (modal) modal.classList.remove('open');
     dispatchMockStateChange('two_factor_enabled', false);
+    if (window.history && window.history.pushState) {
+      window.history.pushState({ route: '/security/2fa-disabled' }, '', '#security/2fa-disabled');
+      window.dispatchEvent(new PopStateEvent('popstate', { state: { route: '/security/2fa-disabled' } }));
+    }
     window.dispatchEvent(
       new CustomEvent('intentnav:client-route-change', {
         detail: { route: '/security/2fa-disabled' },

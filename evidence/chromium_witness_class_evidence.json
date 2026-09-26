@@ -1,0 +1,636 @@
+{
+  "runId": "run_witness_1790426242830",
+  "timestamp": 1790426250351,
+  "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "browserVersion": "Google Chrome 153.0.8010.53",
+  "environment": "Google Chrome (Google Chrome 153.0.8010.53) + CDP over WebSocket",
+  "runnerType": "REAL_CHROMIUM_WITNESS_CLASS_E2E",
+  "claimReference": "Patent Claim 8 — Multi-Class Causal Witness Architecture (W1–W6)",
+  "assertions": {
+    "totalDeclaredClasses": 6,
+    "totalDemonstratedClasses": 6,
+    "all6ClassesDemonstratedInChromium": true,
+    "causalQuorumSatisfiedAcrossAllScenarios": true,
+    "zeroInjectedOrSyntheticWitnesses": true
+  },
+  "witnessClassesSummary": {
+    "DOM_MUTATION": {
+      "witnessClass": "DOM_MUTATION",
+      "status": "REAL_CHROMIUM_DEMONSTRATED",
+      "totalObservations": 7,
+      "scenariosObservedIn": [
+        "Scenario A",
+        "Scenario B",
+        "Scenario D",
+        "Scenario G",
+        "Scenario I"
+      ],
+      "representativeSample": {
+        "scenarioId": "Scenario A",
+        "site": "Site B",
+        "witnessId": "wit_1790426245057_4",
+        "timestamp": 1790426245057,
+        "temporalDeltaMs": 56,
+        "source": "MutationObserver:childList",
+        "observedDelta": {
+          "addedNodes": 1,
+          "removedNodes": 1,
+          "targetTag": "button"
+        },
+        "correlationExplanation": "Observed DOM_MUTATION at 1790426245057"
+      }
+    },
+    "ACCESSIBILITY_STATE_MUTATION": {
+      "witnessClass": "ACCESSIBILITY_STATE_MUTATION",
+      "status": "REAL_CHROMIUM_DEMONSTRATED",
+      "totalObservations": 2,
+      "scenariosObservedIn": [
+        "Scenario A",
+        "Scenario D"
+      ],
+      "representativeSample": {
+        "scenarioId": "Scenario A",
+        "site": "Site B",
+        "witnessId": "wit_1790426245057_3",
+        "timestamp": 1790426245057,
+        "temporalDeltaMs": 56,
+        "source": "MutationObserver:attributes:aria-checked",
+        "observedDelta": {
+          "attribute": "aria-checked",
+          "value": "false",
+          "targetTag": "button",
+          "checked": false,
+          "marketing_emails_enabled": false,
+          "marketing_notifications_enabled": false,
+          "analytics_tracking_enabled": false
+        },
+        "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1790426245057"
+      }
+    },
+    "HISTORY_STATE_MUTATION": {
+      "witnessClass": "HISTORY_STATE_MUTATION",
+      "status": "REAL_CHROMIUM_DEMONSTRATED",
+      "totalObservations": 2,
+      "scenariosObservedIn": [
+        "Scenario D",
+        "Scenario G"
+      ],
+      "representativeSample": {
+        "scenarioId": "Scenario D",
+        "site": "Site B",
+        "witnessId": "wit_1790426247546_2",
+        "timestamp": 1790426247546,
+        "temporalDeltaMs": 3,
+        "source": "History:popstate",
+        "observedDelta": {
+          "path": "/mock-sites/site-b/index.html",
+          "state": {
+            "route": "/security/mfa-disabled"
+          }
+        },
+        "correlationExplanation": "Observed HISTORY_STATE_MUTATION at 1790426247546"
+      }
+    },
+    "CLIENT_ROUTE_MUTATION": {
+      "witnessClass": "CLIENT_ROUTE_MUTATION",
+      "status": "REAL_CHROMIUM_DEMONSTRATED",
+      "totalObservations": 2,
+      "scenariosObservedIn": [
+        "Scenario D",
+        "Scenario G"
+      ],
+      "representativeSample": {
+        "scenarioId": "Scenario D",
+        "site": "Site B",
+        "witnessId": "wit_1790426247546_3",
+        "timestamp": 1790426247546,
+        "temporalDeltaMs": 3,
+        "source": "CustomEvent:intentnav:client-route-change",
+        "observedDelta": {
+          "routeBefore": "/mock-sites/site-b/index.html",
+          "routeAfter": "/security/mfa-disabled",
+          "source": "SPA_ROUTER",
+          "outletChanged": true,
+          "timestamp": 1790426247546
+        },
+        "correlationExplanation": "Observed CLIENT_ROUTE_MUTATION at 1790426247546"
+      }
+    },
+    "APPLICATION_STATE_MUTATION": {
+      "witnessClass": "APPLICATION_STATE_MUTATION",
+      "status": "REAL_CHROMIUM_DEMONSTRATED",
+      "totalObservations": 6,
+      "scenariosObservedIn": [
+        "Scenario A",
+        "Scenario B",
+        "Scenario D",
+        "Scenario G",
+        "Scenario I"
+      ],
+      "representativeSample": {
+        "scenarioId": "Scenario A",
+        "site": "Site B",
+        "witnessId": "wit_1790426245005_1",
+        "timestamp": 1790426245005,
+        "temporalDeltaMs": 4,
+        "source": "CustomEvent:intentnav:mock-state-change",
+        "observedDelta": {
+          "marketing_notifications_enabled": false,
+          "marketing_emails_enabled": true,
+          "two_factor_enabled": true,
+          "export_download_initiated": false,
+          "account_deactivated": false,
+          "account_active": true,
+          "analytics_tracking_enabled": true,
+          "active_session_count": 2,
+          "dark_mode_enabled": false,
+          "invoice_available": true,
+          "invoice_download_triggered": false,
+          "audit_logs_available": true,
+          "audit_logs_visible": false
+        },
+        "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1790426245005"
+      }
+    },
+    "ASYNC_ACKNOWLEDGEMENT": {
+      "witnessClass": "ASYNC_ACKNOWLEDGEMENT",
+      "status": "REAL_CHROMIUM_DEMONSTRATED",
+      "totalObservations": 2,
+      "scenariosObservedIn": [
+        "Scenario B",
+        "Scenario I"
+      ],
+      "representativeSample": {
+        "scenarioId": "Scenario B",
+        "site": "Site B",
+        "witnessId": "wit_1790426246270_2",
+        "timestamp": 1790426246270,
+        "temporalDeltaMs": 1,
+        "source": "CustomEvent:intentnav:async-ack",
+        "observedDelta": {
+          "operation": "export_personal_data",
+          "status": "COMPLETED",
+          "export_download_initiated": true,
+          "timestamp": 1790426246270
+        },
+        "correlationExplanation": "Observed ASYNC_ACKNOWLEDGEMENT at 1790426246270"
+      }
+    }
+  },
+  "executedScenarios": [
+    {
+      "scenarioId": "Scenario A",
+      "site": "Site B",
+      "intent": "Stop commercial bulletins",
+      "machineState": "EXECUTED",
+      "oraclePassed": true,
+      "witnessCount": 5,
+      "witnessClasses": [
+        "APPLICATION_STATE_MUTATION",
+        "ACCESSIBILITY_STATE_MUTATION",
+        "DOM_MUTATION"
+      ],
+      "quorumSatisfied": true
+    },
+    {
+      "scenarioId": "Scenario B",
+      "site": "Site B",
+      "intent": "Download personal information",
+      "machineState": "EXECUTED",
+      "oraclePassed": true,
+      "witnessCount": 3,
+      "witnessClasses": [
+        "APPLICATION_STATE_MUTATION",
+        "ASYNC_ACKNOWLEDGEMENT",
+        "DOM_MUTATION"
+      ],
+      "quorumSatisfied": true
+    },
+    {
+      "scenarioId": "Scenario D",
+      "site": "Site B",
+      "intent": "Turn off multi-factor auth",
+      "machineState": "EXECUTED",
+      "oraclePassed": true,
+      "witnessCount": 5,
+      "witnessClasses": [
+        "APPLICATION_STATE_MUTATION",
+        "HISTORY_STATE_MUTATION",
+        "CLIENT_ROUTE_MUTATION",
+        "ACCESSIBILITY_STATE_MUTATION",
+        "DOM_MUTATION"
+      ],
+      "quorumSatisfied": true
+    },
+    {
+      "scenarioId": "Scenario G",
+      "site": "Site C",
+      "intent": "Turn off 2FA",
+      "machineState": "EXECUTED",
+      "oraclePassed": true,
+      "witnessCount": 5,
+      "witnessClasses": [
+        "APPLICATION_STATE_MUTATION",
+        "HISTORY_STATE_MUTATION",
+        "CLIENT_ROUTE_MUTATION",
+        "DOM_MUTATION"
+      ],
+      "quorumSatisfied": true
+    },
+    {
+      "scenarioId": "Scenario I",
+      "site": "Site A",
+      "intent": "Revoke active login sessions",
+      "machineState": "EXECUTED",
+      "oraclePassed": true,
+      "witnessCount": 3,
+      "witnessClasses": [
+        "APPLICATION_STATE_MUTATION",
+        "ASYNC_ACKNOWLEDGEMENT",
+        "DOM_MUTATION"
+      ],
+      "quorumSatisfied": true
+    }
+  ],
+  "rawObservationsPerClass": {
+    "DOM_MUTATION": [
+      {
+        "scenarioId": "Scenario A",
+        "site": "Site B",
+        "witnessId": "wit_1790426245057_4",
+        "timestamp": 1790426245057,
+        "temporalDeltaMs": 56,
+        "source": "MutationObserver:childList",
+        "observedDelta": {
+          "addedNodes": 1,
+          "removedNodes": 1,
+          "targetTag": "button"
+        },
+        "correlationExplanation": "Observed DOM_MUTATION at 1790426245057"
+      },
+      {
+        "scenarioId": "Scenario A",
+        "site": "Site B",
+        "witnessId": "wit_1790426245057_5",
+        "timestamp": 1790426245057,
+        "temporalDeltaMs": 56,
+        "source": "MutationObserver:childList",
+        "observedDelta": {
+          "addedNodes": 1,
+          "removedNodes": 1,
+          "targetTag": "div"
+        },
+        "correlationExplanation": "Observed DOM_MUTATION at 1790426245057"
+      },
+      {
+        "scenarioId": "Scenario B",
+        "site": "Site B",
+        "witnessId": "wit_1790426246322_3",
+        "timestamp": 1790426246322,
+        "temporalDeltaMs": 53,
+        "source": "MutationObserver:childList",
+        "observedDelta": {
+          "addedNodes": 1,
+          "removedNodes": 1,
+          "targetTag": "div"
+        },
+        "correlationExplanation": "Observed DOM_MUTATION at 1790426246322"
+      },
+      {
+        "scenarioId": "Scenario D",
+        "site": "Site B",
+        "witnessId": "wit_1790426247598_5",
+        "timestamp": 1790426247598,
+        "temporalDeltaMs": 55,
+        "source": "MutationObserver:childList",
+        "observedDelta": {
+          "addedNodes": 1,
+          "removedNodes": 1,
+          "targetTag": "div"
+        },
+        "correlationExplanation": "Observed DOM_MUTATION at 1790426247598"
+      },
+      {
+        "scenarioId": "Scenario G",
+        "site": "Site C",
+        "witnessId": "wit_1790426248885_4",
+        "timestamp": 1790426248885,
+        "temporalDeltaMs": 56,
+        "source": "MutationObserver:attributes:class",
+        "observedDelta": {
+          "attribute": "class",
+          "value": "modal-backdrop",
+          "targetTag": "div"
+        },
+        "correlationExplanation": "Observed DOM_MUTATION at 1790426248885"
+      },
+      {
+        "scenarioId": "Scenario G",
+        "site": "Site C",
+        "witnessId": "wit_1790426248885_5",
+        "timestamp": 1790426248885,
+        "temporalDeltaMs": 56,
+        "source": "MutationObserver:childList",
+        "observedDelta": {
+          "addedNodes": 1,
+          "removedNodes": 1,
+          "targetTag": "div"
+        },
+        "correlationExplanation": "Observed DOM_MUTATION at 1790426248885"
+      },
+      {
+        "scenarioId": "Scenario I",
+        "site": "Site A",
+        "witnessId": "wit_1790426250195_3",
+        "timestamp": 1790426250195,
+        "temporalDeltaMs": 61,
+        "source": "MutationObserver:childList",
+        "observedDelta": {
+          "addedNodes": 1,
+          "removedNodes": 1,
+          "targetTag": "div"
+        },
+        "correlationExplanation": "Observed DOM_MUTATION at 1790426250195"
+      }
+    ],
+    "ACCESSIBILITY_STATE_MUTATION": [
+      {
+        "scenarioId": "Scenario A",
+        "site": "Site B",
+        "witnessId": "wit_1790426245057_3",
+        "timestamp": 1790426245057,
+        "temporalDeltaMs": 56,
+        "source": "MutationObserver:attributes:aria-checked",
+        "observedDelta": {
+          "attribute": "aria-checked",
+          "value": "false",
+          "targetTag": "button",
+          "checked": false,
+          "marketing_emails_enabled": false,
+          "marketing_notifications_enabled": false,
+          "analytics_tracking_enabled": false
+        },
+        "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1790426245057"
+      },
+      {
+        "scenarioId": "Scenario D",
+        "site": "Site B",
+        "witnessId": "wit_1790426247598_4",
+        "timestamp": 1790426247598,
+        "temporalDeltaMs": 55,
+        "source": "MutationObserver:attributes:disabled",
+        "observedDelta": {
+          "attribute": "disabled",
+          "value": "true",
+          "targetTag": "button",
+          "disabled": true
+        },
+        "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1790426247598"
+      }
+    ],
+    "HISTORY_STATE_MUTATION": [
+      {
+        "scenarioId": "Scenario D",
+        "site": "Site B",
+        "witnessId": "wit_1790426247546_2",
+        "timestamp": 1790426247546,
+        "temporalDeltaMs": 3,
+        "source": "History:popstate",
+        "observedDelta": {
+          "path": "/mock-sites/site-b/index.html",
+          "state": {
+            "route": "/security/mfa-disabled"
+          }
+        },
+        "correlationExplanation": "Observed HISTORY_STATE_MUTATION at 1790426247546"
+      },
+      {
+        "scenarioId": "Scenario G",
+        "site": "Site C",
+        "witnessId": "wit_1790426248833_2",
+        "timestamp": 1790426248833,
+        "temporalDeltaMs": 4,
+        "source": "History:popstate",
+        "observedDelta": {
+          "path": "/mock-sites/site-c/index.html",
+          "state": {
+            "route": "/security/2fa-disabled"
+          }
+        },
+        "correlationExplanation": "Observed HISTORY_STATE_MUTATION at 1790426248833"
+      }
+    ],
+    "CLIENT_ROUTE_MUTATION": [
+      {
+        "scenarioId": "Scenario D",
+        "site": "Site B",
+        "witnessId": "wit_1790426247546_3",
+        "timestamp": 1790426247546,
+        "temporalDeltaMs": 3,
+        "source": "CustomEvent:intentnav:client-route-change",
+        "observedDelta": {
+          "routeBefore": "/mock-sites/site-b/index.html",
+          "routeAfter": "/security/mfa-disabled",
+          "source": "SPA_ROUTER",
+          "outletChanged": true,
+          "timestamp": 1790426247546
+        },
+        "correlationExplanation": "Observed CLIENT_ROUTE_MUTATION at 1790426247546"
+      },
+      {
+        "scenarioId": "Scenario G",
+        "site": "Site C",
+        "witnessId": "wit_1790426248833_3",
+        "timestamp": 1790426248833,
+        "temporalDeltaMs": 4,
+        "source": "CustomEvent:intentnav:client-route-change",
+        "observedDelta": {
+          "routeBefore": "/mock-sites/site-c/index.html",
+          "routeAfter": "/security/2fa-disabled",
+          "source": "SPA_ROUTER",
+          "outletChanged": true,
+          "timestamp": 1790426248833
+        },
+        "correlationExplanation": "Observed CLIENT_ROUTE_MUTATION at 1790426248833"
+      }
+    ],
+    "APPLICATION_STATE_MUTATION": [
+      {
+        "scenarioId": "Scenario A",
+        "site": "Site B",
+        "witnessId": "wit_1790426245005_1",
+        "timestamp": 1790426245005,
+        "temporalDeltaMs": 4,
+        "source": "CustomEvent:intentnav:mock-state-change",
+        "observedDelta": {
+          "marketing_notifications_enabled": false,
+          "marketing_emails_enabled": true,
+          "two_factor_enabled": true,
+          "export_download_initiated": false,
+          "account_deactivated": false,
+          "account_active": true,
+          "analytics_tracking_enabled": true,
+          "active_session_count": 2,
+          "dark_mode_enabled": false,
+          "invoice_available": true,
+          "invoice_download_triggered": false,
+          "audit_logs_available": true,
+          "audit_logs_visible": false
+        },
+        "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1790426245005"
+      },
+      {
+        "scenarioId": "Scenario A",
+        "site": "Site B",
+        "witnessId": "wit_1790426245005_2",
+        "timestamp": 1790426245005,
+        "temporalDeltaMs": 4,
+        "source": "CustomEvent:intentnav:mock-state-change",
+        "observedDelta": {
+          "marketing_notifications_enabled": false,
+          "marketing_emails_enabled": false,
+          "two_factor_enabled": true,
+          "export_download_initiated": false,
+          "account_deactivated": false,
+          "account_active": true,
+          "analytics_tracking_enabled": true,
+          "active_session_count": 2,
+          "dark_mode_enabled": false,
+          "invoice_available": true,
+          "invoice_download_triggered": false,
+          "audit_logs_available": true,
+          "audit_logs_visible": false
+        },
+        "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1790426245005"
+      },
+      {
+        "scenarioId": "Scenario B",
+        "site": "Site B",
+        "witnessId": "wit_1790426246270_1",
+        "timestamp": 1790426246270,
+        "temporalDeltaMs": 1,
+        "source": "CustomEvent:intentnav:mock-state-change",
+        "observedDelta": {
+          "marketing_notifications_enabled": true,
+          "marketing_emails_enabled": true,
+          "two_factor_enabled": true,
+          "export_download_initiated": true,
+          "account_deactivated": false,
+          "account_active": true,
+          "analytics_tracking_enabled": true,
+          "active_session_count": 2,
+          "dark_mode_enabled": false,
+          "invoice_available": true,
+          "invoice_download_triggered": false,
+          "audit_logs_available": true,
+          "audit_logs_visible": false
+        },
+        "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1790426246270"
+      },
+      {
+        "scenarioId": "Scenario D",
+        "site": "Site B",
+        "witnessId": "wit_1790426247546_1",
+        "timestamp": 1790426247546,
+        "temporalDeltaMs": 3,
+        "source": "CustomEvent:intentnav:mock-state-change",
+        "observedDelta": {
+          "marketing_notifications_enabled": true,
+          "marketing_emails_enabled": true,
+          "two_factor_enabled": false,
+          "export_download_initiated": false,
+          "account_deactivated": false,
+          "account_active": true,
+          "analytics_tracking_enabled": true,
+          "active_session_count": 2,
+          "dark_mode_enabled": false,
+          "invoice_available": true,
+          "invoice_download_triggered": false,
+          "audit_logs_available": true,
+          "audit_logs_visible": false
+        },
+        "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1790426247546"
+      },
+      {
+        "scenarioId": "Scenario G",
+        "site": "Site C",
+        "witnessId": "wit_1790426248832_1",
+        "timestamp": 1790426248832,
+        "temporalDeltaMs": 3,
+        "source": "CustomEvent:intentnav:mock-state-change",
+        "observedDelta": {
+          "marketing_notifications_enabled": true,
+          "marketing_emails_enabled": true,
+          "export_download_initiated": false,
+          "two_factor_enabled": false,
+          "account_deactivated": false,
+          "account_active": true,
+          "analytics_tracking_enabled": true,
+          "active_session_count": 2,
+          "dark_mode_enabled": false,
+          "invoice_available": true,
+          "invoice_download_triggered": false,
+          "audit_logs_available": true,
+          "audit_logs_visible": false
+        },
+        "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1790426248832"
+      },
+      {
+        "scenarioId": "Scenario I",
+        "site": "Site A",
+        "witnessId": "wit_1790426250143_1",
+        "timestamp": 1790426250143,
+        "temporalDeltaMs": 9,
+        "source": "CustomEvent:intentnav:mock-state-change",
+        "observedDelta": {
+          "marketing_notifications_enabled": true,
+          "marketing_emails_enabled": true,
+          "two_factor_enabled": true,
+          "export_download_initiated": false,
+          "account_deactivated": false,
+          "account_active": true,
+          "analytics_tracking_enabled": true,
+          "active_session_count": 1,
+          "dark_mode_enabled": false,
+          "invoice_available": true,
+          "invoice_download_triggered": false,
+          "audit_logs_available": true,
+          "audit_logs_visible": false
+        },
+        "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1790426250143"
+      }
+    ],
+    "ASYNC_ACKNOWLEDGEMENT": [
+      {
+        "scenarioId": "Scenario B",
+        "site": "Site B",
+        "witnessId": "wit_1790426246270_2",
+        "timestamp": 1790426246270,
+        "temporalDeltaMs": 1,
+        "source": "CustomEvent:intentnav:async-ack",
+        "observedDelta": {
+          "operation": "export_personal_data",
+          "status": "COMPLETED",
+          "export_download_initiated": true,
+          "timestamp": 1790426246270
+        },
+        "correlationExplanation": "Observed ASYNC_ACKNOWLEDGEMENT at 1790426246270"
+      },
+      {
+        "scenarioId": "Scenario I",
+        "site": "Site A",
+        "witnessId": "wit_1790426250144_2",
+        "timestamp": 1790426250144,
+        "temporalDeltaMs": 10,
+        "source": "CustomEvent:intentnav:async-ack",
+        "observedDelta": {
+          "operation": "revoke_other_sessions",
+          "status": "COMPLETED",
+          "export_download_initiated": true,
+          "timestamp": 1790426250144
+        },
+        "correlationExplanation": "Observed ASYNC_ACKNOWLEDGEMENT at 1790426250144"
+      }
+    ]
+  }
+}
