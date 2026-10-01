@@ -46,12 +46,91 @@ export class RoutePromotionController {
       };
     }
 
+    const expectations = {
+      expectedActivationEventId:
+        typeof verificationResult.activationEvent?.eventId === 'string' &&
+        verificationResult.activationEvent.eventId.length > 0
+          ? verificationResult.activationEvent.eventId
+          : undefined,
+      expectedTransitionSignature:
+        verificationResult.signature &&
+        typeof verificationResult.signature.preStateFingerprint === 'string'
+          ? verificationResult.signature
+          : undefined,
+    };
+
     // Causally verified: promote to ACTIVE_VALIDATED using TransitionVerificationToken
     try {
       const activeRoute = this.routeManager.promoteToActive(
         capabilityId,
         routeId,
-        verificationResult.verificationToken
+        verificationResult.verificationToken,
+        expectations
+      );
+      return {
+        promoted: true,
+        route: activeRoute,
+        reason: 'PROMOTED to ACTIVE_VALIDATED: Causal transition verified with required witnesses',
+      };
+    } catch (err: any) {
+      const quarantined = this.quarantineController.quarantineFailedRoute(
+        capabilityId,
+        routeId,
+        err.message || 'Promotion rejected: invalid verification token',
+        { verificationResult }
+      );
+      return {
+        promoted: false,
+        route: quarantined,
+        reason: `Promotion REJECTED: ${err.message}`,
+        failureReason: 'invalid_promotion_token',
+      };
+    }
+  }
+
+  /**
+   * Asynchronously promotes a provisional route ONLY IF transition verification
+   * succeeded with an HMAC-SHA-256 authenticated token (supports browser WebCrypto and Node crypto).
+   */
+  public async evaluateAndPromoteAsync(
+    capabilityId: string,
+    routeId: string,
+    verificationResult: CausalVerificationResult
+  ): Promise<PromotionDecision> {
+    if (!verificationResult.causallyVerified || !verificationResult.verificationToken) {
+      const quarantined = this.quarantineController.quarantineFailedRoute(
+        capabilityId,
+        routeId,
+        verificationResult.explanation,
+        { verificationResult }
+      );
+      return {
+        promoted: false,
+        route: quarantined,
+        reason: `Promotion DENIED: Transition verification failed (${verificationResult.status})`,
+        failureReason: verificationResult.failureReason || 'verification_failed',
+      };
+    }
+
+    const expectations = {
+      expectedActivationEventId:
+        typeof verificationResult.activationEvent?.eventId === 'string' &&
+        verificationResult.activationEvent.eventId.length > 0
+          ? verificationResult.activationEvent.eventId
+          : undefined,
+      expectedTransitionSignature:
+        verificationResult.signature &&
+        typeof verificationResult.signature.preStateFingerprint === 'string'
+          ? verificationResult.signature
+          : undefined,
+    };
+
+    try {
+      const activeRoute = await this.routeManager.promoteToActiveAsync(
+        capabilityId,
+        routeId,
+        verificationResult.verificationToken,
+        expectations
       );
       return {
         promoted: true,

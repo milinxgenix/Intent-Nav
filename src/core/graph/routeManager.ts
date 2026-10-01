@@ -12,9 +12,24 @@
 import { RouteVersion, RouteStep } from '../../types/state';
 import { CapabilityGraphEngine } from './capabilityGraph';
 import { TransitionVerificationToken } from '../../types/transition';
+import {
+  PromotionTokenAuthenticator,
+  defaultTokenAuthenticator,
+  VerifyPromotionTokenExpectations,
+  TokenVerificationOutcome,
+} from '../quarantine/tokenAuthenticator';
 
 export class RouteManager {
-  constructor(private graph: CapabilityGraphEngine) {}
+  public readonly tokenAuthenticator: PromotionTokenAuthenticator;
+  private readonly consumedTokenIds: Set<string> = new Set();
+  private readonly consumedSignatureHashes: Set<string> = new Set();
+
+  constructor(
+    private graph: CapabilityGraphEngine,
+    tokenAuthenticator: PromotionTokenAuthenticator = defaultTokenAuthenticator
+  ) {
+    this.tokenAuthenticator = tokenAuthenticator;
+  }
 
   /**
    * Creates a new route in the PROVISIONAL quarantine state
@@ -51,51 +66,69 @@ export class RouteManager {
   }
 
   /**
-   * Promotes a route from PROVISIONAL to ACTIVE_VALIDATED.
-   * UNBYPASSABLE: Strictly requires a valid TransitionVerificationToken.
-   * Direct promotion without token throws an invariant violation.
+   * Independently verifies a TransitionVerificationToken against target routeId,
+   * capabilityId, and anti-replay state without mutating route status.
    */
-  public promoteToActive(
+  public verifyPromotionToken(
+    capabilityId: string,
+    routeId: string,
+    token: TransitionVerificationToken,
+    expectations?: Partial<VerifyPromotionTokenExpectations>
+  ): TokenVerificationOutcome {
+    const outcome = this.tokenAuthenticator.verifyToken(token, {
+      expectedRouteId: routeId,
+      expectedCapabilityId: capabilityId,
+      ...expectations,
+    });
+    if (!outcome.valid) {
+      return outcome;
+    }
+    if (
+      (token.tokenId && this.consumedTokenIds.has(token.tokenId)) ||
+      (token.signatureHash && this.consumedSignatureHashes.has(token.signatureHash))
+    ) {
+      return {
+        valid: false,
+        reason: `INVARIANT VIOLATION: Replay detected — TransitionVerificationToken '${token.tokenId}' has already been consumed and cannot be replayed.`,
+      };
+    }
+    return outcome;
+  }
+
+  /**
+   * Asynchronously verifies a TransitionVerificationToken (supports browser WebCrypto and Node crypto).
+   */
+  public async verifyPromotionTokenAsync(
+    capabilityId: string,
+    routeId: string,
+    token: TransitionVerificationToken,
+    expectations?: Partial<VerifyPromotionTokenExpectations>
+  ): Promise<TokenVerificationOutcome> {
+    const outcome = await this.tokenAuthenticator.verifyTokenAsync(token, {
+      expectedRouteId: routeId,
+      expectedCapabilityId: capabilityId,
+      ...expectations,
+    });
+    if (!outcome.valid) {
+      return outcome;
+    }
+    if (
+      (token.tokenId && this.consumedTokenIds.has(token.tokenId)) ||
+      (token.signatureHash && this.consumedSignatureHashes.has(token.signatureHash))
+    ) {
+      return {
+        valid: false,
+        reason: `INVARIANT VIOLATION: Replay detected — TransitionVerificationToken '${token.tokenId}' has already been consumed and cannot be replayed.`,
+      };
+    }
+    return outcome;
+  }
+
+  private finalizeRoutePromotion(
     capabilityId: string,
     routeId: string,
     token: TransitionVerificationToken
   ): RouteVersion {
-    if (!token || typeof token !== 'object') {
-      throw new Error(
-        'INVARIANT VIOLATION: Cannot promote provisional route to ACTIVE_VALIDATED without a valid TransitionVerificationToken.'
-      );
-    }
-
-    if (token.verifiedStatus !== 'VERIFIED') {
-      throw new Error(
-        `INVARIANT VIOLATION: TransitionVerificationToken status is '${token.verifiedStatus}'; must be 'VERIFIED'.`
-      );
-    }
-
-    if (token.capabilityId !== capabilityId) {
-      throw new Error(
-        `INVARIANT VIOLATION: Token capabilityId '${token.capabilityId}' does not match route capabilityId '${capabilityId}'.`
-      );
-    }
-
-    if (token.routeId !== routeId) {
-      throw new Error(
-        `INVARIANT VIOLATION: Token routeId '${token.routeId}' does not match target routeId '${routeId}'. A valid token for capability ${capabilityId} cannot promote another route version.`
-      );
-    }
-
-    if (!token.verifiedWitnessClasses || token.verifiedWitnessClasses.length < 2) {
-      throw new Error(
-        'INVARIANT VIOLATION: Token does not demonstrate the required quorum of >=2 independent witness classes.'
-      );
-    }
-
-    if (!token.signatureHash || token.signatureHash === 'FORGED_INVALID_TOKEN_SIGNATURE' || token.signatureHash.startsWith('FORGED') || token.signatureHash.startsWith('INVALID')) {
-      throw new Error(
-        `INVARIANT VIOLATION: Token signature hash is invalid or forged ('${token.signatureHash}').`
-      );
-    }
-
     const capability = this.graph.getCapability(capabilityId);
     if (!capability) throw new Error(`Capability ${capabilityId} not found in graph.`);
 
@@ -108,6 +141,13 @@ export class RouteManager {
       );
     }
 
+    if (token.tokenId) {
+      this.consumedTokenIds.add(token.tokenId);
+    }
+    if (token.signatureHash) {
+      this.consumedSignatureHashes.add(token.signatureHash);
+    }
+
     route.status = 'ACTIVE_VALIDATED';
     route.lastValidatedTimestamp = Date.now();
     route.quarantineReason = undefined;
@@ -118,6 +158,49 @@ export class RouteManager {
 
     this.graph.attachRouteVersion(capabilityId, route);
     return route;
+  }
+
+  /**
+   * Promotes a route from PROVISIONAL to ACTIVE_VALIDATED.
+   * UNBYPASSABLE: Strictly requires an HMAC-SHA-256 authenticated TransitionVerificationToken
+   * bound to the exact routeId, capabilityId, activationEventId, transitionBinding,
+   * and witnessDigest with >=2 independent witness classes and anti-replay protection.
+   */
+  public promoteToActive(
+    capabilityId: string,
+    routeId: string,
+    token: TransitionVerificationToken,
+    expectations?: Partial<VerifyPromotionTokenExpectations>
+  ): RouteVersion {
+    const verification = this.verifyPromotionToken(capabilityId, routeId, token, expectations);
+    if (!verification.valid) {
+      throw new Error(verification.reason);
+    }
+
+    return this.finalizeRoutePromotion(capabilityId, routeId, token);
+  }
+
+  /**
+   * Asynchronously promotes a route from PROVISIONAL to ACTIVE_VALIDATED
+   * (supports browser WebCrypto and Node crypto).
+   */
+  public async promoteToActiveAsync(
+    capabilityId: string,
+    routeId: string,
+    token: TransitionVerificationToken,
+    expectations?: Partial<VerifyPromotionTokenExpectations>
+  ): Promise<RouteVersion> {
+    const verification = await this.verifyPromotionTokenAsync(
+      capabilityId,
+      routeId,
+      token,
+      expectations
+    );
+    if (!verification.valid) {
+      throw new Error(verification.reason);
+    }
+
+    return this.finalizeRoutePromotion(capabilityId, routeId, token);
   }
 
   /**

@@ -255,16 +255,13 @@ describe('PersistentCapabilityStore', () => {
       { stepIndex: 1, fromStateId: 'STATE_A', toStateId: 'STATE_B', actionDescription: 'Click switch' },
     ], 0.95);
 
-    const token: any = {
+    const token = machine1.tokenAuthenticator.issueToken({
       tokenId: 'tok_restart_1',
       routeId: provisional.routeId,
       capabilityId: 'CAP_RESTART_TEST',
       activationEventId: 'act_restart_1',
       verifiedWitnessClasses: ['DOM_MUTATION', 'ACCESSIBILITY_STATE_MUTATION'],
-      issuedTimestamp: Date.now(),
-      verifiedStatus: 'VERIFIED',
-      signatureHash: 'hash_restart',
-    };
+    });
 
     machine1.routeManager.promoteToActive('CAP_RESTART_TEST', provisional.routeId, token);
 
@@ -757,30 +754,26 @@ describe('Prompt 7: Persistence Completeness & Restart Matrix', () => {
 
     // Route 1 promoted
     const route1 = rm1.createProvisionalRoute(capId, [], 0.95, 1.0);
-    const token1: TransitionVerificationToken = {
+    const token1: TransitionVerificationToken = rm1.tokenAuthenticator.issueToken({
       tokenId: 'tok_v1',
       capabilityId: capId,
       routeId: route1.routeId,
       activationEventId: 'evt_act_tok1',
       issuedTimestamp: Date.now() - 5000,
-      verifiedStatus: 'VERIFIED',
       verifiedWitnessClasses: ['DOM_MUTATION', 'HISTORY_STATE_MUTATION'],
-      signatureHash: 'sig_hash_tok1',
-    };
+    });
     rm1.promoteToActive(capId, route1.routeId, token1);
 
     // Route 2 promoted
     const route2 = rm1.createProvisionalRoute(capId, [], 0.99, 0.8);
-    const token2: TransitionVerificationToken = {
+    const token2: TransitionVerificationToken = rm1.tokenAuthenticator.issueToken({
       tokenId: 'tok_v2',
       capabilityId: capId,
       routeId: route2.routeId,
       activationEventId: 'evt_act_tok2',
       issuedTimestamp: Date.now() - 2000,
-      verifiedStatus: 'VERIFIED',
       verifiedWitnessClasses: ['DOM_MUTATION', 'ACCESSIBILITY_STATE_MUTATION'],
-      signatureHash: 'sig_hash_tok2',
-    };
+    });
     rm1.promoteToActive(capId, route2.routeId, token2);
 
     expect(graph1.getCapability(capId)?.activeRouteId).toBe(route2.routeId);

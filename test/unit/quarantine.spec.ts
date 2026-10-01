@@ -8,6 +8,7 @@ import { RouteManager } from '../../src/core/graph/routeManager';
 import { QuarantineController } from '../../src/core/quarantine/controller';
 import { RoutePromotionController } from '../../src/core/quarantine/promotion';
 import { NegativeEvidenceStore } from '../../src/core/contradiction/store';
+import { defaultTokenAuthenticator } from '../../src/core/quarantine/tokenAuthenticator';
 import { CausalVerificationResult, WitnessClass, TransitionVerificationToken } from '../../src/types/transition';
 
 describe('QuarantineController & RoutePromotionController', () => {
@@ -60,16 +61,13 @@ describe('QuarantineController & RoutePromotionController', () => {
       causallyVerified: true,
       durationMs: 80,
       explanation: 'Causal transition verified',
-      verificationToken: {
+      verificationToken: defaultTokenAuthenticator.issueToken({
         tokenId: 'tok_test_1',
         routeId: route.routeId,
         capabilityId: 'CAP_DISABLE_MARKETING',
         activationEventId: 'act_1',
         verifiedWitnessClasses: ['DOM_MUTATION', 'ACCESSIBILITY_STATE_MUTATION'],
-        issuedTimestamp: Date.now(),
-        verifiedStatus: 'VERIFIED',
-        signatureHash: 'hash_test_1',
-      },
+      }),
     };
 
     const promoResult = promotion.evaluateAndPromote('CAP_DISABLE_MARKETING', route.routeId, successVerification);
@@ -87,16 +85,13 @@ describe('QuarantineController & RoutePromotionController', () => {
     const routeB = routeManager.createProvisionalRoute('CAP_DISABLE_MARKETING', [], 0.88);
 
     // Token minted for Route A
-    const tokenRouteA: TransitionVerificationToken = {
+    const tokenRouteA: TransitionVerificationToken = defaultTokenAuthenticator.issueToken({
       tokenId: 'tok_route_a',
       routeId: routeA.routeId,
       capabilityId: 'CAP_DISABLE_MARKETING',
       activationEventId: 'act_123',
       verifiedWitnessClasses: ['DOM_MUTATION', 'ACCESSIBILITY_STATE_MUTATION'] as WitnessClass[],
-      issuedTimestamp: Date.now(),
-      verifiedStatus: 'VERIFIED',
-      signatureHash: 'hash_a',
-    };
+    });
 
     // Adversarial attack 1: Try to promote Route B using Token A
     expect(() => {

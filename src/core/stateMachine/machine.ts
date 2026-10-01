@@ -65,6 +65,10 @@ import { WitnessCollector } from '../causal/witnessCollector';
 import { CausalTransitionVerifier } from '../causal/verifier';
 import { QuarantineController } from '../quarantine/controller';
 import { RoutePromotionController } from '../quarantine/promotion';
+import {
+  PromotionTokenAuthenticator,
+  defaultTokenAuthenticator,
+} from '../quarantine/tokenAuthenticator';
 import { ExecutionAuthorizationController } from '../authorization/controller';
 import { AuditLogger } from '../audit/logger';
 import { PersistentCapabilityStore } from '../storage/persistentStore';
@@ -149,6 +153,7 @@ export class IntentNavMachine {
   public state: SystemMachineState = 'IDLE';
   public context: StateMachineContext = { currentState: 'IDLE' };
 
+  public tokenAuthenticator: PromotionTokenAuthenticator;
   public graph: CapabilityGraphEngine;
   public routeManager: RouteManager;
   public negativeEvidenceStore: NegativeEvidenceStore;
@@ -167,11 +172,13 @@ export class IntentNavMachine {
 
   constructor(
     auditLogger?: AuditLogger,
-    persistentStore?: PersistentCapabilityStore
+    persistentStore?: PersistentCapabilityStore,
+    tokenAuthenticator?: PromotionTokenAuthenticator
   ) {
+    this.tokenAuthenticator = tokenAuthenticator || defaultTokenAuthenticator;
     this.persistentStore = persistentStore || new PersistentCapabilityStore();
     this.graph = new CapabilityGraphEngine(this.persistentStore);
-    this.routeManager = new RouteManager(this.graph);
+    this.routeManager = new RouteManager(this.graph, this.tokenAuthenticator);
     this.negativeEvidenceStore = new NegativeEvidenceStore(this.persistentStore);
     this.rankingEngine = new CandidateRankingEngine();
     this.candidatePipeline = new CandidatePipeline(
@@ -179,7 +186,9 @@ export class IntentNavMachine {
       this.rankingEngine
     );
     this.witnessCollector = new WitnessCollector();
-    this.causalVerifier = new CausalTransitionVerifier();
+    this.causalVerifier = new CausalTransitionVerifier({
+      tokenAuthenticator: this.tokenAuthenticator,
+    });
     this.quarantineController = new QuarantineController(
       this.routeManager,
       this.negativeEvidenceStore
@@ -664,7 +673,7 @@ export class IntentNavMachine {
     // 8. CAUSAL TRANSITION VERIFICATION (Derived internally, >=2 independent witness classes)
     this.state = 'TRANSITION_VERIFYING';
     const targetRouteId = (this.context.provisionalRoute || routeToAuthorize)?.routeId || `route_${matchedCap.capabilityId}`;
-    const verificationResult = this.causalVerifier.verifyTransition(
+    const verificationResult = await this.causalVerifier.verifyTransitionAsync(
       {
         preStateFingerprint: matchedCap.transitionEvidence.preStateFingerprint,
         activationEventExpected: {
@@ -764,17 +773,21 @@ export class IntentNavMachine {
     if (this.context.provisionalRoute) {
       let verificationResultForPromotion = verificationResult;
       if (executionOptions?.corruptPromotionToken && verificationResult.verificationToken) {
+        // Preserve all valid binding fields (routeId, capabilityId, activationEventId,
+        // verifiedWitnessClasses, transitionBinding, witnessDigest, verifiedStatus)
+        // and forge ONLY signatureHash so promotion is rejected specifically by
+        // cryptographic HMAC-SHA-256 verification.
         verificationResultForPromotion = {
           ...verificationResult,
           verificationToken: {
             ...verificationResult.verificationToken,
-            routeId: 'forged_route_mismatch_id',
-            signatureHash: 'FORGED_INVALID_TOKEN_SIGNATURE',
+            signatureHash: 'hmac_sha256_' + '0'.repeat(64),
           },
         };
+        this.context.verificationResult = verificationResultForPromotion;
       }
 
-      const promoDecision = this.promotionController.evaluateAndPromote(
+      const promoDecision = await this.promotionController.evaluateAndPromoteAsync(
         matchedCap.capabilityId,
         this.context.provisionalRoute.routeId,
         verificationResultForPromotion
@@ -964,10 +977,17 @@ export class IntentNavMachine {
       reasons.push('Target route has an unresolved quarantine');
     }
 
-    // Precondition 17: Route Promotion Validated & Token Valid
+    // Precondition 17: Route Promotion Validated & Token Cryptographically Valid
     if (context.provisionalRoute) {
       const token = context.verificationResult?.verificationToken;
-      if (!token || !token.signatureHash || token.verifiedStatus !== 'VERIFIED') {
+      const tokenCheck =
+        token && context.resolvedCapability
+          ? this.tokenAuthenticator.verifyToken(token, {
+              expectedRouteId: context.provisionalRoute.routeId,
+              expectedCapabilityId: context.resolvedCapability.capabilityId,
+            })
+          : { valid: false };
+      if (!token || !token.signatureHash || token.verifiedStatus !== 'VERIFIED' || !tokenCheck.valid) {
         failedPreconditions.push('PRE_17_PROMOTION_TOKEN_VALID');
         reasons.push('Route promotion token is missing or invalid');
       } else if (!context.activeRoute || context.activeRoute.status !== 'ACTIVE_VALIDATED') {

@@ -1016,7 +1016,9 @@ describe('CausalTransitionVerifier & WitnessCollector', () => {
       expect(res.causallyVerified).toBe(true);
       expect(res.status).toBe('VERIFIED');
       expect(res.verificationToken).toBeDefined();
-      expect(res.verificationToken?.signatureHash).toMatch(/^tok_[0-9a-f]+$/);
+      expect(res.verificationToken?.signatureHash).toMatch(/^hmac_sha256_[0-9a-f]{64}$/);
+      expect(res.verificationToken?.transitionBinding).toMatch(/^tb_sha256_[0-9a-f]{64}$/);
+      expect(res.verificationToken?.witnessDigest).toMatch(/^wd_sha256_[0-9a-f]{64}$/);
       expect(res.verificationToken?.verifiedWitnessClasses).toEqual([
         'DOM_MUTATION',
         'ACCESSIBILITY_STATE_MUTATION',

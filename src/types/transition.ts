@@ -122,7 +122,9 @@ export interface CausalVerificationResult {
 
 /**
  * TransitionVerificationToken
- * Cryptographic / opaque token proving that causal transition verification passed.
+ * Cryptographically authenticated token (HMAC-SHA-256) proving that causal transition
+ * verification passed for a specific routeId, capabilityId, activationEventId,
+ * transitionSignature, and independent witness quorum.
  * Required by RouteManager to promote PROVISIONAL -> ACTIVE_VALIDATED.
  */
 export interface TransitionVerificationToken {
@@ -132,8 +134,12 @@ export interface TransitionVerificationToken {
   activationEventId: string;
   verifiedWitnessClasses: WitnessClass[];
   transitionSignature?: TransitionSignature;
+  transitionBinding?: string;
+  witnessDigest?: string;
+  witnessEvidenceHash?: string;
   issuedTimestamp: number;
   verifiedStatus: 'VERIFIED';
+  algorithm?: 'HMAC-SHA-256';
   signatureHash: string;
 }
 

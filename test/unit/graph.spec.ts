@@ -8,17 +8,16 @@ import { CapabilityGraphEngine } from '../../src/core/graph/capabilityGraph';
 import { RouteManager } from '../../src/core/graph/routeManager';
 import { InterfaceStateNode } from '../../src/types/state';
 import { TransitionVerificationToken } from '../../src/types/transition';
+import { defaultTokenAuthenticator } from '../../src/core/quarantine/tokenAuthenticator';
 
-const createTestToken = (capabilityId: string, routeId: string): TransitionVerificationToken => ({
-  tokenId: `tok_${routeId}`,
-  routeId,
-  capabilityId,
-  activationEventId: 'act_test',
-  verifiedWitnessClasses: ['DOM_MUTATION', 'ACCESSIBILITY_STATE_MUTATION'],
-  issuedTimestamp: Date.now(),
-  verifiedStatus: 'VERIFIED',
-  signatureHash: 'hash_test',
-});
+const createTestToken = (capabilityId: string, routeId: string): TransitionVerificationToken =>
+  defaultTokenAuthenticator.issueToken({
+    tokenId: `tok_${routeId}_${Math.random().toString(36).slice(2, 6)}`,
+    routeId,
+    capabilityId,
+    activationEventId: `act_test_${routeId}`,
+    verifiedWitnessClasses: ['DOM_MUTATION', 'ACCESSIBILITY_STATE_MUTATION'],
+  });
 
 describe('CapabilityGraphEngine & RouteManager', () => {
   it('differentiates Capability Nodes from Interface-State Nodes', () => {

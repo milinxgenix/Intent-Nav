@@ -663,16 +663,13 @@ describe('IntentNav-SCFR: Browser E2E Test Suite (Real DOM Execution)', () => {
   // 8. Presentation-Only Drift: Preserves route without re-binding
   it('E2E Scenario 8: Presentation-only drift preserves route without requiring re-binding', async () => {
     const v1 = machine.routeManager.createProvisionalRoute('CAP_DISABLE_MARKETING', [], 0.95);
-    const token: any = {
+    const token = machine.tokenAuthenticator.issueToken({
       tokenId: 'tok_pres_1',
       routeId: v1.routeId,
       capabilityId: 'CAP_DISABLE_MARKETING',
       activationEventId: 'act_pres_1',
       verifiedWitnessClasses: ['DOM_MUTATION', 'ACCESSIBILITY_STATE_MUTATION'],
-      issuedTimestamp: Date.now(),
-      verifiedStatus: 'VERIFIED',
-      signatureHash: 'hash_pres',
-    };
+    });
     machine.routeManager.promoteToActive('CAP_DISABLE_MARKETING', v1.routeId, token);
 
     let actId = '';
@@ -933,16 +930,13 @@ describe('IntentNav-SCFR: Browser E2E Test Suite (Real DOM Execution)', () => {
     const route2 = machine.routeManager.createProvisionalRoute('CAP_DISABLE_MARKETING', [], 0.88);
 
     // Mint token explicitly for route1
-    const tokenForRoute1: any = {
+    const tokenForRoute1 = machine.tokenAuthenticator.issueToken({
       tokenId: 'tok_strict_1',
       routeId: route1.routeId,
       capabilityId: 'CAP_DISABLE_MARKETING',
       activationEventId: 'act_strict_1',
       verifiedWitnessClasses: ['DOM_MUTATION', 'ACCESSIBILITY_STATE_MUTATION'],
-      issuedTimestamp: Date.now(),
-      verifiedStatus: 'VERIFIED',
-      signatureHash: 'hash_strict_1',
-    };
+    });
 
     // Attempting to promote route2 using route1's token must be strictly rejected
     expect(() => {
@@ -962,31 +956,25 @@ describe('IntentNav-SCFR: Browser E2E Test Suite (Real DOM Execution)', () => {
   it('E2E Scenario 12: Demoting active route automatically rolls back to prior validated route', async () => {
     // 1. Establish validated active route v1
     const routeV1 = machine.routeManager.createProvisionalRoute('CAP_DISABLE_MARKETING', [], 0.90);
-    const tokenV1: any = {
-      tokenId: 'tok_v1',
+    const tokenV1 = machine.tokenAuthenticator.issueToken({
+      tokenId: 'tok_e2e12_v1',
       routeId: routeV1.routeId,
       capabilityId: 'CAP_DISABLE_MARKETING',
-      activationEventId: 'act_v1',
+      activationEventId: 'act_e2e12_v1',
       verifiedWitnessClasses: ['DOM_MUTATION', 'ACCESSIBILITY_STATE_MUTATION'],
-      issuedTimestamp: Date.now(),
-      verifiedStatus: 'VERIFIED',
-      signatureHash: 'hash_v1',
-    };
+    });
     machine.routeManager.promoteToActive('CAP_DISABLE_MARKETING', routeV1.routeId, tokenV1);
     expect(machine.graph.getActiveRoute('CAP_DISABLE_MARKETING')?.routeId).toBe(routeV1.routeId);
 
     // 2. Establish validated active route v2 (promoted over v1)
     const routeV2 = machine.routeManager.createProvisionalRoute('CAP_DISABLE_MARKETING', [], 0.95);
-    const tokenV2: any = {
-      tokenId: 'tok_v2',
+    const tokenV2 = machine.tokenAuthenticator.issueToken({
+      tokenId: 'tok_e2e12_v2',
       routeId: routeV2.routeId,
       capabilityId: 'CAP_DISABLE_MARKETING',
-      activationEventId: 'act_v2',
+      activationEventId: 'act_e2e12_v2',
       verifiedWitnessClasses: ['DOM_MUTATION', 'ACCESSIBILITY_STATE_MUTATION'],
-      issuedTimestamp: Date.now(),
-      verifiedStatus: 'VERIFIED',
-      signatureHash: 'hash_v2',
-    };
+    });
     machine.routeManager.promoteToActive('CAP_DISABLE_MARKETING', routeV2.routeId, tokenV2);
     expect(machine.graph.getActiveRoute('CAP_DISABLE_MARKETING')?.routeId).toBe(routeV2.routeId);
 

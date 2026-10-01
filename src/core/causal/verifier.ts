@@ -26,33 +26,22 @@ import {
   TransitionVerificationToken,
   ClassifiedWitnessRecord,
 } from '../../types/transition';
+import {
+  PromotionTokenAuthenticator,
+  defaultTokenAuthenticator,
+} from '../quarantine/tokenAuthenticator';
 
 export interface CausalVerifierOptions {
   minWitnessClasses?: number; // Default 2 independent witness classes
   enforceStrictDeltaMatch?: boolean;
+  tokenAuthenticator?: PromotionTokenAuthenticator;
 }
 
 export class CausalTransitionVerifier {
-  constructor(private options: CausalVerifierOptions = {}) {}
+  public readonly tokenAuthenticator: PromotionTokenAuthenticator;
 
-  /**
-   * Generates a deterministic signature hash for the verification token.
-   * NOTE: This is a deterministic structural hash for runtime identity and tamper
-   * tracking across route versions, not a public-key or HMAC cryptographic digital signature.
-   */
-  private static generateTokenSignature(
-    routeId: string,
-    capabilityId: string,
-    activationEventId: string,
-    timestamp: number
-  ): string {
-    const raw = `${routeId}|${capabilityId}|${activationEventId}|${timestamp}|VALIDATED_SCFR`;
-    let hash = 0;
-    for (let i = 0; i < raw.length; i++) {
-      hash = (hash << 5) - hash + raw.charCodeAt(i);
-      hash |= 0;
-    }
-    return `tok_${Math.abs(hash).toString(16)}`;
+  constructor(private options: CausalVerifierOptions = {}) {
+    this.tokenAuthenticator = options.tokenAuthenticator || defaultTokenAuthenticator;
   }
 
   /**
@@ -188,14 +177,13 @@ export class CausalTransitionVerifier {
   }
 
   /**
-   * Verifies the causal transition according to the formal witness protocol
+   * Evaluates causal transition evidence according to the formal witness protocol.
    */
-  public verifyTransition(
+  private evaluateCausalEvidence(
     signature: TransitionSignature,
     activationEvent: ActivationEventRecord,
     witnesses: TransitionWitness[],
-    currentPostStateFingerprint?: string,
-    routeId?: string
+    currentPostStateFingerprint?: string
   ): CausalVerificationResult {
     // 0. Activation Event Presence & Validity
     if (!activationEvent || !activationEvent.eventId || typeof activationEvent.timestamp !== 'number') {
@@ -534,25 +522,6 @@ export class CausalTransitionVerifier {
     }
 
     const durationMs = relevantCausalWitnesses[relevantCausalWitnesses.length - 1]!.timestamp - startTime;
-    const effectiveRouteId = routeId || `route_${activationEvent.initiatingCapabilityId}`;
-    const tokenTimestamp = Date.now();
-
-    const verificationToken: TransitionVerificationToken = {
-      tokenId: `tok_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-      routeId: effectiveRouteId,
-      capabilityId: activationEvent.initiatingCapabilityId,
-      activationEventId: activationEvent.eventId,
-      verifiedWitnessClasses: distinctClasses,
-      transitionSignature: signature,
-      issuedTimestamp: tokenTimestamp,
-      verifiedStatus: 'VERIFIED',
-      signatureHash: CausalTransitionVerifier.generateTokenSignature(
-        effectiveRouteId,
-        activationEvent.initiatingCapabilityId,
-        activationEvent.eventId,
-        tokenTimestamp
-      ),
-    };
 
     return {
       signature,
@@ -564,6 +533,83 @@ export class CausalTransitionVerifier {
       causallyVerified: true,
       durationMs,
       explanation: `CAUSALLY VERIFIED: Correlated ${relevantCausalWitnesses.length} witnesses across ${distinctClasses.length} independent classes (${distinctClasses.join(', ')}) in ${durationMs}ms`,
+    };
+  }
+
+  /**
+   * Synchronously verifies the causal transition and mints an HMAC-SHA-256
+   * authenticated TransitionVerificationToken when verified.
+   */
+  public verifyTransition(
+    signature: TransitionSignature,
+    activationEvent: ActivationEventRecord,
+    witnesses: TransitionWitness[],
+    currentPostStateFingerprint?: string,
+    routeId?: string
+  ): CausalVerificationResult {
+    const baseResult = this.evaluateCausalEvidence(
+      signature,
+      activationEvent,
+      witnesses,
+      currentPostStateFingerprint
+    );
+
+    if (!baseResult.causallyVerified || baseResult.status !== 'VERIFIED') {
+      return baseResult;
+    }
+
+    const effectiveRouteId = routeId || `route_${activationEvent.initiatingCapabilityId}`;
+    const verificationToken: TransitionVerificationToken = this.tokenAuthenticator.issueToken({
+      routeId: effectiveRouteId,
+      capabilityId: activationEvent.initiatingCapabilityId,
+      activationEventId: activationEvent.eventId,
+      verifiedWitnessClasses: baseResult.verifiedWitnessClasses,
+      transitionSignature: signature,
+      observedWitnesses: baseResult.observedWitnesses,
+      issuedTimestamp: Date.now(),
+    });
+
+    return {
+      ...baseResult,
+      verificationToken,
+    };
+  }
+
+  /**
+   * Asynchronously verifies the causal transition and mints an HMAC-SHA-256
+   * authenticated TransitionVerificationToken (supports browser WebCrypto and Node crypto).
+   */
+  public async verifyTransitionAsync(
+    signature: TransitionSignature,
+    activationEvent: ActivationEventRecord,
+    witnesses: TransitionWitness[],
+    currentPostStateFingerprint?: string,
+    routeId?: string
+  ): Promise<CausalVerificationResult> {
+    const baseResult = this.evaluateCausalEvidence(
+      signature,
+      activationEvent,
+      witnesses,
+      currentPostStateFingerprint
+    );
+
+    if (!baseResult.causallyVerified || baseResult.status !== 'VERIFIED') {
+      return baseResult;
+    }
+
+    const effectiveRouteId = routeId || `route_${activationEvent.initiatingCapabilityId}`;
+    const verificationToken: TransitionVerificationToken = await this.tokenAuthenticator.issueTokenAsync({
+      routeId: effectiveRouteId,
+      capabilityId: activationEvent.initiatingCapabilityId,
+      activationEventId: activationEvent.eventId,
+      verifiedWitnessClasses: baseResult.verifiedWitnessClasses,
+      transitionSignature: signature,
+      observedWitnesses: baseResult.observedWitnesses,
+      issuedTimestamp: Date.now(),
+    });
+
+    return {
+      ...baseResult,
       verificationToken,
     };
   }

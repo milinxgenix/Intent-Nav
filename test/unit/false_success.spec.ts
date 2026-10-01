@@ -935,16 +935,14 @@ describe('False-Success & Fail-Safe Execution Semantics', () => {
           causallyVerified: true,
           durationMs: 80,
           explanation: 'Verified',
-          verificationToken: {
+          verificationToken: machine.tokenAuthenticator.issueToken({
             tokenId: 'tok_ko',
             routeId: 'route_ko_v1',
             capabilityId: 'CAP_DISABLE_MARKETING',
             activationEventId: 'act_ko',
             verifiedWitnessClasses: ['DOM_MUTATION', 'ACCESSIBILITY_STATE_MUTATION'],
             issuedTimestamp: t0 + 80,
-            verifiedStatus: 'VERIFIED',
-            signatureHash: 'hash_ko_tok',
-          },
+          }),
         },
         dispatchSuccessful: true, postStateVerified: true, causalVerified: true,
       };

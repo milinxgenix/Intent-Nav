@@ -85,16 +85,14 @@ describe('Adversarial Test Matrix (A through Z)', () => {
     },
   };
 
-  const createTestToken = (capabilityId: string, routeId: string): TransitionVerificationToken => ({
-    tokenId: `tok_${routeId}`,
-    routeId,
-    capabilityId,
-    activationEventId: 'act_test',
-    verifiedWitnessClasses: ['DOM_MUTATION', 'ACCESSIBILITY_STATE_MUTATION'],
-    issuedTimestamp: Date.now(),
-    verifiedStatus: 'VERIFIED',
-    signatureHash: 'hash_test',
-  });
+  const createTestToken = (capabilityId: string, routeId: string): TransitionVerificationToken =>
+    machine.tokenAuthenticator.issueToken({
+      tokenId: `tok_${routeId}_${Math.random().toString(36).slice(2, 6)}`,
+      routeId,
+      capabilityId,
+      activationEventId: `act_test_${routeId}`,
+      verifiedWitnessClasses: ['DOM_MUTATION', 'ACCESSIBILITY_STATE_MUTATION'],
+    });
 
   let lastActivationEventId = 'act_1';
   let lastActivationTimestamp = Date.now();

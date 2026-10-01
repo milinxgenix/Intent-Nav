@@ -487,16 +487,13 @@ describe('Prompt 3 Verification: Invariant Closure, Allowed Deltas & Active-Rout
 
       // Create and promote a route to ACTIVE_VALIDATED
       const v1 = machine.routeManager.createProvisionalRoute(baseFingerprint.capabilityId, [], 0.95);
-      const token: any = {
+      const token = machine.tokenAuthenticator.issueToken({
         tokenId: 'tok_active_rev_1',
         routeId: v1.routeId,
         capabilityId: baseFingerprint.capabilityId,
         activationEventId: 'act_rev_1',
         verifiedWitnessClasses: ['DOM_MUTATION', 'ACCESSIBILITY_STATE_MUTATION'],
-        issuedTimestamp: Date.now(),
-        verifiedStatus: 'VERIFIED',
-        signatureHash: 'hash_rev',
-      };
+      });
       machine.routeManager.promoteToActive(baseFingerprint.capabilityId, v1.routeId, token);
 
       let wasDispatched = false;
