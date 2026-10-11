@@ -229,6 +229,8 @@ export interface CurrentInterfaceBinding {
   lastValidatedTimestamp?: number;
 }
 
+export type CapabilityFingerprintVersion = 'v2' | 'v1_legacy';
+
 /**
  * Persistent Functional Capability Identity
  * Must be independent of DOM id, CSS class, CSS selector, coordinates, URL, menu position.
@@ -240,6 +242,7 @@ export interface PersistentCapabilityIdentity {
   targetEntity: TargetEntity;
   domainScope?: string;
   fingerprintHash: string;
+  fingerprintVersion?: CapabilityFingerprintVersion;
 }
 
 export interface CapabilityEvidence {
@@ -278,8 +281,10 @@ export interface FunctionalCapabilityFingerprint {
   confidence: ConfidenceRecord;
   negativeEvidence: NegativeEvidenceRecord;
 
-  // Fingerprint Hash
+  // Fingerprint Hash & Explicit Version Boundary (v2 = capfp_sha256_<64hex>)
   fingerprintHash?: string;
+  fingerprintVersion?: CapabilityFingerprintVersion;
+  transitionSignatureBinding?: string;
 }
 
 /**

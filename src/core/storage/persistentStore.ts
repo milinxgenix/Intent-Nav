@@ -13,6 +13,7 @@ import { ContradictionEvidence } from '../../types/negativeEvidence';
 import { ValidationRecord } from '../../types/transition';
 import { TypedDriftVector } from '../../types/drift';
 import { DeclarativePredicateEvaluator } from '../invariant/predicates';
+import { FingerprintConstructor } from '../fingerprint/constructor';
 
 export const CURRENT_SCHEMA_VERSION = 1;
 
@@ -120,7 +121,7 @@ export class PersistentCapabilityStore {
   }
 
   private hydratePredicateList(predicates?: any[]): void {
-    if (!predicates || !Array.isArray(predicates)) return;
+    if (!Array.isArray(predicates)) return;
     for (const pred of predicates) {
       if (pred && typeof pred === 'object') {
         if (pred.declarative && (!pred.evaluate || typeof pred.evaluate !== 'function')) {
@@ -142,6 +143,9 @@ export class PersistentCapabilityStore {
     if (cap.negativeEvidence) {
       this.hydratePredicateList(cap.negativeEvidence.contradictionPredicates);
       this.hydratePredicateList(cap.negativeEvidence.failedInvariantPredicates);
+    }
+    if (!cap.fingerprintHash || !FingerprintConstructor.isValidV2FingerprintHash(cap.fingerprintHash)) {
+      FingerprintConstructor.migrateCapabilityFingerprintToV2(cap);
     }
     return cap;
   }

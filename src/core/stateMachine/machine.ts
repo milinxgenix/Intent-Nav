@@ -214,19 +214,26 @@ export class IntentNavMachine {
   }
 
   public registerCapability(cap: FunctionalCapabilityFingerprint): void {
-    if (!cap.fingerprintHash) {
-      cap.fingerprintHash = FingerprintConstructor.computeFingerprintHash({
-        canonicalFunction: cap.canonicalFunction,
-        actionType: cap.actionType,
-        targetEntity: cap.targetEntity,
-        role: cap.semanticEvidence?.role || 'button',
-        riskClass: cap.riskMetadata?.riskClass,
-        mandatoryPreStatePredicates: cap.mandatoryPreStatePredicates,
-        allowedStateDelta: cap.allowedStateDelta,
-        expectedPostState: cap.expectedPostState,
-        requiredContextPredicates: cap.requiredContextPredicates,
-        forbiddenContextPredicates: cap.forbiddenContextPredicates,
-      });
+    if (!cap.fingerprintHash || !FingerprintConstructor.isValidV2FingerprintHash(cap.fingerprintHash)) {
+      cap.fingerprintHash = FingerprintConstructor.computeFingerprintHashFromCapability(cap);
+      cap.fingerprintVersion = 'v2';
+    }
+    if (!cap.transitionSignatureBinding && cap.transitionEvidence) {
+      cap.transitionSignatureBinding = FingerprintConstructor.computeTransitionSignatureHash(
+        {
+          preStateFingerprint: cap.transitionEvidence.preStateFingerprint,
+          activationEventExpected: {
+            eventType: cap.transitionEvidence.activationEventCharacteristics.eventType,
+            key: cap.transitionEvidence.activationEventCharacteristics.key,
+            code: cap.transitionEvidence.activationEventCharacteristics.code,
+            keyCode: cap.transitionEvidence.activationEventCharacteristics.keyCode,
+          },
+          expectedStateDelta: cap.transitionEvidence.expectedDelta,
+          verificationWindowMs: cap.transitionEvidence.verificationWindowMs,
+          postStateFingerprint: cap.transitionEvidence.postStateFingerprint,
+        },
+        cap.fingerprintHash
+      );
     }
     this.capabilities.set(cap.capabilityId, cap);
     this.graph.registerCapability(cap.capabilityId, cap.canonicalFunction);

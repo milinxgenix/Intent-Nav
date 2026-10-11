@@ -162,5 +162,85 @@ export class VolatileFeatureSuppressor {
       },
     };
   }
+
+  /**
+   * Explicitly strips volatile presentation features and runtime execution context fields
+   * from raw capability input records prior to canonical stable representation.
+   *
+   * Excluded categories:
+   * 1. Volatile framework/DOM IDs & utility CSS classes (id, volatileId, className, classes, volatileClasses)
+   * 2. Pixel coordinates & bounding boxes (coordinates, boundingBox, clientRect, x, y, width, height, top, left, right, bottom)
+   * 3. Brittle selectors & paths (xpath, fullXpath, cssSelector, fullPath)
+   * 4. Cosmetic label wording variations (visibleLabel, accessibleName, canonicalLabel, textContent, innerText)
+   * 5. Runtime execution & session context (activationEventId, issuedTimestamp, creationTimestamp,
+   *    validationTimestamp, lastValidatedTimestamp, witnessId, witnessIds, handleId, tokenId,
+   *    routeId, sessionToken, sequenceNumber, temporalDeltaMs, durationMs)
+   */
+  public static stripVolatileInputFields<T extends Record<string, unknown>>(
+    rawInput: T
+  ): Record<string, unknown> {
+    if (!rawInput || typeof rawInput !== 'object') {
+      return {};
+    }
+
+    const excludedKeys = new Set<string>([
+      // Presentation & DOM handle keys
+      'id',
+      'volatileId',
+      'className',
+      'classes',
+      'volatileClasses',
+      'style',
+      'inlineStyle',
+      // Coordinates & bounding boxes
+      'coordinates',
+      'boundingBox',
+      'clientRect',
+      'x',
+      'y',
+      'width',
+      'height',
+      'top',
+      'left',
+      'right',
+      'bottom',
+      // Brittle selectors
+      'xpath',
+      'fullXpath',
+      'cssSelector',
+      'fullPath',
+      'domStructuralPath',
+      'elementIndex',
+      // Cosmetic labels
+      'canonicalLabel',
+      'visibleLabel',
+      'accessibleName',
+      'textContent',
+      'innerText',
+      // Runtime execution context
+      'activationEventId',
+      'issuedTimestamp',
+      'creationTimestamp',
+      'validationTimestamp',
+      'lastValidatedTimestamp',
+      'witnessId',
+      'witnessIds',
+      'handleId',
+      'tokenId',
+      'routeId',
+      'sessionToken',
+      'sequenceNumber',
+      'temporalDeltaMs',
+      'durationMs',
+    ]);
+
+    const cleaned: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(rawInput)) {
+      if (!excludedKeys.has(key) && value !== undefined) {
+        cleaned[key] = value;
+      }
+    }
+    return cleaned;
+  }
 }
 

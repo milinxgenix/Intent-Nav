@@ -147,8 +147,15 @@ function validate() {
     if (!s.resolvedCapabilityId || !s.resolvedCapabilityId.startsWith('CAP_')) {
       errors.push(`[${sid}] Invalid resolvedCapabilityId: '${s.resolvedCapabilityId}'`);
     }
-    if (!s.capabilityFingerprintHash || typeof s.capabilityFingerprintHash !== 'string' || !/^fph_[a-f0-9]{8,}$/.test(s.capabilityFingerprintHash)) {
-      errors.push(`[${sid}] Invalid capabilityFingerprintHash: '${s.capabilityFingerprintHash}' (must be a valid non-empty fph_ hash)`);
+    if (
+      !s.capabilityFingerprintHash ||
+      typeof s.capabilityFingerprintHash !== 'string' ||
+      (!/^capfp_sha256_[a-f0-9]{64}$/.test(s.capabilityFingerprintHash) &&
+        !/^fph_[a-f0-9]{8,}$/.test(s.capabilityFingerprintHash))
+    ) {
+      errors.push(
+        `[${sid}] Invalid capabilityFingerprintHash: '${s.capabilityFingerprintHash}' (must be a valid v2 capfp_sha256_<64hex> or frozen v1_legacy fph_ hash)`
+      );
     } else {
       if (capabilityFingerprintMap.has(s.resolvedCapabilityId)) {
         const expectedHash = capabilityFingerprintMap.get(s.resolvedCapabilityId);

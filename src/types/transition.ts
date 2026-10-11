@@ -131,6 +131,7 @@ export interface TransitionVerificationToken {
   tokenId: string;
   routeId: string;
   capabilityId: string;
+  capabilityFingerprintHash?: string;
   activationEventId: string;
   verifiedWitnessClasses: WitnessClass[];
   transitionSignature?: TransitionSignature;

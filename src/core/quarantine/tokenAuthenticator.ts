@@ -30,6 +30,7 @@ export interface IssuePromotionTokenParams {
   tokenId?: string;
   routeId: string;
   capabilityId: string;
+  capabilityFingerprintHash?: string;
   activationEventId: string;
   verifiedWitnessClasses: WitnessClass[];
   transitionSignature?: TransitionSignature;
@@ -40,6 +41,7 @@ export interface IssuePromotionTokenParams {
 export interface VerifyPromotionTokenExpectations {
   expectedRouteId: string;
   expectedCapabilityId: string;
+  expectedCapabilityFingerprintHash?: string;
   expectedActivationEventId?: string;
   expectedTransitionSignature?: TransitionSignature;
   minWitnessClasses?: number;
@@ -50,6 +52,7 @@ export type TokenVerificationFailureCode =
   | 'INVALID_STATUS'
   | 'ROUTE_ID_MISMATCH'
   | 'CAPABILITY_ID_MISMATCH'
+  | 'CAPABILITY_FINGERPRINT_MISMATCH'
   | 'ACTIVATION_EVENT_ID_INVALID'
   | 'WITNESS_QUORUM_INSUFFICIENT'
   | 'ISSUED_TIMESTAMP_INVALID'
@@ -266,7 +269,8 @@ export class PromotionTokenAuthenticator {
   }
 
   /**
-   * Canonicalizes stable transition semantics from TransitionSignature.
+   * Canonicalizes stable transition semantics from TransitionSignature under explicit
+   * domain separation ('INTENTNAV_SCFR_TRANSITION_BINDING_V2').
    * Excludes volatile timing measurements while binding preStateFingerprint,
    * activationEventExpected, expectedStateDelta, verificationWindowMs, and postStateFingerprint.
    */
@@ -274,6 +278,7 @@ export class PromotionTokenAuthenticator {
     if (!signature || typeof signature !== 'object') {
       return canonicalize({
         activationEventExpected: { code: null, eventType: 'click', key: null, keyCode: null },
+        domain: 'INTENTNAV_SCFR_TRANSITION_BINDING_V2',
         expectedStateDelta: {},
         postStateFingerprint: '',
         preStateFingerprint: '',
@@ -287,6 +292,7 @@ export class PromotionTokenAuthenticator {
         key: signature.activationEventExpected?.key ?? null,
         keyCode: signature.activationEventExpected?.keyCode ?? null,
       },
+      domain: 'INTENTNAV_SCFR_TRANSITION_BINDING_V2',
       expectedStateDelta: signature.expectedStateDelta ?? {},
       postStateFingerprint: signature.postStateFingerprint ?? '',
       preStateFingerprint: signature.preStateFingerprint ?? '',
@@ -310,12 +316,16 @@ export class PromotionTokenAuthenticator {
   }
 
   /**
-   * Canonicalizes observed causal witness records (excluding volatile arrival timestamps
-   * while binding witnessClass, correlatedActivationEventId, and observedDelta).
+   * Canonicalizes observed causal witness records under explicit domain separation
+   * ('INTENTNAV_SCFR_WITNESS_EVIDENCE_V2'), excluding volatile arrival timestamps
+   * while binding witnessClass, correlatedActivationEventId, and observedDelta.
    */
   public static buildCanonicalWitnessEvidence(observedWitnesses?: TransitionWitness[] | null): string {
     if (!Array.isArray(observedWitnesses) || observedWitnesses.length === 0) {
-      return canonicalize([]);
+      return canonicalize({
+        domain: 'INTENTNAV_SCFR_WITNESS_EVIDENCE_V2',
+        witnesses: [],
+      });
     }
     const normalizedRecords = observedWitnesses
       .map((w) => ({
@@ -328,7 +338,10 @@ export class PromotionTokenAuthenticator {
         const strB = `${b.witnessClass}:${canonicalize(b.observedDelta)}`;
         return strA.localeCompare(strB);
       });
-    return canonicalize(normalizedRecords);
+    return canonicalize({
+      domain: 'INTENTNAV_SCFR_WITNESS_EVIDENCE_V2',
+      witnesses: normalizedRecords,
+    });
   }
 
   public computeWitnessEvidenceHash(observedWitnesses?: TransitionWitness[] | null): string {
@@ -356,6 +369,7 @@ export class PromotionTokenAuthenticator {
     const sortedClasses = Array.from(new Set(verifiedWitnessClasses || [])).sort();
     return canonicalize({
       activationEventId,
+      domain: 'INTENTNAV_SCFR_WITNESS_BINDING_V2',
       verifiedWitnessClasses: sortedClasses,
       witnessClassCount: sortedClasses.length,
       witnessEvidenceHash: witnessEvidenceHash ?? 'we_sha256_none',
@@ -399,6 +413,7 @@ export class PromotionTokenAuthenticator {
   public static serializeCanonicalTokenPayload(token: {
     routeId: string;
     capabilityId: string;
+    capabilityFingerprintHash?: string;
     activationEventId: string;
     verifiedStatus: string;
     verifiedWitnessClasses: WitnessClass[];
@@ -410,6 +425,9 @@ export class PromotionTokenAuthenticator {
     return canonicalize({
       activationEventId: token.activationEventId,
       algorithm: 'HMAC-SHA-256',
+      ...(token.capabilityFingerprintHash
+        ? { capabilityFingerprintHash: token.capabilityFingerprintHash }
+        : {}),
       capabilityId: token.capabilityId,
       domain: 'INTENTNAV_SCFR_PROMOTION_TOKEN_V1',
       issuedTimestamp: token.issuedTimestamp,
@@ -438,6 +456,7 @@ export class PromotionTokenAuthenticator {
     const payload = {
       routeId: params.routeId,
       capabilityId: params.capabilityId,
+      capabilityFingerprintHash: params.capabilityFingerprintHash,
       activationEventId: params.activationEventId,
       verifiedStatus: 'VERIFIED' as const,
       verifiedWitnessClasses: distinctClasses,
@@ -453,6 +472,9 @@ export class PromotionTokenAuthenticator {
       tokenId: params.tokenId ?? `tok_${issuedTimestamp}_${hmacHex.slice(0, 12)}`,
       routeId: params.routeId,
       capabilityId: params.capabilityId,
+      ...(params.capabilityFingerprintHash
+        ? { capabilityFingerprintHash: params.capabilityFingerprintHash }
+        : {}),
       activationEventId: params.activationEventId,
       verifiedWitnessClasses: distinctClasses,
       transitionSignature: params.transitionSignature,
@@ -484,6 +506,7 @@ export class PromotionTokenAuthenticator {
     const payload = {
       routeId: params.routeId,
       capabilityId: params.capabilityId,
+      capabilityFingerprintHash: params.capabilityFingerprintHash,
       activationEventId: params.activationEventId,
       verifiedStatus: 'VERIFIED' as const,
       verifiedWitnessClasses: distinctClasses,
@@ -499,6 +522,9 @@ export class PromotionTokenAuthenticator {
       tokenId: params.tokenId ?? `tok_${issuedTimestamp}_${hmacHex.slice(0, 12)}`,
       routeId: params.routeId,
       capabilityId: params.capabilityId,
+      ...(params.capabilityFingerprintHash
+        ? { capabilityFingerprintHash: params.capabilityFingerprintHash }
+        : {}),
       activationEventId: params.activationEventId,
       verifiedWitnessClasses: distinctClasses,
       transitionSignature: params.transitionSignature,
@@ -541,6 +567,17 @@ export class PromotionTokenAuthenticator {
         valid: false,
         failedCheck: 'CAPABILITY_ID_MISMATCH',
         reason: `INVARIANT VIOLATION: Token capabilityId '${token.capabilityId}' does not match route capabilityId '${expectations.expectedCapabilityId}'.`,
+      };
+    }
+
+    if (
+      expectations.expectedCapabilityFingerprintHash !== undefined &&
+      token.capabilityFingerprintHash !== expectations.expectedCapabilityFingerprintHash
+    ) {
+      return {
+        valid: false,
+        failedCheck: 'CAPABILITY_FINGERPRINT_MISMATCH',
+        reason: `INVARIANT VIOLATION: Token capabilityFingerprintHash '${token.capabilityFingerprintHash}' does not match expected capability fingerprint '${expectations.expectedCapabilityFingerprintHash}'.`,
       };
     }
 

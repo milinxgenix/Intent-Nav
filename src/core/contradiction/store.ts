@@ -12,6 +12,7 @@ import { ContradictionType, NegativeEvidenceEntry, ContradictionEvidence } from 
 import { FunctionalCapabilityFingerprint } from '../../types/capability';
 import { CandidateEvaluationContext } from '../invariant/engine';
 import { PersistentCapabilityStore } from '../storage/persistentStore';
+import { FingerprintConstructor } from '../fingerprint/constructor';
 
 export class NegativeEvidenceStore {
   private records: Map<string, NegativeEvidenceEntry> = new Map(); // key = interfaceEvidenceHash or candidateFingerprintHash
@@ -60,11 +61,21 @@ export class NegativeEvidenceStore {
     const interfaceEvidenceHash = `${capId}::${rawEvidenceHash}`;
     const idKey = `${capId}::${candidateIdentifier}`;
 
+    const computedCandidateFpHash =
+      partialFingerprint.fingerprintHash ||
+      FingerprintConstructor.computeFingerprintHash({
+        canonicalFunction: partialFingerprint.canonicalFunction || `rejected_${candidateIdentifier}`,
+        actionType: partialFingerprint.actionType || candidateContext?.observedActionType || 'VIEW',
+        targetEntity: partialFingerprint.targetEntity || candidateContext?.observedTargetEntity || 'UNKNOWN',
+        role: partialFingerprint.semanticEvidence?.role || candidateContext?.observedRole || 'element',
+        riskClass: partialFingerprint.riskMetadata?.riskClass,
+      });
+
     const entry: NegativeEvidenceEntry = {
       id,
       candidateFingerprint: partialFingerprint,
       candidateIdentifier,
-      candidateFingerprintHash: partialFingerprint.fingerprintHash || `fph_${candidateIdentifier}`,
+      candidateFingerprintHash: computedCandidateFpHash,
       interfaceEvidenceHash,
       contradictionType,
       failedInvariantId,

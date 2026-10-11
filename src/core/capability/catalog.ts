@@ -845,21 +845,28 @@ export const AUTHORITATIVE_CAPABILITY_CATALOG: FunctionalCapabilityFingerprint[]
   },
 ];
 
-// Deterministically populate stable functional fingerprint hashes for all authoritative capabilities
+// Deterministically populate stable v2 SHA-256 functional fingerprint hashes and transition bindings for all authoritative capabilities
 for (const cap of AUTHORITATIVE_CAPABILITY_CATALOG) {
-  if (!cap.fingerprintHash) {
-    cap.fingerprintHash = FingerprintConstructor.computeFingerprintHash({
-      canonicalFunction: cap.canonicalFunction,
-      actionType: cap.actionType,
-      targetEntity: cap.targetEntity,
-      role: cap.semanticEvidence?.role || 'button',
-      riskClass: cap.riskMetadata?.riskClass,
-      mandatoryPreStatePredicates: cap.mandatoryPreStatePredicates,
-      allowedStateDelta: cap.allowedStateDelta,
-      expectedPostState: cap.expectedPostState,
-      requiredContextPredicates: cap.requiredContextPredicates,
-      forbiddenContextPredicates: cap.forbiddenContextPredicates,
-    });
+  if (!cap.fingerprintHash || !FingerprintConstructor.isValidV2FingerprintHash(cap.fingerprintHash)) {
+    cap.fingerprintHash = FingerprintConstructor.computeFingerprintHashFromCapability(cap);
+    cap.fingerprintVersion = 'v2';
+  }
+  if (!cap.transitionSignatureBinding && cap.transitionEvidence) {
+    cap.transitionSignatureBinding = FingerprintConstructor.computeTransitionSignatureHash(
+      {
+        preStateFingerprint: cap.transitionEvidence.preStateFingerprint,
+        activationEventExpected: {
+          eventType: cap.transitionEvidence.activationEventCharacteristics.eventType,
+          key: cap.transitionEvidence.activationEventCharacteristics.key,
+          code: cap.transitionEvidence.activationEventCharacteristics.code,
+          keyCode: cap.transitionEvidence.activationEventCharacteristics.keyCode,
+        },
+        expectedStateDelta: cap.transitionEvidence.expectedDelta,
+        verificationWindowMs: cap.transitionEvidence.verificationWindowMs,
+        postStateFingerprint: cap.transitionEvidence.postStateFingerprint,
+      },
+      cap.fingerprintHash
+    );
   }
 }
 
@@ -948,19 +955,26 @@ export function createFunctionalCapability(
     },
   };
 
-  if (!cap.fingerprintHash) {
-    cap.fingerprintHash = FingerprintConstructor.computeFingerprintHash({
-      canonicalFunction: cap.canonicalFunction,
-      actionType: cap.actionType,
-      targetEntity: cap.targetEntity,
-      role: cap.semanticEvidence?.role || 'button',
-      riskClass: cap.riskMetadata?.riskClass,
-      mandatoryPreStatePredicates: cap.mandatoryPreStatePredicates,
-      allowedStateDelta: cap.allowedStateDelta,
-      expectedPostState: cap.expectedPostState,
-      requiredContextPredicates: cap.requiredContextPredicates,
-      forbiddenContextPredicates: cap.forbiddenContextPredicates,
-    });
+  if (!cap.fingerprintHash || !FingerprintConstructor.isValidV2FingerprintHash(cap.fingerprintHash)) {
+    cap.fingerprintHash = FingerprintConstructor.computeFingerprintHashFromCapability(cap);
+    cap.fingerprintVersion = 'v2';
+  }
+  if (!cap.transitionSignatureBinding && cap.transitionEvidence) {
+    cap.transitionSignatureBinding = FingerprintConstructor.computeTransitionSignatureHash(
+      {
+        preStateFingerprint: cap.transitionEvidence.preStateFingerprint,
+        activationEventExpected: {
+          eventType: cap.transitionEvidence.activationEventCharacteristics.eventType,
+          key: cap.transitionEvidence.activationEventCharacteristics.key,
+          code: cap.transitionEvidence.activationEventCharacteristics.code,
+          keyCode: cap.transitionEvidence.activationEventCharacteristics.keyCode,
+        },
+        expectedStateDelta: cap.transitionEvidence.expectedDelta,
+        verificationWindowMs: cap.transitionEvidence.verificationWindowMs,
+        postStateFingerprint: cap.transitionEvidence.postStateFingerprint,
+      },
+      cap.fingerprintHash
+    );
   }
 
   return cap;

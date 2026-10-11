@@ -117,7 +117,8 @@ describe('Generic Capability Taxonomy & Domain Independence', () => {
     expect(genericCapability.actionType).toBe('MODIFY_PREFERENCE');
     expect(genericCapability.fingerprintHash).toBeDefined();
     expect(typeof genericCapability.fingerprintHash).toBe('string');
-    expect(genericCapability.fingerprintHash!.startsWith('fph_')).toBe(true);
+    expect(genericCapability.fingerprintHash).toMatch(/^capfp_sha256_[0-9a-f]{64}$/);
+    expect(genericCapability.fingerprintVersion).toBe('v2');
 
     // Determinism check: recomputing fingerprint yields identical hash
     const recomputedHash = FingerprintConstructor.computeFingerprintHash({
