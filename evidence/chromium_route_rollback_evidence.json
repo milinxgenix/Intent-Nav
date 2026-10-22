@@ -1,9 +1,9 @@
 {
-  "runId": "run_rollback_1790425680909",
-  "timestamp": 1790425685568,
+  "runId": "run_rollback_1792640911350",
+  "timestamp": 1792640914880,
   "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-  "browserVersion": "Google Chrome 153.0.8010.53",
-  "environment": "Google Chrome (Google Chrome 153.0.8010.53) + CDP over WebSocket",
+  "browserVersion": "Google Chrome 155.0.8059.85",
+  "environment": "Google Chrome (Google Chrome 155.0.8059.85) + CDP over WebSocket",
   "runnerType": "REAL_CHROMIUM_ROUTE_ROLLBACK_E2E",
   "claimReference": "Patent Claim 10 — Provisional Route Lifecycle, Demotion, and Prior-Validated Rollback",
   "scenarioId": "Scenario K",
@@ -12,72 +12,72 @@
   "lifecycleEvents": [
     {
       "event": "ROUTE_V1_VERIFIED_AND_PROMOTED",
-      "routeId": "route_CAP_DISABLE_MARKETING_v1_1790425684018",
+      "routeId": "route_CAP_DISABLE_MARKETING_v1_1792640913309",
       "capabilityId": "CAP_DISABLE_MARKETING",
       "versionNumber": 1,
       "status": "ACTIVE_VALIDATED",
-      "lastValidatedTimestamp": 1790425684187,
-      "timestamp": 1790425684215
+      "lastValidatedTimestamp": 1792640913494,
+      "timestamp": 1792640913517
     },
     {
       "event": "ROUTE_V2_CREATED_PROVISIONAL",
-      "routeId": "route_CAP_DISABLE_MARKETING_v2_1790425684218",
+      "routeId": "route_CAP_DISABLE_MARKETING_v2_1792640913520",
       "capabilityId": "CAP_DISABLE_MARKETING",
       "versionNumber": 2,
       "status": "PROVISIONAL",
-      "timestamp": 1790425684231
+      "timestamp": 1792640913532
     },
     {
       "event": "ROUTE_V2_VERIFIED_AND_PROMOTED",
-      "routeId": "route_CAP_DISABLE_MARKETING_v2_1790425684218",
+      "routeId": "route_CAP_DISABLE_MARKETING_v2_1792640913520",
       "capabilityId": "CAP_DISABLE_MARKETING",
       "versionNumber": 2,
       "status": "ACTIVE_VALIDATED",
-      "lastValidatedTimestamp": 1790425684218,
-      "timestamp": 1790425684231
+      "lastValidatedTimestamp": 1792640913527,
+      "timestamp": 1792640913532
     },
     {
       "event": "ROUTE_V2_RUNTIME_FAILURE_DETECTED",
-      "routeId": "route_CAP_DISABLE_MARKETING_v2_1790425684218",
+      "routeId": "route_CAP_DISABLE_MARKETING_v2_1792640913520",
       "failureReason": "Runtime action execution failure: alternate target element missing from live DOM",
-      "timestamp": 1790425684231
+      "timestamp": 1792640913532
     },
     {
       "event": "ROUTE_V2_DEMOTED",
-      "routeId": "route_CAP_DISABLE_MARKETING_v2_1790425684218",
+      "routeId": "route_CAP_DISABLE_MARKETING_v2_1792640913520",
       "versionNumber": 2,
       "status": "DEMOTED",
       "demotionReason": "Runtime action execution failure: alternate target element missing from live DOM",
-      "timestamp": 1790425684242
+      "timestamp": 1792640913540
     },
     {
       "event": "ROLLBACK_RESTORED_TO_V1",
-      "restoredRouteId": "route_CAP_DISABLE_MARKETING_v1_1790425684018",
+      "restoredRouteId": "route_CAP_DISABLE_MARKETING_v1_1792640913309",
       "restoredVersion": 1,
       "restoredStatus": "ACTIVE_VALIDATED",
-      "activeRouteId": "route_CAP_DISABLE_MARKETING_v1_1790425684018",
-      "timestamp": 1790425684242
+      "activeRouteId": "route_CAP_DISABLE_MARKETING_v1_1792640913309",
+      "timestamp": 1792640913540
     },
     {
       "event": "REEXECUTION_UNDER_RESTORED_V1_SUCCEEDED",
-      "routeId": "route_CAP_DISABLE_MARKETING_v1_1790425684018",
+      "routeId": "route_CAP_DISABLE_MARKETING_v1_1792640913309",
       "finalMachineState": "EXECUTED",
       "postStateVerified": true,
-      "timestamp": 1790425685567
+      "timestamp": 1792640914879
     }
   ],
   "routeHistory": [
     {
-      "routeId": "route_CAP_DISABLE_MARKETING_v1_1790425684018",
+      "routeId": "route_CAP_DISABLE_MARKETING_v1_1792640913309",
       "versionNumber": 1,
       "status": "ACTIVE_VALIDATED",
-      "lastValidatedTimestamp": 1790425684187
+      "lastValidatedTimestamp": 1792640913494
     },
     {
-      "routeId": "route_CAP_DISABLE_MARKETING_v2_1790425684218",
+      "routeId": "route_CAP_DISABLE_MARKETING_v2_1792640913520",
       "versionNumber": 2,
       "status": "DEMOTED",
-      "lastValidatedTimestamp": 1790425684218
+      "lastValidatedTimestamp": 1792640913527
     }
   ],
   "stateSnapshots": {

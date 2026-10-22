@@ -133,6 +133,12 @@ export async function processIntentDirect(
         availableCandidates = obsResp.candidates || [];
         if (obsResp.stateNode) {
           observedFeatures.tag = obsResp.stateNode.activeTabs?.[0] || 'body';
+          if (obsResp.stateNode.observedApplicationState) {
+            (observedFeatures as any).observedPreState = obsResp.stateNode.observedApplicationState;
+          }
+          if (obsResp.stateNode.semanticLandmarks && obsResp.stateNode.semanticLandmarks.length > 0) {
+            (observedFeatures as any).containerSemantics = obsResp.stateNode.semanticLandmarks;
+          }
         }
       }
       dispatcher = new BrowserExecutionDispatcher(tabId);

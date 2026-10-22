@@ -42,6 +42,27 @@ export type DriftDimension =
   | 'capability'
   | 'transition';
 
+export interface DriftRecoveryMetrics {
+  /** Count of candidate evaluation contexts inspected during candidate discovery */
+  inspectedCandidatesCount: number;
+  /** Backwards-compatible legacy alias strictly mirroring inspectedCandidatesCount; does NOT represent raw DOM-tree node enumeration */
+  inspectedNodesCount?: number;
+  /** Direct count of candidates evaluated through invariant closure at the candidate pipeline evaluation site */
+  candidateEvaluationsCount: number;
+  /** Direct counter incremented at the FingerprintConstructor SHA-256 primitive computation site during the recovery cycle */
+  fingerprintComputationsCount: number;
+  /** Count of distinct capability IDs whose active routes were demoted/invalidated during localized invalidation */
+  invalidatedCapabilitiesCount: number;
+  /** Differential graph comparison counting non-target capability nodes whose active routes were demoted (null if unmeasured); makes no claim of counterfactual stability */
+  unnecessarilyInvalidatedCount: number | null;
+  /** Monotonic high-resolution timer (performance.now) from drift evaluation start to recovery completion */
+  recoveryLatencyMs: number;
+  /** Narrow operational blocked-attempt counter: increments to 1 strictly when a concrete execution attempt explicitly targeting an invalidated or unpromoted quarantined route is intercepted and prevented from executing. Does not increment merely because a route was demoted, and makes no claim of counterfactual user attempts. */
+  staleExecutionAttemptsAvoided: number;
+  /** Binary decision outcome per intent recovery cycle (0 = candidate selected, 1 = safe refusal/abstention). Reflects the single decision outcome of the current recovery cycle, not an aggregated historical event counter. */
+  abstentionsCount: number;
+}
+
 export interface DriftLocalizationResult {
   driftVector: TypedDriftVector;
   actionRequired: DriftActionRequired;
@@ -49,5 +70,7 @@ export interface DriftLocalizationResult {
   explanation: string;
   triggerFactors: string[];
   assessedTimestamp: number;
+  localizedAffectedCapabilityId?: string;
+  invalidationApplied?: boolean;
 }
 

@@ -23,7 +23,8 @@ export const DEFAULT_DRIFT_THRESHOLDS: DriftThresholds = {
 export class DriftClassifier {
   public static classify(
     vector: TypedDriftVector,
-    thresholds: DriftThresholds = DEFAULT_DRIFT_THRESHOLDS
+    thresholds: DriftThresholds = DEFAULT_DRIFT_THRESHOLDS,
+    localizedAffectedCapabilityId?: string
   ): DriftLocalizationResult {
     const triggerFactors: string[] = [];
     let actionRequired: DriftActionRequired = 'MAINTAIN_ACTIVE';
@@ -119,6 +120,7 @@ export class DriftClassifier {
       explanation,
       triggerFactors,
       assessedTimestamp: Date.now(),
+      localizedAffectedCapabilityId,
     };
   }
 }

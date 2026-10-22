@@ -40,7 +40,7 @@
 import { NormalizedIntent } from '../../types/intent';
 import { FunctionalCapabilityFingerprint, ActivationEventCharacteristics } from '../../types/capability';
 import { InterfaceStateNode, RouteVersion } from '../../types/state';
-import { TypedDriftVector, DriftLocalizationResult } from '../../types/drift';
+import { TypedDriftVector, DriftLocalizationResult, DriftRecoveryMetrics } from '../../types/drift';
 import { InvariantClosureResult } from '../../types/invariant';
 import { CandidateRebindScore } from '../../types/ranking';
 import {
@@ -56,7 +56,7 @@ import { CapabilityIntentResolver } from '../intent/resolver';
 import { CapabilityGraphEngine } from '../graph/capabilityGraph';
 import { RouteManager } from '../graph/routeManager';
 import { TypedDriftDetector, ObservedElementFeatures } from '../drift/detector';
-import { DriftClassifier } from '../drift/classifier';
+import { DriftClassifier, DEFAULT_DRIFT_THRESHOLDS } from '../drift/classifier';
 import { CandidateEvaluationContext, InvariantClosureEngine } from '../invariant/engine';
 import { NegativeEvidenceStore } from '../contradiction/store';
 import { CandidatePipeline } from '../candidate/pipeline';
@@ -147,6 +147,7 @@ export interface StateMachineContext {
   promotionDecision?: import('../quarantine/promotion').PromotionDecision;
   promotionTokenValid?: boolean;
   promotionFailureReason?: string;
+  driftRecoveryMetrics?: DriftRecoveryMetrics;
 }
 
 export class IntentNavMachine {
@@ -288,23 +289,120 @@ export class IntentNavMachine {
 
     // 3. RETRIEVE ACTIVE ROUTE
     let activeRoute = this.graph.getActiveRoute(matchedCap.capabilityId);
-    if (!activeRoute && executionOptions?.executeQuarantinedRoute) {
+    if (executionOptions?.executeQuarantinedRoute) {
       const node = this.graph.getCapability(matchedCap.capabilityId);
-      if (node && node.activeRouteId) {
-        const r = node.routeVersions[node.activeRouteId];
-        if (r && r.status === 'QUARANTINED') {
-          activeRoute = r;
-        }
-      }
-      if (!activeRoute && node && node.quarantinedRouteIds.length > 0) {
+      if (node && node.quarantinedRouteIds.length > 0) {
         activeRoute = node.routeVersions[node.quarantinedRouteIds[0]!] || null;
+      } else if (activeRoute) {
+        const quarantinedRoute: RouteVersion = {
+          ...activeRoute,
+          status: 'QUARANTINED',
+          quarantineReason: 'EXPLICIT_TEST_QUARANTINE',
+        };
+        this.graph.attachRouteVersion(matchedCap.capabilityId, quarantinedRoute);
+        activeRoute = quarantinedRoute;
       }
     }
     this.context.activeRoute = activeRoute;
 
     // 4. TYPED DRIFT LOCALIZATION (5D: [P, C, S, Cap, T])
-    const driftVector = TypedDriftDetector.computeDrift(matchedCap, observedFeatures);
-    const driftResult = DriftClassifier.classify(driftVector);
+    // Ground observed features in live candidate evidence if caller provided coarse stubs
+    let effectiveObserved: ObservedElementFeatures = { ...observedFeatures };
+    const driftTargetStep = activeRoute?.steps?.[0];
+
+    // Find candidate matching active route step or best candidate for this capability
+    let candidateForDrift: CandidateEvaluationContext | null = null;
+    if (availableCandidates.length > 0) {
+      if (driftTargetStep) {
+        candidateForDrift =
+          availableCandidates.find((c) => {
+            if (driftTargetStep.bindingHandle?.handleId && c.bindingHandle?.handleId === driftTargetStep.bindingHandle.handleId) return true;
+            if (driftTargetStep.bindingHandle?.volatileId && c.candidateId === driftTargetStep.bindingHandle.volatileId) return true;
+            if (driftTargetStep.bindingHandle?.domStructuralPath && c.domStructuralPath === driftTargetStep.bindingHandle.domStructuralPath) return true;
+            if (driftTargetStep.targetAccessibleName && c.candidateLabel.trim().toLowerCase() === driftTargetStep.targetAccessibleName.trim().toLowerCase()) return true;
+            return false;
+          }) || null;
+      }
+      if (!candidateForDrift) {
+        // Fall back to candidate matching the capability's semantic accessibleName or role/target
+        candidateForDrift =
+          availableCandidates.find(
+            (c) =>
+              c.observedTargetEntity === matchedCap.targetEntity ||
+              (c.candidateLabel && matchedCap.semanticEvidence?.accessibleName &&
+                c.candidateLabel.toLowerCase().includes(matchedCap.semanticEvidence.accessibleName.toLowerCase()))
+          ) || availableCandidates[0] || null;
+      }
+    }
+
+    if (candidateForDrift) {
+      const handle = candidateForDrift.bindingHandle;
+      effectiveObserved = {
+        tag: handle?.tagName || effectiveObserved.tag || 'button',
+        id: handle?.volatileId || effectiveObserved.id,
+        storedId: driftTargetStep?.bindingHandle?.volatileId || effectiveObserved.storedId,
+        classes: handle?.volatileClasses || effectiveObserved.classes,
+        storedClasses: driftTargetStep?.bindingHandle?.volatileClasses || effectiveObserved.storedClasses,
+        role: candidateForDrift.observedRole || handle?.role || effectiveObserved.role,
+        accessibleName: candidateForDrift.candidateLabel || handle?.accessibleName || effectiveObserved.accessibleName,
+        ancestors: candidateForDrift.ancestors && candidateForDrift.ancestors.length > 0
+          ? candidateForDrift.ancestors
+          : effectiveObserved.ancestors,
+        containerSemantics: candidateForDrift.containerSemantics && candidateForDrift.containerSemantics.length > 0
+          ? candidateForDrift.containerSemantics
+          : effectiveObserved.containerSemantics,
+        nearbyText: candidateForDrift.nearbyText && candidateForDrift.nearbyText.length > 0
+          ? candidateForDrift.nearbyText
+          : effectiveObserved.nearbyText,
+        relativeStructuralPath: candidateForDrift.domStructuralPath || handle?.domStructuralPath || effectiveObserved.relativeStructuralPath,
+        observedActionType: candidateForDrift.observedActionType || effectiveObserved.observedActionType,
+        observedTargetEntity: candidateForDrift.observedTargetEntity || effectiveObserved.observedTargetEntity,
+        observedPreState: candidateForDrift.observedState || effectiveObserved.observedPreState,
+        observedStateDelta: effectiveObserved.observedStateDelta,
+        observedPostState: effectiveObserved.observedPostState,
+        observedActivationEventType: effectiveObserved.observedActivationEventType,
+        observedWitnessClasses: effectiveObserved.observedWitnessClasses,
+      };
+    }
+
+    const getMonotonicTime = (): number => {
+      if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
+        return performance.now();
+      }
+      return Date.now();
+    };
+
+    const driftStartTime = getMonotonicTime();
+    const startFpComputations = FingerprintConstructor.getComputationCount();
+
+    // Differential graph comparison snapshot before recovery
+    const allCapsBefore = this.graph.getAllCapabilities();
+    const preActiveRouteMap = new Map<string, string | null>();
+    for (const node of allCapsBefore) {
+      preActiveRouteMap.set(node.capabilityId, node.activeRouteId);
+    }
+
+    const computeCollateralInvalidations = (): number | null => {
+      const allCapsAfter = this.graph.getAllCapabilities();
+      if (allCapsAfter.length === 0) return null;
+      let collateral = 0;
+      for (const node of allCapsAfter) {
+        if (node.capabilityId !== matchedCap.capabilityId) {
+          const preRoute = preActiveRouteMap.get(node.capabilityId);
+          if (preRoute && !node.activeRouteId) {
+            collateral++;
+          }
+        }
+      }
+      return collateral;
+    };
+
+    const driftVector = TypedDriftDetector.computeDrift(matchedCap, effectiveObserved);
+    const driftResult = DriftClassifier.classify(
+      driftVector,
+      DEFAULT_DRIFT_THRESHOLDS,
+      matchedCap.capabilityId
+    );
     this.context.driftVector = driftVector;
     this.context.driftResult = driftResult;
     this.state = 'DRIFT_CLASSIFIED';
@@ -314,16 +412,73 @@ export class IntentNavMachine {
       driftVector,
     }).catch(() => {});
 
-    // 5. DECIDE IF REBIND RECOVERY REQUIRED
+    // 5. LOCALIZED ROUTE INVALIDATION & CANDIDATE RECOVERY
     let routeToAuthorize: RouteVersion | null = activeRoute;
     let selectedWinnerContext: CandidateEvaluationContext | null = null;
+    const invalidatedCapabilityIds = new Set<string>();
+    let staleAttemptsAvoided = 0;
 
-    if (
+    // Check if recovery is triggered by drift or missing route
+    const recoveryNeeded =
       !activeRoute ||
       driftResult.actionRequired === 'TRIGGER_REBIND_RECOVERY' ||
       driftResult.actionRequired === 'TRIGGER_VALIDATION' ||
-      executionOptions?.executeQuarantinedRoute
+      driftResult.actionRequired === 'QUARANTINE_IMMEDIATELY' ||
+      executionOptions?.executeQuarantinedRoute;
+
+    if (
+      activeRoute &&
+      activeRoute.status !== 'QUARANTINED' &&
+      (driftResult.actionRequired === 'TRIGGER_REBIND_RECOVERY' ||
+        driftResult.actionRequired === 'TRIGGER_VALIDATION' ||
+        driftResult.actionRequired === 'QUARANTINE_IMMEDIATELY')
     ) {
+      // Localized Invalidation: Demote stale route strictly on the affected capability
+      try {
+        const demotedRouteId = activeRoute.routeId;
+        const demoteReason = `DRIFT_LOCALIZATION: ${driftResult.dominantDriftDimension} drift (${driftVector[driftResult.dominantDriftDimension]}) triggered ${driftResult.actionRequired}`;
+        this.routeManager.demoteActiveRoute(matchedCap.capabilityId, demotedRouteId, demoteReason);
+        driftResult.invalidationApplied = true;
+        invalidatedCapabilityIds.add(matchedCap.capabilityId);
+
+        // Operationally define avoided attempts: only recorded when an execution attempt against the stale route was prevented
+        if (
+          (executionOptions?.targetRouteId && executionOptions.targetRouteId === demotedRouteId) ||
+          executionOptions?.executeQuarantinedRoute
+        ) {
+          staleAttemptsAvoided = 1;
+        }
+
+        if (!executionOptions?.executeQuarantinedRoute) {
+          activeRoute = null; // Stale route no longer eligible for direct execution
+          this.context.activeRoute = null;
+        }
+      } catch (err: any) {
+        console.warn(`[StateMachine] Could not demote active route for ${matchedCap.capabilityId}:`, err?.message);
+      }
+    }
+
+    if (recoveryNeeded) {
+      // If immediate quarantine is required due to contradictory evidence, abort recovery
+      if (driftResult.actionRequired === 'QUARANTINE_IMMEDIATELY') {
+        const driftEndTime = getMonotonicTime();
+        this.context.driftRecoveryMetrics = {
+          inspectedCandidatesCount: availableCandidates.length,
+          inspectedNodesCount: availableCandidates.length,
+          candidateEvaluationsCount: 0,
+          fingerprintComputationsCount: FingerprintConstructor.getComputationCount() - startFpComputations,
+          invalidatedCapabilitiesCount: invalidatedCapabilityIds.size,
+          unnecessarilyInvalidatedCount: computeCollateralInvalidations(),
+          recoveryLatencyMs: Math.max(0, Math.round((driftEndTime - driftStartTime) * 100) / 100),
+          staleExecutionAttemptsAvoided: staleAttemptsAvoided,
+          abstentionsCount: 1,
+        };
+        this.state = 'ABSTAINED';
+        this.context.currentState = this.state;
+        this.logAudit('ABSTAINED', 'Immediate quarantine required: contradictory functional drift detected');
+        return this.context;
+      }
+
       // TRIGGER RECOVERY: Process candidates through invariant closure
       this.state = 'CANDIDATE_DISCOVERY';
       this.context.candidateList = availableCandidates;
@@ -340,6 +495,23 @@ export class IntentNavMachine {
       this.context.invariantResults = pipelineResult.invariantResults;
       this.context.rankedScores = pipelineResult.rankedScores;
       this.context.selectedCandidate = pipelineResult.selectedWinner;
+
+      const driftEndTime = getMonotonicTime();
+      const evaluatedCandidatesCount = pipelineResult.candidateEvaluationsCount;
+      const measuredFpComputations = FingerprintConstructor.getComputationCount() - startFpComputations;
+
+      // Quantitative recovery instrumentation with directly measured counters
+      this.context.driftRecoveryMetrics = {
+        inspectedCandidatesCount: availableCandidates.length,
+        inspectedNodesCount: availableCandidates.length,
+        candidateEvaluationsCount: evaluatedCandidatesCount,
+        fingerprintComputationsCount: measuredFpComputations,
+        invalidatedCapabilitiesCount: invalidatedCapabilityIds.size,
+        unnecessarilyInvalidatedCount: computeCollateralInvalidations(),
+        recoveryLatencyMs: Math.max(0, Math.round((driftEndTime - driftStartTime) * 100) / 100),
+        staleExecutionAttemptsAvoided: staleAttemptsAvoided,
+        abstentionsCount: pipelineResult.selectedWinner ? 0 : 1,
+      };
 
       if (!pipelineResult.selectedWinner) {
         this.state = 'ABSTAINED';
@@ -363,7 +535,7 @@ export class IntentNavMachine {
         };
       }
 
-      if (executionOptions?.executeQuarantinedRoute && activeRoute && activeRoute.status === 'QUARANTINED') {
+      if (executionOptions?.executeQuarantinedRoute && activeRoute && (activeRoute as RouteVersion).status === 'QUARANTINED') {
         // Enforce execution attempt directly on the quarantined route to test PRE_16
         routeToAuthorize = activeRoute;
         this.context.activeRoute = activeRoute;
@@ -376,7 +548,7 @@ export class IntentNavMachine {
           [
             {
               stepIndex: 1,
-              fromStateId: observedFeatures.tag || 'CURRENT_PAGE',
+              fromStateId: effectiveObserved.tag || 'CURRENT_PAGE',
               toStateId: `PANEL_${matchedCap.targetEntity}`,
               actionDescription: `Interact with candidate ${pipelineResult.selectedWinner.candidateId}`,
               bindingHandle: selectedWinnerContext?.bindingHandle,
@@ -396,7 +568,7 @@ export class IntentNavMachine {
       this.state = 'CANDIDATE_DISCOVERY';
       this.context.candidateList = availableCandidates;
 
-      const targetStep = activeRoute.steps?.[0];
+      const targetStep = activeRoute!.steps?.[0];
       let activeCandidate: CandidateEvaluationContext | null = null;
 
       if (availableCandidates.length > 0) {
@@ -449,7 +621,22 @@ export class IntentNavMachine {
       const liveInvariantResult = InvariantClosureEngine.evaluateCandidate(matchedCap, activeCandidate);
       this.context.invariantResults = { [activeCandidate.candidateId]: liveInvariantResult };
 
+      const activeEvalEndTime = getMonotonicTime();
+      const inspectedCount = availableCandidates.length > 0 ? availableCandidates.length : 1;
+      const activeFpComputations = FingerprintConstructor.getComputationCount() - startFpComputations;
+
       if (liveInvariantResult.status !== 'PASS') {
+        this.context.driftRecoveryMetrics = {
+          inspectedCandidatesCount: inspectedCount,
+          inspectedNodesCount: inspectedCount,
+          candidateEvaluationsCount: 1,
+          fingerprintComputationsCount: activeFpComputations,
+          invalidatedCapabilitiesCount: 0,
+          unnecessarilyInvalidatedCount: computeCollateralInvalidations(),
+          recoveryLatencyMs: Math.max(0, Math.round((activeEvalEndTime - driftStartTime) * 100) / 100),
+          staleExecutionAttemptsAvoided: 0,
+          abstentionsCount: 1,
+        };
         this.state = 'ABSTAINED';
         this.context.currentState = this.state;
         this.logAudit(
@@ -458,6 +645,18 @@ export class IntentNavMachine {
         );
         return this.context;
       }
+
+      this.context.driftRecoveryMetrics = {
+        inspectedCandidatesCount: inspectedCount,
+        inspectedNodesCount: inspectedCount,
+        candidateEvaluationsCount: 1,
+        fingerprintComputationsCount: activeFpComputations,
+        invalidatedCapabilitiesCount: 0,
+        unnecessarilyInvalidatedCount: computeCollateralInvalidations(),
+        recoveryLatencyMs: Math.max(0, Math.round((activeEvalEndTime - driftStartTime) * 100) / 100),
+        staleExecutionAttemptsAvoided: 0,
+        abstentionsCount: 0,
+      };
 
       selectedWinnerContext = activeCandidate;
       const activeRankResults = this.rankingEngine.rankCandidates(matchedCap, [activeCandidate], {
@@ -482,7 +681,7 @@ export class IntentNavMachine {
             stalenessPenalty: 0.0,
             riskPenalty: 0.0,
             pathCostPenalty: 0.0,
-            totalScore: activeRoute.confidenceScore || 1.0,
+            totalScore: activeRoute?.confidenceScore || 1.0,
           },
         };
       }
@@ -1106,6 +1305,7 @@ export class IntentNavMachine {
       userConfirmation: this.context.userConfirmationGranted ?? null,
       finalOutcome: outcome,
       failureReason,
+      driftRecoveryMetrics: this.context.driftRecoveryMetrics,
     });
   }
 }

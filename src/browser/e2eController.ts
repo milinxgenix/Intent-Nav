@@ -309,6 +309,7 @@ export class IntentNavBrowserController {
       tag: 'body',
       observedActionType: 'VIEW',
       observedTargetEntity: 'UNKNOWN',
+      observedPreState: preState,
     };
 
     // 2. Full closed-loop IntentNav-SCFR pipeline execution

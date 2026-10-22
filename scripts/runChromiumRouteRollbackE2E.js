@@ -125,20 +125,26 @@ class CDPClient {
     });
   }
 
-  send(method, params = {}) {
+  send(method, params = {}, sessionId = undefined) {
     const id = ++this.id;
     return new Promise((resolve, reject) => {
       this.callbacks.set(id, { resolve, reject });
-      this.ws.send(JSON.stringify({ id, method, params }));
+      const payload = { id, method, params };
+      if (sessionId) payload.sessionId = sessionId;
+      this.ws.send(JSON.stringify(payload));
     });
   }
 
-  async evaluate(expression) {
-    const res = await this.send('Runtime.evaluate', {
-      expression,
-      returnByValue: true,
-      awaitPromise: true,
-    });
+  async evaluate(expression, sessionId = undefined) {
+    const res = await this.send(
+      'Runtime.evaluate',
+      {
+        expression,
+        returnByValue: true,
+        awaitPromise: true,
+      },
+      sessionId
+    );
     if (res.exceptionDetails) {
       throw new Error(`CDP Evaluate Error: ${JSON.stringify(res.exceptionDetails)}`);
     }
@@ -195,17 +201,67 @@ async function run() {
   try {
     const versionData = await waitForChrome();
 
-    // 1. Connect to Browser Target and load unpacked extension
+    // 1. Connect to Browser Target
     const browserClient = new CDPClient(versionData.webSocketDebuggerUrl);
     await browserClient.connect();
+
+    // Listen for service worker attachment before loading extension to catch startup
+    let swSessionId = null;
+    const swAttachedPromise = new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => reject(new Error('MV3 Service Worker attachment timeout after 15000ms')), 15000);
+      browserClient.ws.on('message', async (data) => {
+        try {
+          const msg = JSON.parse(data.toString());
+          if (
+            msg.method === 'Target.attachedToTarget' &&
+            msg.params?.targetInfo?.type === 'service_worker' &&
+            msg.params?.targetInfo?.url?.includes('background.js')
+          ) {
+            clearTimeout(timeout);
+            swSessionId = msg.params.sessionId;
+            resolve(swSessionId);
+          }
+        } catch {}
+      });
+    });
+
+    await browserClient.send('Target.setAutoAttach', {
+      autoAttach: true,
+      waitForDebuggerOnStart: true,
+      flatten: true,
+    });
+
     const ext = await browserClient.send('Extensions.loadUnpacked', { path: DIST_DIR });
     console.log(`[Extension] Loaded MV3 Extension via CDP: ID=${ext.id}`);
 
-    // 2. Connect to Service Worker Target
-    const swTarget = await waitForServiceWorker(ext.id);
-    const swClient = new CDPClient(swTarget.webSocketDebuggerUrl);
-    await swClient.connect();
-    await swClient.send('Runtime.enable');
+    await swAttachedPromise;
+    console.log(`[CDP] Attached to MV3 Service Worker with sessionId: ${swSessionId}`);
+    await browserClient.send('Runtime.enable', {}, swSessionId);
+    await browserClient.send('Runtime.runIfWaitingForDebugger', {}, swSessionId);
+
+    const swClient = {
+      evaluate: (expr) => browserClient.evaluate(expr, swSessionId),
+      send: (method, params) => browserClient.send(method, params, swSessionId),
+      close: () => {},
+    };
+
+    // Wait for Background Service Worker module graph to initialize globalThis.processIntentDirect
+    console.log('[Extension] Waiting for service worker module initialization...');
+    let ready = false;
+    for (let r = 0; r < 30; r++) {
+      try {
+        const fnType = await swClient.evaluate('typeof globalThis.processIntentDirect');
+        if (fnType === 'function') {
+          ready = true;
+          console.log('[Extension] Service Worker processIntentDirect is ready.');
+          break;
+        }
+      } catch {}
+      await new Promise((res) => setTimeout(res, 200));
+    }
+    if (!ready) {
+      throw new Error('Service Worker processIntentDirect failed to initialize within timeout');
+    }
 
     // 3. Connect to Web Page Target (Site A)
     const targetsRes = await fetch(`http://127.0.0.1:${CDP_PORT}/json/list`);
@@ -278,7 +334,7 @@ async function run() {
 
     // In the extension background, create provisional route v2 and promote it with valid token
     const v2CreationAndPromotion = await swClient.evaluate(`
-      (function() {
+      (async function() {
         const m = globalThis.intentNavMachine;
         const capId = ${JSON.stringify(v1CapabilityId)};
         const cap = m.graph.getCapability(capId);
@@ -295,19 +351,16 @@ async function run() {
 
         const provisionalSnapshot = { ...v2 };
 
-        // 2. Generate valid TransitionVerificationToken for v2 with >=2 witness classes
-        const token = {
-          tokenId: 'token_v2_' + Date.now(),
-          capabilityId: capId,
+        // 2. Generate valid TransitionVerificationToken for v2 with >=2 witness classes using authenticator
+        const token = await m.routeManager.tokenAuthenticator.issueTokenAsync({
           routeId: v2.routeId,
-          verifiedStatus: 'VERIFIED',
+          capabilityId: capId,
+          activationEventId: 'act_v2_' + Date.now(),
           verifiedWitnessClasses: ['DOM_MUTATION', 'APPLICATION_STATE_MUTATION'],
-          signatureHash: 'SIG_VALID_' + Date.now(),
-          timestamp: Date.now()
-        };
+        });
 
         // 3. Promote v2 to ACTIVE_VALIDATED
-        const promotedV2 = m.routeManager.promoteToActive(capId, v2.routeId, token);
+        const promotedV2 = await m.routeManager.promoteToActiveAsync(capId, v2.routeId, token);
 
         return {
           provisionalSnapshot,

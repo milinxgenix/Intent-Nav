@@ -14,6 +14,7 @@ import { CandidateRankingEngine, RankingOptions } from '../ranking/engine';
 
 export interface CandidatePipelineResult {
   allCandidates: CandidateEvaluationContext[];
+  candidateEvaluationsCount: number;
   invariantResults: Record<string, InvariantClosureResult>;
   eligibleCandidates: CandidateEvaluationContext[];
   rejectedCandidates: Array<{
@@ -46,9 +47,11 @@ export class CandidatePipeline {
       result: InvariantClosureResult;
       rejectionReason: string;
     }> = [];
+    let candidateEvaluationsCount = 0;
 
     // STEP 1: Hard Invariant Closure & Contradiction Filtering for each candidate
     for (const candidate of candidates) {
+      candidateEvaluationsCount++;
       // Check negative evidence store first with candidate context for material evidence hashing
       if (this.negativeEvidenceStore.isKnownContradiction(candidate.candidateId, candidate, targetFingerprint.capabilityId)) {
         const neg = this.negativeEvidenceStore.getNegativeEvidence(candidate.candidateId, targetFingerprint.capabilityId)!;
@@ -121,6 +124,7 @@ export class CandidatePipeline {
 
     return {
       allCandidates: candidates,
+      candidateEvaluationsCount,
       invariantResults,
       eligibleCandidates,
       rejectedCandidates,

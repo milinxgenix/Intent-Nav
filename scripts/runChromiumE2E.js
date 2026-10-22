@@ -92,19 +92,42 @@ async function waitForChrome(retries = 30, delayMs = 300) {
 }
 
 // 2b. Poll for MV3 Background Service Worker Target
-async function waitForServiceWorker(extensionId = '', retries = 40, delayMs = 300) {
+async function waitForServiceWorker(extensionId = '', browserClient = null, retries = 40, delayMs = 300) {
   for (let i = 0; i < retries; i++) {
     try {
       const res = await fetch(`http://127.0.0.1:${CDP_PORT}/json/list`);
       if (res.ok) {
         const targets = await res.json();
-        const sw = targets.find((t) => t.type === 'service_worker' && t.url && t.url.includes(extensionId || 'background.js'));
+        if (i === 0 || i % 10 === 0) {
+          console.log(`[CDP] /json/list targets (attempt ${i + 1}):`, targets.map((t) => ({ type: t.type, url: t.url })));
+        }
+        const sw = targets.find((t) => (t.type === 'service_worker' || t.type === 'worker' || t.type === 'background_page') && t.url && t.url.includes(extensionId || 'background.js'));
         if (sw && sw.webSocketDebuggerUrl) {
-          console.log(`[Extension] Found MV3 Service Worker target: ${sw.url}`);
+          console.log(`[Extension] Found MV3 Service Worker target in /json/list: ${sw.url}`);
           return sw;
         }
       }
     } catch {}
+
+    if (browserClient) {
+      try {
+        const { targetInfos } = await browserClient.send('Target.getTargets');
+        if (i === 0 || i % 10 === 0) {
+          console.log(`[CDP] Target.getTargets (attempt ${i + 1}):`, targetInfos.map((t) => ({ type: t.type, url: t.url })));
+        }
+        const swInfo = targetInfos.find((t) => (t.type === 'service_worker' || t.type === 'worker' || t.type === 'background_page') && t.url && t.url.includes(extensionId || 'background.js'));
+        if (swInfo) {
+          console.log(`[Extension] Found MV3 Service Worker target in Target.getTargets: ${swInfo.url}`);
+          return {
+            type: swInfo.type,
+            url: swInfo.url,
+            webSocketDebuggerUrl: `ws://127.0.0.1:${CDP_PORT}/devtools/page/${swInfo.targetId}`,
+            targetId: swInfo.targetId,
+          };
+        }
+      } catch {}
+    }
+
     await new Promise((r) => setTimeout(r, delayMs));
   }
   throw new Error(`MV3 Background Service Worker not found on port ${CDP_PORT} after ${retries * delayMs}ms`);
@@ -134,20 +157,26 @@ class CDPClient {
     });
   }
 
-  send(method, params = {}) {
+  send(method, params = {}, sessionId = undefined) {
     const id = ++this.id;
     return new Promise((resolve, reject) => {
       this.callbacks.set(id, { resolve, reject });
-      this.ws.send(JSON.stringify({ id, method, params }));
+      const payload = { id, method, params };
+      if (sessionId) payload.sessionId = sessionId;
+      this.ws.send(JSON.stringify(payload));
     });
   }
 
-  async evaluate(expression) {
-    const res = await this.send('Runtime.evaluate', {
-      expression,
-      returnByValue: true,
-      awaitPromise: true,
-    });
+  async evaluate(expression, sessionId = undefined) {
+    const res = await this.send(
+      'Runtime.evaluate',
+      {
+        expression,
+        returnByValue: true,
+        awaitPromise: true,
+      },
+      sessionId
+    );
     if (res.exceptionDetails) {
       throw new Error(`CDP Evaluate Error: ${JSON.stringify(res.exceptionDetails)}`);
     }
@@ -312,15 +341,64 @@ async function run() {
     console.log(`[CDP] Connecting to Browser endpoint: ${versionData.webSocketDebuggerUrl}`);
     const browserClient = new CDPClient(versionData.webSocketDebuggerUrl);
     await browserClient.connect();
+
+    // Listen for service worker attachment before loading extension to catch startup
+    let swSessionId = null;
+    const swAttachedPromise = new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => reject(new Error('MV3 Service Worker attachment timeout after 15000ms')), 15000);
+      browserClient.ws.on('message', async (data) => {
+        try {
+          const msg = JSON.parse(data.toString());
+          if (
+            msg.method === 'Target.attachedToTarget' &&
+            msg.params?.targetInfo?.type === 'service_worker' &&
+            msg.params?.targetInfo?.url?.includes('background.js')
+          ) {
+            clearTimeout(timeout);
+            swSessionId = msg.params.sessionId;
+            resolve(swSessionId);
+          }
+        } catch {}
+      });
+    });
+
+    await browserClient.send('Target.setAutoAttach', {
+      autoAttach: true,
+      waitForDebuggerOnStart: true,
+      flatten: true,
+    });
+
     const ext = await browserClient.send('Extensions.loadUnpacked', { path: DIST_DIR });
     console.log(`[Extension] Loaded MV3 Extension via CDP: ID=${ext.id}`);
 
-    // Connect to MV3 Background Service Worker Target
-    const swTarget = await waitForServiceWorker(ext.id);
-    console.log(`[CDP] Connecting to MV3 Service Worker: ${swTarget.url}`);
-    const swClient = new CDPClient(swTarget.webSocketDebuggerUrl);
-    await swClient.connect();
-    await swClient.send('Runtime.enable');
+    await swAttachedPromise;
+    console.log(`[CDP] Attached to MV3 Service Worker with sessionId: ${swSessionId}`);
+    await browserClient.send('Runtime.enable', {}, swSessionId);
+    await browserClient.send('Runtime.runIfWaitingForDebugger', {}, swSessionId);
+
+    const swClient = {
+      evaluate: (expr) => browserClient.evaluate(expr, swSessionId),
+      send: (method, params) => browserClient.send(method, params, swSessionId),
+      close: () => {},
+    };
+
+    // Wait for Background Service Worker module graph to initialize globalThis.processIntentDirect
+    console.log('[Extension] Waiting for service worker module initialization...');
+    let ready = false;
+    for (let r = 0; r < 30; r++) {
+      try {
+        const fnType = await swClient.evaluate('typeof globalThis.processIntentDirect');
+        if (fnType === 'function') {
+          ready = true;
+          console.log('[Extension] Service Worker processIntentDirect is ready.');
+          break;
+        }
+      } catch {}
+      await new Promise((res) => setTimeout(res, 200));
+    }
+    if (!ready) {
+      throw new Error('Service Worker processIntentDirect failed to initialize within timeout');
+    }
 
     // Connect to Web Page Target
     const targetsRes = await fetch(`http://127.0.0.1:${CDP_PORT}/json/list`);

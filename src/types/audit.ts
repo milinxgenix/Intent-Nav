@@ -3,7 +3,7 @@
  */
 
 import { NormalizedIntent } from './intent';
-import { TypedDriftVector } from './drift';
+import { TypedDriftVector, DriftRecoveryMetrics } from './drift';
 import { InvariantClosureResult } from './invariant';
 import { CandidateRebindScore } from './ranking';
 import { CausalVerificationResult } from './transition';
@@ -36,6 +36,7 @@ export interface AuditRecord {
   userConfirmation: boolean | null;
   finalOutcome: 'EXECUTED' | 'ABSTAINED' | 'CONFIRMATION_PENDING' | 'SUGGESTED' | 'FAILED';
   failureReason?: string;
+  driftRecoveryMetrics?: DriftRecoveryMetrics;
 }
 
 export interface AuditLogExport {
