@@ -98,26 +98,38 @@ class LiveChromiumExecutionDispatcher implements ExecutionDispatcher {
             targetTag: target.tagName.toLowerCase(),
           };
 
+          const rawObs = {
+            attributeName: attrName,
+            attributeOldValue: m.oldValue,
+            attributeNewValue: attrVal,
+            targetTag: target.tagName?.toLowerCase() || 'unknown',
+          };
+
           if (attrName === 'aria-checked') {
             delta['checked'] = attrVal === 'true';
-            delta['marketing_emails_enabled'] = attrVal !== 'true';
-            delta['marketing_notifications_enabled'] = attrVal !== 'true';
-            delta['analytics_tracking_enabled'] = attrVal !== 'true';
+            delta['marketing_emails_enabled'] = attrVal === 'true';
+            delta['marketing_notifications_enabled'] = attrVal === 'true';
+            delta['analytics_tracking_enabled'] = attrVal === 'true';
             delta['dark_mode_enabled'] = attrVal === 'true';
-            this.recordWitness('ACCESSIBILITY_STATE_MUTATION', delta, 'MutationObserver:attributes:aria-checked');
+            this.recordWitness('ACCESSIBILITY_STATE_MUTATION', delta, 'MutationObserver:attributes:aria-checked', rawObs, 'DOM_ATTRIBUTE_CHANGE');
           } else if (attrName === 'aria-expanded' || attrName === 'disabled') {
             delta['expanded'] = attrVal === 'true';
             delta['disabled'] = target.hasAttribute('disabled');
-            this.recordWitness('ACCESSIBILITY_STATE_MUTATION', delta, `MutationObserver:attributes:${attrName}`);
+            this.recordWitness('ACCESSIBILITY_STATE_MUTATION', delta, `MutationObserver:attributes:${attrName}`, rawObs, 'DOM_ATTRIBUTE_CHANGE');
           } else {
-            this.recordWitness('DOM_MUTATION', delta, `MutationObserver:attributes:${attrName}`);
+            this.recordWitness('DOM_MUTATION', delta, `MutationObserver:attributes:${attrName}`, rawObs, 'DOM_ATTRIBUTE_CHANGE');
           }
         } else if (m.type === 'childList') {
+          const rawObs = {
+            addedNodes: m.addedNodes.length,
+            removedNodes: m.removedNodes.length,
+            targetTag: (m.target as HTMLElement).tagName?.toLowerCase() || 'unknown',
+          };
           this.recordWitness('DOM_MUTATION', {
             addedNodes: m.addedNodes.length,
             removedNodes: m.removedNodes.length,
             targetTag: (m.target as HTMLElement).tagName?.toLowerCase() || 'unknown',
-          }, 'MutationObserver:childList');
+          }, 'MutationObserver:childList', rawObs, 'CHILD_LIST_MUTATION');
         }
       }
     });
@@ -131,7 +143,13 @@ class LiveChromiumExecutionDispatcher implements ExecutionDispatcher {
   }
 
 
-  private recordWitness(witnessClass: WitnessClass, observedDelta: Record<string, unknown>, source: string): void {
+  private recordWitness(
+    witnessClass: WitnessClass,
+    observedDelta: Record<string, unknown>,
+    source: string,
+    rawObservation?: Record<string, unknown>,
+    observationType?: string
+  ): void {
     this.witnessCounter++;
     const now = Date.now();
     const actTime = this.currentActivationEvent?.timestamp || now;
@@ -147,6 +165,13 @@ class LiveChromiumExecutionDispatcher implements ExecutionDispatcher {
       isCausallyCorrelated: false,
       correlationExplanation: `Live browser observation of ${witnessClass}`,
       source,
+      rawObservation,
+      observationType,
+      provenance: {
+        origin: source,
+        sequenceId: this.witnessCounter,
+        observedAt: now,
+      },
     });
   }
 

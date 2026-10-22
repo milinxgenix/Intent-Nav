@@ -1,6 +1,6 @@
 {
-  "runId": "run_privacy_1792640896411",
-  "timestamp": 1792640911141,
+  "runId": "run_privacy_1792680770231",
+  "timestamp": 1792680784739,
   "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
   "browserVersion": "Google Chrome 155.0.8059.85",
   "environment": "Google Chrome (Google Chrome 155.0.8059.85) + CDP over WebSocket",
@@ -139,7 +139,7 @@
   ],
   "allRequests": [
     {
-      "requestId": "4759EDE65101D50013877A49FB3AD32B",
+      "requestId": "71ADA2F4A99851FF0010892727B33AA2",
       "target": "page",
       "method": "GET",
       "url": "http://localhost:3000/mock-sites/site-b/index.html",
@@ -148,10 +148,10 @@
       "classification": "LOCAL_MOCK_ASSET",
       "postDataSize": 0,
       "encodedDataLength": 156,
-      "timestamp": 25255.208674
+      "timestamp": 40146.038479
     },
     {
-      "requestId": "22736.6",
+      "requestId": "35200.6",
       "target": "page",
       "method": "GET",
       "url": "http://localhost:3000/mock-sites/site-b/app.js",
@@ -160,10 +160,10 @@
       "classification": "LOCAL_MOCK_ASSET",
       "postDataSize": 0,
       "encodedDataLength": 162,
-      "timestamp": 25255.215847
+      "timestamp": 40146.044637
     },
     {
-      "requestId": "D19A5D2EF4AC6B82432A6D500E5F64C1",
+      "requestId": "1FE0C025C67577AB8EC8389250F5A025",
       "target": "page",
       "method": "GET",
       "url": "http://localhost:3000/mock-sites/site-b/index.html",
@@ -172,10 +172,10 @@
       "classification": "LOCAL_MOCK_ASSET",
       "postDataSize": 0,
       "encodedDataLength": 156,
-      "timestamp": 25256.506973
+      "timestamp": 40147.331861
     },
     {
-      "requestId": "22736.9",
+      "requestId": "35200.9",
       "target": "page",
       "method": "GET",
       "url": "http://localhost:3000/mock-sites/site-b/app.js",
@@ -184,10 +184,10 @@
       "classification": "LOCAL_MOCK_ASSET",
       "postDataSize": 0,
       "encodedDataLength": 162,
-      "timestamp": 25256.51292
+      "timestamp": 40147.337685
     },
     {
-      "requestId": "2E0E4CBBA7412211E9199F06582D0D16",
+      "requestId": "97A6516F1DD61F877B1ECAA56128EFC7",
       "target": "page",
       "method": "GET",
       "url": "http://localhost:3000/mock-sites/site-a/index.html",
@@ -196,10 +196,10 @@
       "classification": "LOCAL_MOCK_ASSET",
       "postDataSize": 0,
       "encodedDataLength": 156,
-      "timestamp": 25257.791894
+      "timestamp": 40148.600994
     },
     {
-      "requestId": "22736.12",
+      "requestId": "35200.12",
       "target": "page",
       "method": "GET",
       "url": "http://localhost:3000/mock-sites/site-a/app.js",
@@ -208,10 +208,10 @@
       "classification": "LOCAL_MOCK_ASSET",
       "postDataSize": 0,
       "encodedDataLength": 162,
-      "timestamp": 25257.797165
+      "timestamp": 40148.605505
     },
     {
-      "requestId": "6E66D1CB23E4AED4720EBAA37CB9C4A2",
+      "requestId": "30048EE3D509B4495566CFE3025708E7",
       "target": "page",
       "method": "GET",
       "url": "http://localhost:3000/mock-sites/site-b/index.html",
@@ -220,10 +220,10 @@
       "classification": "LOCAL_MOCK_ASSET",
       "postDataSize": 0,
       "encodedDataLength": 156,
-      "timestamp": 25259.088493
+      "timestamp": 40149.901152
     },
     {
-      "requestId": "22736.15",
+      "requestId": "35200.15",
       "target": "page",
       "method": "GET",
       "url": "http://localhost:3000/mock-sites/site-b/app.js",
@@ -232,10 +232,10 @@
       "classification": "LOCAL_MOCK_ASSET",
       "postDataSize": 0,
       "encodedDataLength": 162,
-      "timestamp": 25259.093299
+      "timestamp": 40149.909385
     },
     {
-      "requestId": "82487EA6AC691615F9D71EE4192E9706",
+      "requestId": "3B4D323F235CC8C45A66B965714CAFD2",
       "target": "page",
       "method": "GET",
       "url": "http://localhost:3000/mock-sites/site-c/index.html",
@@ -244,10 +244,10 @@
       "classification": "LOCAL_MOCK_ASSET",
       "postDataSize": 0,
       "encodedDataLength": 156,
-      "timestamp": 25260.389401
+      "timestamp": 40151.204089
     },
     {
-      "requestId": "22736.18",
+      "requestId": "35200.18",
       "target": "page",
       "method": "GET",
       "url": "http://localhost:3000/mock-sites/site-c/app.js",
@@ -256,10 +256,10 @@
       "classification": "LOCAL_MOCK_ASSET",
       "postDataSize": 0,
       "encodedDataLength": 162,
-      "timestamp": 25260.394106
+      "timestamp": 40151.20868
     },
     {
-      "requestId": "3A1456385C7FD7B08060A05B4B909036",
+      "requestId": "FF9D159E373D8902AECD158A0FE9B5A1",
       "target": "page",
       "method": "GET",
       "url": "http://localhost:3000/mock-sites/site-c/index.html",
@@ -268,10 +268,10 @@
       "classification": "LOCAL_MOCK_ASSET",
       "postDataSize": 0,
       "encodedDataLength": 156,
-      "timestamp": 25261.706503
+      "timestamp": 40152.525756
     },
     {
-      "requestId": "22736.21",
+      "requestId": "35200.21",
       "target": "page",
       "method": "GET",
       "url": "http://localhost:3000/mock-sites/site-c/app.js",
@@ -280,10 +280,10 @@
       "classification": "LOCAL_MOCK_ASSET",
       "postDataSize": 0,
       "encodedDataLength": 162,
-      "timestamp": 25261.711602
+      "timestamp": 40152.530727
     },
     {
-      "requestId": "3945DDD38104F20BCC743D56B088793F",
+      "requestId": "AF00E3B95F4EE5CA23C696F4D528D224",
       "target": "page",
       "method": "GET",
       "url": "http://localhost:3000/mock-sites/site-c/index.html",
@@ -292,10 +292,10 @@
       "classification": "LOCAL_MOCK_ASSET",
       "postDataSize": 0,
       "encodedDataLength": 156,
-      "timestamp": 25263.014278
+      "timestamp": 40153.794611
     },
     {
-      "requestId": "22736.24",
+      "requestId": "35200.24",
       "target": "page",
       "method": "GET",
       "url": "http://localhost:3000/mock-sites/site-c/app.js",
@@ -304,10 +304,10 @@
       "classification": "LOCAL_MOCK_ASSET",
       "postDataSize": 0,
       "encodedDataLength": 162,
-      "timestamp": 25263.019259
+      "timestamp": 40153.799647
     },
     {
-      "requestId": "739C4B4E60D5AA31BC342FAD1973D996",
+      "requestId": "15C45C3345E049270AA447420816D781",
       "target": "page",
       "method": "GET",
       "url": "http://localhost:3000/mock-sites/site-a/index.html",
@@ -316,10 +316,10 @@
       "classification": "LOCAL_MOCK_ASSET",
       "postDataSize": 0,
       "encodedDataLength": 156,
-      "timestamp": 25264.422446
+      "timestamp": 40155.124563
     },
     {
-      "requestId": "22736.27",
+      "requestId": "35200.27",
       "target": "page",
       "method": "GET",
       "url": "http://localhost:3000/mock-sites/site-a/app.js",
@@ -328,10 +328,10 @@
       "classification": "LOCAL_MOCK_ASSET",
       "postDataSize": 0,
       "encodedDataLength": 162,
-      "timestamp": 25264.42683
+      "timestamp": 40155.129108
     },
     {
-      "requestId": "A09564EDFE7686F5ADD2EC74DBD2FC9F",
+      "requestId": "8908C2800DA9BAE966762C296BD97B48",
       "target": "page",
       "method": "GET",
       "url": "http://localhost:3000/mock-sites/site-a/index.html",
@@ -340,10 +340,10 @@
       "classification": "LOCAL_MOCK_ASSET",
       "postDataSize": 0,
       "encodedDataLength": 156,
-      "timestamp": 25265.762624
+      "timestamp": 40156.43921
     },
     {
-      "requestId": "22736.30",
+      "requestId": "35200.30",
       "target": "page",
       "method": "GET",
       "url": "http://localhost:3000/mock-sites/site-a/app.js",
@@ -352,10 +352,10 @@
       "classification": "LOCAL_MOCK_ASSET",
       "postDataSize": 0,
       "encodedDataLength": 162,
-      "timestamp": 25265.767448
+      "timestamp": 40156.443848
     },
     {
-      "requestId": "6A9BF454B844D5E581F61101B978862A",
+      "requestId": "2B800276AD43DB782813DD941073B8F0",
       "target": "page",
       "method": "GET",
       "url": "http://localhost:3000/mock-sites/site-d/index.html",
@@ -364,10 +364,10 @@
       "classification": "LOCAL_MOCK_ASSET",
       "postDataSize": 0,
       "encodedDataLength": 156,
-      "timestamp": 25267.060034
+      "timestamp": 40157.753705
     },
     {
-      "requestId": "22736.33",
+      "requestId": "35200.33",
       "target": "page",
       "method": "GET",
       "url": "http://localhost:3000/mock-sites/site-d/app.js",
@@ -376,7 +376,7 @@
       "classification": "LOCAL_MOCK_ASSET",
       "postDataSize": 0,
       "encodedDataLength": 162,
-      "timestamp": 25267.064121
+      "timestamp": 40157.757516
     }
   ]
 }

@@ -25,6 +25,7 @@ import {
   WitnessClass,
   TransitionVerificationToken,
   ClassifiedWitnessRecord,
+  ObservedPostState,
 } from '../../types/transition';
 import {
   PromotionTokenAuthenticator,
@@ -183,7 +184,7 @@ export class CausalTransitionVerifier {
     signature: TransitionSignature,
     activationEvent: ActivationEventRecord,
     witnesses: TransitionWitness[],
-    currentPostStateFingerprint?: string
+    currentPostStateFingerprint?: string | ObservedPostState
   ): CausalVerificationResult {
     // 0. Activation Event Presence & Validity
     if (!activationEvent || !activationEvent.eventId || typeof activationEvent.timestamp !== 'number') {
@@ -420,6 +421,33 @@ export class CausalTransitionVerifier {
       };
     }
 
+    // Check for Inter-Witness Contradictions across relevant witnesses on expected state delta properties
+    if (relevantCausalWitnesses.length > 1) {
+      const mergedExpectedObserved: Record<string, unknown> = {};
+      for (const w of relevantCausalWitnesses) {
+        if (!w.observedDelta) continue;
+        for (const [k, v] of Object.entries(w.observedDelta)) {
+          if (k in signature.expectedStateDelta) {
+            if (k in mergedExpectedObserved && !this.deepEqual(mergedExpectedObserved[k], v)) {
+              return {
+                signature,
+                activationEvent,
+                observedWitnesses: relevantCausalWitnesses,
+                classifiedWitnesses,
+                verifiedWitnessClasses: [],
+                status: 'FAILED_CONTRADICTORY_WITNESS',
+                failureReason: 'contradictory_witness',
+                causallyVerified: false,
+                durationMs: relevantCausalWitnesses[relevantCausalWitnesses.length - 1]!.timestamp - startTime,
+                explanation: `Transition rejected: Contradictory witness observations across channels for property '${k}' (${JSON.stringify(mergedExpectedObserved[k])} vs ${JSON.stringify(v)}).`,
+              };
+            }
+            mergedExpectedObserved[k] = v;
+          }
+        }
+      }
+    }
+
     // Verify Expected State Delta Match -> wrong_direction
     let deltaMatched = false;
     if (Object.keys(signature.expectedStateDelta).length === 0) {
@@ -468,71 +496,172 @@ export class CausalTransitionVerifier {
       };
     }
 
-    // Direct Post-State Verification -> post_state_mismatch
-    // Compare observed post-state against expected post-state directly (do not merely check post !== pre)
-    if (currentPostStateFingerprint !== undefined) {
-      if (currentPostStateFingerprint === signature.preStateFingerprint) {
-        return {
-          signature,
-          activationEvent,
-          observedWitnesses: relevantCausalWitnesses,
-          classifiedWitnesses,
-          verifiedWitnessClasses: [],
-          status: 'FAILED_POST_STATE_MISMATCH',
-          failureReason: 'post_state_mismatch',
-          causallyVerified: false,
-          durationMs: relevantCausalWitnesses[relevantCausalWitnesses.length - 1]!.timestamp - startTime,
-          explanation: 'Transition rejected: Post-state fingerprint identical to pre-state; no actual state progression occurred.',
-        };
-      }
-      if (signature.postStateFingerprint && currentPostStateFingerprint !== signature.postStateFingerprint) {
-        return {
-          signature,
-          activationEvent,
-          observedWitnesses: relevantCausalWitnesses,
-          classifiedWitnesses,
-          verifiedWitnessClasses: [],
-          status: 'FAILED_POST_STATE_MISMATCH',
-          failureReason: 'post_state_mismatch',
-          causallyVerified: false,
-          durationMs: relevantCausalWitnesses[relevantCausalWitnesses.length - 1]!.timestamp - startTime,
-          explanation: `Transition rejected: Observed post-state fingerprint '${currentPostStateFingerprint}' does not match expected post-state fingerprint '${signature.postStateFingerprint}'.`,
-        };
+    // 6. Verify Independent Witness Classes Quorum -> insufficient_independence
+    // Deduplicate identical witness IDs
+    const seenWitnessIds = new Set<string>();
+    const deduplicatedWitnesses: TransitionWitness[] = [];
+    for (const w of relevantCausalWitnesses) {
+      if (!seenWitnessIds.has(w.witnessId)) {
+        seenWitnessIds.add(w.witnessId);
+        deduplicatedWitnesses.push(w);
       }
     }
 
-    // Verify Independent Witness Classes Quorum -> insufficient_independence
     const distinctClasses: WitnessClass[] = Array.from(
-      new Set(relevantCausalWitnesses.map((w) => w.witnessClass))
+      new Set(deduplicatedWitnesses.map((w) => w.witnessClass))
     );
 
     if (distinctClasses.length < minClasses) {
       return {
         signature,
         activationEvent,
-        observedWitnesses: relevantCausalWitnesses,
+        observedWitnesses: deduplicatedWitnesses,
         classifiedWitnesses,
         verifiedWitnessClasses: distinctClasses,
         status: 'FAILED_INSUFFICIENT_WITNESS_CLASSES',
         failureReason: 'insufficient_independence',
         causallyVerified: false,
-        durationMs: relevantCausalWitnesses[relevantCausalWitnesses.length - 1]!.timestamp - startTime,
+        durationMs: deduplicatedWitnesses[deduplicatedWitnesses.length - 1]!.timestamp - startTime,
         explanation: `Transition rejected: Observed only ${distinctClasses.length} distinct witness class (${distinctClasses.join(', ')}). Minimum required independent classes is ${minClasses}. Duplicate events of the same class do not satisfy quorum.`,
       };
     }
 
-    const durationMs = relevantCausalWitnesses[relevantCausalWitnesses.length - 1]!.timestamp - startTime;
+    // Distinct Observational Origins Check (Step 4 Requirement:
+    // "Do not claim independent witnesses merely because two records exist. Verify distinct observational origins and the required independence rules.")
+    const origins = new Set(
+      deduplicatedWitnesses.map((w) => {
+        if (w.provenance?.origin) return w.provenance.origin;
+        if (w.source) return w.source;
+        return `observer_${w.witnessClass}`;
+      })
+    );
+
+    if (origins.size < minClasses) {
+      return {
+        signature,
+        activationEvent,
+        observedWitnesses: deduplicatedWitnesses,
+        classifiedWitnesses,
+        verifiedWitnessClasses: distinctClasses,
+        status: 'FAILED_INSUFFICIENT_WITNESS_CLASSES',
+        failureReason: 'insufficient_independence',
+        causallyVerified: false,
+        durationMs: deduplicatedWitnesses[deduplicatedWitnesses.length - 1]!.timestamp - startTime,
+        explanation: `Transition rejected: Multiple witnesses share the same observational origin (${Array.from(origins).join(', ')}). Distinct observational origins required for independent quorum.`,
+      };
+    }
+
+    // 7. Direct Post-State Verification -> post_state_mismatch
+    // Compare observed post-state against expected post-state directly (do not merely check post !== pre)
+    let observedPostStateObj: ObservedPostState | undefined = undefined;
+    let postStateFpString: string | undefined = undefined;
+
+    if (currentPostStateFingerprint !== undefined) {
+      if (typeof currentPostStateFingerprint === 'object' && currentPostStateFingerprint !== null) {
+        observedPostStateObj = currentPostStateFingerprint as ObservedPostState;
+        postStateFpString = observedPostStateObj.postStateFingerprint;
+
+        // 1. Must be a genuine observation, not predicted or caller-supplied
+        if (!observedPostStateObj.isObserved) {
+          return {
+            signature,
+            activationEvent,
+            observedWitnesses: deduplicatedWitnesses,
+            classifiedWitnesses,
+            verifiedWitnessClasses: [],
+            status: 'FAILED_POST_STATE_MISMATCH',
+            failureReason: 'post_state_mismatch',
+            causallyVerified: false,
+            durationMs: deduplicatedWitnesses[deduplicatedWitnesses.length - 1]!.timestamp - startTime,
+            explanation: 'Transition rejected: Supplied post-state is not a genuine observation (isObserved is false). Predicted or caller-supplied states cannot satisfy post-state verification.',
+          };
+        }
+
+        // 2. Binding checks: activationEventId, capabilityId
+        if (observedPostStateObj.activationEventId && observedPostStateObj.activationEventId !== activationEvent.eventId) {
+          return {
+            signature,
+            activationEvent,
+            observedWitnesses: deduplicatedWitnesses,
+            classifiedWitnesses,
+            verifiedWitnessClasses: [],
+            status: 'FAILED_POST_STATE_MISMATCH',
+            failureReason: 'stale_witness',
+            causallyVerified: false,
+            durationMs: deduplicatedWitnesses[deduplicatedWitnesses.length - 1]!.timestamp - startTime,
+            explanation: `Transition rejected: Observed post-state activationEventId '${observedPostStateObj.activationEventId}' does not match current activation event '${activationEvent.eventId}'. Stale post-state binding rejected.`,
+          };
+        }
+
+        if (observedPostStateObj.capabilityId && observedPostStateObj.capabilityId !== activationEvent.initiatingCapabilityId) {
+          return {
+            signature,
+            activationEvent,
+            observedWitnesses: deduplicatedWitnesses,
+            classifiedWitnesses,
+            verifiedWitnessClasses: [],
+            status: 'FAILED_POST_STATE_MISMATCH',
+            failureReason: 'invalid_transition',
+            causallyVerified: false,
+            durationMs: deduplicatedWitnesses[deduplicatedWitnesses.length - 1]!.timestamp - startTime,
+            explanation: `Transition rejected: Observed post-state capabilityId '${observedPostStateObj.capabilityId}' does not match initiating capability '${activationEvent.initiatingCapabilityId}'. Cross-route or mismatched capability binding rejected.`,
+          };
+        }
+      } else {
+        postStateFpString = currentPostStateFingerprint as string;
+      }
+
+      if (postStateFpString === signature.preStateFingerprint) {
+        return {
+          signature,
+          activationEvent,
+          observedWitnesses: deduplicatedWitnesses,
+          classifiedWitnesses,
+          verifiedWitnessClasses: [],
+          status: 'FAILED_POST_STATE_MISMATCH',
+          failureReason: 'post_state_mismatch',
+          causallyVerified: false,
+          durationMs: deduplicatedWitnesses[deduplicatedWitnesses.length - 1]!.timestamp - startTime,
+          explanation: 'Transition rejected: Post-state fingerprint identical to pre-state; no actual state progression occurred.',
+        };
+      }
+
+      if (signature.postStateFingerprint && postStateFpString !== signature.postStateFingerprint) {
+        const appStateMatches = observedPostStateObj?.observedApplicationState
+          ? this.isDeltaMatching(observedPostStateObj.observedApplicationState, signature.expectedStateDelta)
+          : false;
+
+        if (!appStateMatches) {
+          return {
+            signature,
+            activationEvent,
+            observedWitnesses: deduplicatedWitnesses,
+            classifiedWitnesses,
+            verifiedWitnessClasses: [],
+            status: 'FAILED_POST_STATE_MISMATCH',
+            failureReason: 'post_state_mismatch',
+            causallyVerified: false,
+            durationMs: deduplicatedWitnesses[deduplicatedWitnesses.length - 1]!.timestamp - startTime,
+            explanation: `Transition rejected: Observed post-state fingerprint '${postStateFpString}' does not match expected post-state fingerprint '${signature.postStateFingerprint}'.`,
+          };
+        }
+      }
+    }
+
+    const durationMs = deduplicatedWitnesses[deduplicatedWitnesses.length - 1]!.timestamp - startTime;
 
     return {
       signature,
       activationEvent,
-      observedWitnesses: relevantCausalWitnesses,
+      observedWitnesses: deduplicatedWitnesses,
       classifiedWitnesses,
       verifiedWitnessClasses: distinctClasses,
       status: 'VERIFIED',
       causallyVerified: true,
       durationMs,
-      explanation: `CAUSALLY VERIFIED: Correlated ${relevantCausalWitnesses.length} witnesses across ${distinctClasses.length} independent classes (${distinctClasses.join(', ')}) in ${durationMs}ms`,
+      explanation: `CAUSALLY VERIFIED: Correlated ${deduplicatedWitnesses.length} witnesses across ${distinctClasses.length} independent classes (${distinctClasses.join(', ')}) from ${origins.size} distinct origins in ${durationMs}ms`,
+      observedPostState: observedPostStateObj,
+      observedPostStateFingerprint: postStateFpString,
     };
   }
 
@@ -544,7 +673,7 @@ export class CausalTransitionVerifier {
     signature: TransitionSignature,
     activationEvent: ActivationEventRecord,
     witnesses: TransitionWitness[],
-    currentPostStateFingerprint?: string,
+    currentPostStateFingerprint?: string | ObservedPostState,
     routeId?: string
   ): CausalVerificationResult {
     const baseResult = this.evaluateCausalEvidence(
@@ -583,7 +712,7 @@ export class CausalTransitionVerifier {
     signature: TransitionSignature,
     activationEvent: ActivationEventRecord,
     witnesses: TransitionWitness[],
-    currentPostStateFingerprint?: string,
+    currentPostStateFingerprint?: string | ObservedPostState,
     routeId?: string
   ): Promise<CausalVerificationResult> {
     const baseResult = this.evaluateCausalEvidence(

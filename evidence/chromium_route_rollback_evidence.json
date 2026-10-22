@@ -1,6 +1,6 @@
 {
-  "runId": "run_rollback_1792640911350",
-  "timestamp": 1792640914880,
+  "runId": "run_rollback_1792680714141",
+  "timestamp": 1792680717881,
   "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
   "browserVersion": "Google Chrome 155.0.8059.85",
   "environment": "Google Chrome (Google Chrome 155.0.8059.85) + CDP over WebSocket",
@@ -12,72 +12,72 @@
   "lifecycleEvents": [
     {
       "event": "ROUTE_V1_VERIFIED_AND_PROMOTED",
-      "routeId": "route_CAP_DISABLE_MARKETING_v1_1792640913309",
+      "routeId": "route_CAP_DISABLE_MARKETING_v1_1792680716322",
       "capabilityId": "CAP_DISABLE_MARKETING",
       "versionNumber": 1,
       "status": "ACTIVE_VALIDATED",
-      "lastValidatedTimestamp": 1792640913494,
-      "timestamp": 1792640913517
+      "lastValidatedTimestamp": 1792680716504,
+      "timestamp": 1792680716525
     },
     {
       "event": "ROUTE_V2_CREATED_PROVISIONAL",
-      "routeId": "route_CAP_DISABLE_MARKETING_v2_1792640913520",
+      "routeId": "route_CAP_DISABLE_MARKETING_v2_1792680716527",
       "capabilityId": "CAP_DISABLE_MARKETING",
       "versionNumber": 2,
       "status": "PROVISIONAL",
-      "timestamp": 1792640913532
+      "timestamp": 1792680716540
     },
     {
       "event": "ROUTE_V2_VERIFIED_AND_PROMOTED",
-      "routeId": "route_CAP_DISABLE_MARKETING_v2_1792640913520",
+      "routeId": "route_CAP_DISABLE_MARKETING_v2_1792680716527",
       "capabilityId": "CAP_DISABLE_MARKETING",
       "versionNumber": 2,
       "status": "ACTIVE_VALIDATED",
-      "lastValidatedTimestamp": 1792640913527,
-      "timestamp": 1792640913532
+      "lastValidatedTimestamp": 1792680716536,
+      "timestamp": 1792680716540
     },
     {
       "event": "ROUTE_V2_RUNTIME_FAILURE_DETECTED",
-      "routeId": "route_CAP_DISABLE_MARKETING_v2_1792640913520",
+      "routeId": "route_CAP_DISABLE_MARKETING_v2_1792680716527",
       "failureReason": "Runtime action execution failure: alternate target element missing from live DOM",
-      "timestamp": 1792640913532
+      "timestamp": 1792680716540
     },
     {
       "event": "ROUTE_V2_DEMOTED",
-      "routeId": "route_CAP_DISABLE_MARKETING_v2_1792640913520",
+      "routeId": "route_CAP_DISABLE_MARKETING_v2_1792680716527",
       "versionNumber": 2,
       "status": "DEMOTED",
       "demotionReason": "Runtime action execution failure: alternate target element missing from live DOM",
-      "timestamp": 1792640913540
+      "timestamp": 1792680716548
     },
     {
       "event": "ROLLBACK_RESTORED_TO_V1",
-      "restoredRouteId": "route_CAP_DISABLE_MARKETING_v1_1792640913309",
+      "restoredRouteId": "route_CAP_DISABLE_MARKETING_v1_1792680716322",
       "restoredVersion": 1,
       "restoredStatus": "ACTIVE_VALIDATED",
-      "activeRouteId": "route_CAP_DISABLE_MARKETING_v1_1792640913309",
-      "timestamp": 1792640913540
+      "activeRouteId": "route_CAP_DISABLE_MARKETING_v1_1792680716322",
+      "timestamp": 1792680716548
     },
     {
       "event": "REEXECUTION_UNDER_RESTORED_V1_SUCCEEDED",
-      "routeId": "route_CAP_DISABLE_MARKETING_v1_1792640913309",
+      "routeId": "route_CAP_DISABLE_MARKETING_v1_1792680716322",
       "finalMachineState": "EXECUTED",
       "postStateVerified": true,
-      "timestamp": 1792640914879
+      "timestamp": 1792680717880
     }
   ],
   "routeHistory": [
     {
-      "routeId": "route_CAP_DISABLE_MARKETING_v1_1792640913309",
+      "routeId": "route_CAP_DISABLE_MARKETING_v1_1792680716322",
       "versionNumber": 1,
       "status": "ACTIVE_VALIDATED",
-      "lastValidatedTimestamp": 1792640913494
+      "lastValidatedTimestamp": 1792680716504
     },
     {
-      "routeId": "route_CAP_DISABLE_MARKETING_v2_1792640913520",
+      "routeId": "route_CAP_DISABLE_MARKETING_v2_1792680716527",
       "versionNumber": 2,
       "status": "DEMOTED",
-      "lastValidatedTimestamp": 1792640913527
+      "lastValidatedTimestamp": 1792680716536
     }
   ],
   "stateSnapshots": {

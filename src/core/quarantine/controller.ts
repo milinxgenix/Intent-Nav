@@ -29,24 +29,53 @@ export class QuarantineController {
   }
 
   /**
-   * Transitions route to failed QUARANTINED state and records negative evidence
+   * Transitions route to failed QUARANTINED state and records structured negative evidence
    */
   public quarantineFailedRoute(
     capabilityId: string,
     routeId: string,
     reason: string,
-    evidenceDetails: Record<string, unknown> = {}
+    evidenceDetails: Record<string, unknown> = {},
+    extra?: {
+      failedCondition?: string;
+      activationEventId?: string;
+      sequenceNumber?: number;
+      witnessIds?: string[];
+      candidateIdentifier?: string;
+      requiredMaterialEvidenceChange?: string;
+    }
   ): RouteVersion {
     const quarantined = this.routeManager.quarantineRoute(capabilityId, routeId, reason);
+
+    const statusCondition = extra?.failedCondition || (evidenceDetails['status'] as string) || 'TRANSITION_VERIFICATION_FAILURE';
+    const requiredChange =
+      extra?.requiredMaterialEvidenceChange ||
+      (statusCondition === 'FAILED_POST_STATE_MISMATCH'
+        ? 'Requires valid observed interface post-state progression differing from pre-state and satisfying expected delta.'
+        : 'Requires material interface or state transition change before candidate can be reconsidered.');
 
     this.negativeEvidenceStore.recordContradiction(
       routeId,
       'CAUSAL_WITNESS_FAILURE',
-      'TRANSITION_VERIFICATION_FAILURE',
+      statusCondition,
       reason,
       evidenceDetails,
-      {},
-      routeId
+      { capabilityId },
+      routeId,
+      undefined,
+      {
+        failedCondition: statusCondition,
+        affectedCapabilityId: capabilityId,
+        affectedRouteId: routeId,
+        affectedCandidateId: extra?.candidateIdentifier || routeId,
+        sequenceNumber: extra?.sequenceNumber,
+        activationEventId: extra?.activationEventId,
+        witnessIds: extra?.witnessIds,
+        failureClassification: statusCondition,
+        quarantined: true,
+        canReconsider: true,
+        requiredMaterialEvidenceChange: requiredChange,
+      }
     );
 
     return quarantined;

@@ -33,15 +33,18 @@ import {
   CapabilityFingerprintVersion,
 } from '../../types/capability';
 import { TransitionSignature, WitnessClass } from '../../types/transition';
+import { InterfaceStateNode } from '../../types/state';
 import { VolatileFeatureSuppressor } from './suppressor';
 
 export const CAPABILITY_FINGERPRINT_DOMAIN = 'INTENTNAV_SCFR_CAPABILITY_FINGERPRINT_V2' as const;
 export const TRANSITION_BINDING_DOMAIN = 'INTENTNAV_SCFR_TRANSITION_BINDING_V2' as const;
 export const WITNESS_BINDING_DOMAIN = 'INTENTNAV_SCFR_WITNESS_BINDING_V2' as const;
 export const WITNESS_EVIDENCE_DOMAIN = 'INTENTNAV_SCFR_WITNESS_EVIDENCE_V2' as const;
+export const POST_STATE_FINGERPRINT_DOMAIN = 'INTENTNAV_SCFR_POST_STATE_FINGERPRINT_V2' as const;
 
 export const FINGERPRINT_PREFIX_V2 = 'capfp_sha256_' as const;
 export const FINGERPRINT_PREFIX_V1_LEGACY = 'fph_' as const;
+export const POST_STATE_FINGERPRINT_PREFIX_V2 = 'postfp_sha256_' as const;
 
 export interface FingerprintConstructionOptions {
   capabilityId: string;
@@ -692,6 +695,63 @@ export class FingerprintConstructor {
       witnessEvidenceHash
     );
     return `wd_sha256_${this.sha256HexSync(canonical)}`;
+  }
+
+  /**
+   * Deterministically constructs the canonical representation for observed post-state.
+   * Enforces lexicographical key sorting, set-sorted arrays, domain separation,
+   * and binding to capabilityId, routeId, and activationEventId.
+   */
+  public static buildCanonicalPostStateRepresentation(input: {
+    capabilityId: string;
+    routeId?: string | null;
+    routeVersion?: string | null;
+    activationEventId?: string | null;
+    stateNode?: Partial<InterfaceStateNode> | null;
+    observedApplicationState?: Record<string, unknown>;
+    domStructuralHash?: string | null;
+    semanticLandmarks?: string[];
+    activeModalsOrDialogs?: string[];
+    activeTabs?: string[];
+  }): string {
+    const appState = input.observedApplicationState ?? input.stateNode?.observedApplicationState ?? {};
+    const sortedLandmarks = Array.from(new Set(input.semanticLandmarks ?? input.stateNode?.semanticLandmarks ?? [])).sort();
+    const sortedModals = Array.from(new Set(input.activeModalsOrDialogs ?? input.stateNode?.activeModalsOrDialogs ?? [])).sort();
+    const sortedTabs = Array.from(new Set(input.activeTabs ?? input.stateNode?.activeTabs ?? [])).sort();
+    const domStructuralHash = input.domStructuralHash ?? input.stateNode?.domStructuralHash ?? null;
+
+    const base: Record<string, unknown> = {
+      activationEventId: input.activationEventId ?? null,
+      activeModalsOrDialogs: sortedModals,
+      activeTabs: sortedTabs,
+      capabilityId: input.capabilityId,
+      domain: POST_STATE_FINGERPRINT_DOMAIN,
+      domStructuralHash,
+      observedApplicationState: appState,
+      routeId: input.routeId ?? null,
+      routeVersion: input.routeVersion ?? null,
+      semanticLandmarks: sortedLandmarks,
+    };
+    return canonicalizeValue(base);
+  }
+
+  /**
+   * Computes a domain-separated SHA-256 observed post-state fingerprint (`postfp_sha256_<64hex>`).
+   */
+  public static computePostStateFingerprint(input: {
+    capabilityId: string;
+    routeId?: string | null;
+    routeVersion?: string | null;
+    activationEventId?: string | null;
+    stateNode?: Partial<InterfaceStateNode> | null;
+    observedApplicationState?: Record<string, unknown>;
+    domStructuralHash?: string | null;
+    semanticLandmarks?: string[];
+    activeModalsOrDialogs?: string[];
+    activeTabs?: string[];
+  }): string {
+    const canonical = this.buildCanonicalPostStateRepresentation(input);
+    return `${POST_STATE_FINGERPRINT_PREFIX_V2}${this.sha256HexSync(canonical)}`;
   }
 
   /**

@@ -53,4 +53,17 @@ export interface NegativeEvidenceEntry {
   confidence: number;
   previouslySelected: boolean;
   suppressionWeight: number; // Penalty applied to future matching
+
+  // Step 6 complete negative evidence fields:
+  failedCondition?: string; // specific failed invariant name or causal status (e.g. 'FAILED_POST_STATE_MISMATCH')
+  affectedCapabilityId?: string;
+  affectedRouteId?: string;
+  affectedCandidateId?: string;
+  sequenceNumber?: number;
+  activationEventId?: string;
+  witnessIds?: string[];
+  failureClassification?: string;
+  quarantined?: boolean; // whether the candidate/route remains quarantined
+  canReconsider?: boolean; // whether candidate may be reconsidered upon material interface change
+  requiredMaterialEvidenceChange?: string; // explicit explanation of what evidence change is required for reconsideration
 }

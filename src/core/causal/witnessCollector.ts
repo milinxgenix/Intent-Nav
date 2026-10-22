@@ -28,12 +28,22 @@ export class WitnessCollector {
   }
 
   /**
-   * Records an observed witness event
+   * Records an observed witness event with raw evidence, provenance, and binding info
    */
   public recordWitness(
     witnessClass: WitnessClass,
     observedDelta: Record<string, unknown>,
-    timestamp: number = Date.now()
+    timestamp: number = Date.now(),
+    options?: {
+      source?: string;
+      targetInfo?: string;
+      rawObservation?: Record<string, unknown>;
+      observationType?: string;
+      routeId?: string;
+      capabilityId?: string;
+      provenance?: import('../../types/transition').WitnessProvenance;
+      eventSequenceId?: string;
+    }
   ): TransitionWitness {
     this.sequenceCounter++;
     const witnessId = `wit_${this.sequenceCounter}_${witnessClass}_${timestamp}`;
@@ -58,6 +68,8 @@ export class WitnessCollector {
       correlationExplanation = 'REJECTED: Unrelated event observed without prior activation event';
     }
 
+    const defaultSource = options?.source || (options?.provenance?.origin ?? `WitnessCollector:${witnessClass}`);
+
     const witness: TransitionWitness = {
       witnessId,
       witnessClass,
@@ -68,6 +80,18 @@ export class WitnessCollector {
       temporalDeltaMs,
       isCausallyCorrelated,
       correlationExplanation,
+      source: defaultSource,
+      targetInfo: options?.targetInfo,
+      rawObservation: options?.rawObservation,
+      observationType: options?.observationType,
+      routeId: options?.routeId,
+      capabilityId: options?.capabilityId || this.activeActivationEvent?.initiatingCapabilityId,
+      provenance: options?.provenance || {
+        origin: defaultSource,
+        sequenceId: this.sequenceCounter,
+        observedAt: timestamp,
+      },
+      eventSequenceId: options?.eventSequenceId,
     };
 
     this.witnesses.push(witness);

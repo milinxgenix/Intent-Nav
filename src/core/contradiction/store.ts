@@ -51,10 +51,23 @@ export class NegativeEvidenceStore {
     evidenceDetails: Record<string, unknown> = {},
     partialFingerprint: Partial<FunctionalCapabilityFingerprint> = {},
     originatingRouteId?: string,
-    candidateContext?: CandidateEvaluationContext
+    candidateContext?: CandidateEvaluationContext,
+    extra?: {
+      failedCondition?: string;
+      affectedCapabilityId?: string;
+      affectedRouteId?: string;
+      affectedCandidateId?: string;
+      sequenceNumber?: number;
+      activationEventId?: string;
+      witnessIds?: string[];
+      failureClassification?: string;
+      quarantined?: boolean;
+      canReconsider?: boolean;
+      requiredMaterialEvidenceChange?: string;
+    }
   ): NegativeEvidenceEntry {
     const id = `neg_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-    const capId = partialFingerprint.capabilityId || 'GLOBAL';
+    const capId = partialFingerprint.capabilityId || extra?.affectedCapabilityId || 'GLOBAL';
     const rawEvidenceHash = candidateContext
       ? NegativeEvidenceStore.computeEvidenceHash(candidateContext)
       : `id_${candidateIdentifier}`;
@@ -70,6 +83,10 @@ export class NegativeEvidenceStore {
         role: partialFingerprint.semanticEvidence?.role || candidateContext?.observedRole || 'element',
         riskClass: partialFingerprint.riskMetadata?.riskClass,
       });
+
+    const defaultRequiredChange =
+      extra?.requiredMaterialEvidenceChange ||
+      'Material change in candidate role, target entity, or container semantics required before reconsideration.';
 
     const entry: NegativeEvidenceEntry = {
       id,
@@ -87,6 +104,19 @@ export class NegativeEvidenceStore {
       confidence: 0.95,
       previouslySelected: false,
       suppressionWeight: 1.0, // Full suppression
+
+      // Step 6 structured negative evidence:
+      failedCondition: extra?.failedCondition || failedInvariantId,
+      affectedCapabilityId: capId,
+      affectedRouteId: originatingRouteId || extra?.affectedRouteId,
+      affectedCandidateId: candidateIdentifier,
+      sequenceNumber: extra?.sequenceNumber,
+      activationEventId: extra?.activationEventId,
+      witnessIds: extra?.witnessIds,
+      failureClassification: extra?.failureClassification || contradictionType,
+      quarantined: extra?.quarantined ?? true,
+      canReconsider: extra?.canReconsider ?? false,
+      requiredMaterialEvidenceChange: defaultRequiredChange,
     };
 
     this.records.set(interfaceEvidenceHash, entry);
@@ -111,6 +141,154 @@ export class NegativeEvidenceStore {
     }
 
     return entry;
+  }
+
+  /**
+   * Records structured negative evidence for a failed causal transition verification
+   */
+  public recordCausalFailure(params: {
+    capabilityId: string;
+    routeId: string;
+    candidateIdentifier?: string;
+    verificationStatus: string;
+    failureReason?: string;
+    explanation: string;
+    activationEventId?: string;
+    sequenceNumber?: number;
+    witnessIds?: string[];
+    observedWitnessClasses?: string[];
+    observedPostStateFingerprint?: string;
+    candidateContext?: CandidateEvaluationContext;
+  }): NegativeEvidenceEntry {
+    const candidateId = params.candidateIdentifier || `cand_${params.capabilityId}_${params.routeId}`;
+    const requiredChange =
+      params.verificationStatus === 'FAILED_POST_STATE_MISMATCH'
+        ? 'Requires valid observed interface post-state progression differing from pre-state and satisfying expected delta.'
+        : params.verificationStatus === 'FAILED_CONTRADICTORY_WITNESS'
+        ? 'Requires eliminating conflicting DOM mutations or error/failure flags in observation channels.'
+        : params.verificationStatus === 'FAILED_INSUFFICIENT_WITNESS_CLASSES'
+        ? 'Requires independent observations across at least 2 distinct witness classes and origins.'
+        : params.verificationStatus === 'FAILED_WINDOW_TIMEOUT'
+        ? 'Requires state transition to occur within the bounded verification window.'
+        : 'Requires material interface or state transition change.';
+
+    return this.recordContradiction(
+      candidateId,
+      'CAUSAL_WITNESS_FAILURE',
+      params.verificationStatus,
+      params.explanation,
+      {
+        failureReason: params.failureReason,
+        status: params.verificationStatus,
+        activationEventId: params.activationEventId,
+        sequenceNumber: params.sequenceNumber,
+        witnessIds: params.witnessIds,
+        observedWitnessClasses: params.observedWitnessClasses,
+        postStateFingerprint: params.observedPostStateFingerprint,
+      },
+      { capabilityId: params.capabilityId },
+      params.routeId,
+      params.candidateContext,
+      {
+        failedCondition: params.verificationStatus,
+        affectedCapabilityId: params.capabilityId,
+        affectedRouteId: params.routeId,
+        affectedCandidateId: candidateId,
+        sequenceNumber: params.sequenceNumber,
+        activationEventId: params.activationEventId,
+        witnessIds: params.witnessIds,
+        failureClassification: params.verificationStatus,
+        quarantined: true,
+        canReconsider: false,
+        requiredMaterialEvidenceChange: requiredChange,
+      }
+    );
+  }
+
+  /**
+   * Explains whether a candidate can be reconsidered upon material interface change,
+   * returning an auditable decision object.
+   */
+  public canCandidateBeReconsidered(
+    candidateIdentifier: string,
+    candidateContext: CandidateEvaluationContext,
+    capabilityId?: string
+  ): { allowed: boolean; reason: string; requiredChange?: string } {
+    const rawEvidenceHash = NegativeEvidenceStore.computeEvidenceHash(candidateContext);
+    const cap = capabilityId || 'GLOBAL';
+    const scopedHash = `${cap}::${rawEvidenceHash}`;
+
+    if (this.records.has(scopedHash) || this.records.has(`GLOBAL::${rawEvidenceHash}`)) {
+      const entry = this.records.get(scopedHash) || this.records.get(`GLOBAL::${rawEvidenceHash}`);
+      return {
+        allowed: false,
+        reason: `Suppressed by identical material evidence (${scopedHash}). Candidate unchanged since prior failure.`,
+        requiredChange: entry?.requiredMaterialEvidenceChange || 'Material change in candidate role, target entity, or container semantics required.',
+      };
+    }
+
+    const idKey = `${cap}::${candidateIdentifier}`;
+    const previousHash = this.idIndex.get(idKey) || this.idIndex.get(`GLOBAL::${candidateIdentifier}`);
+
+    if (previousHash && !previousHash.endsWith(`id_${candidateIdentifier}`) && previousHash !== scopedHash) {
+      return {
+        allowed: true,
+        reason: `Reconsideration permitted: Material interface change observed (previous evidence: ${previousHash}, current evidence: ${scopedHash}).`,
+      };
+    }
+
+    if (this.idIndex.has(idKey) || this.idIndex.has(`GLOBAL::${candidateIdentifier}`)) {
+      return {
+        allowed: false,
+        reason: `Candidate identifier '${candidateIdentifier}' remains under active failure quarantine without material evidence delta.`,
+        requiredChange: 'Material DOM or interface evidence change required.',
+      };
+    }
+
+    return {
+      allowed: true,
+      reason: 'No conflicting negative evidence recorded for this candidate.',
+    };
+  }
+
+  /**
+   * Initializes store by loading existing negative evidence from persistent capability store
+   */
+  public async init(): Promise<void> {
+    if (this.store) {
+      try {
+        const stored = await this.store.getNegativeEvidence();
+        for (const item of stored) {
+          if (!this.records.has(item.interfaceEvidenceHash)) {
+            const entry: NegativeEvidenceEntry = {
+              id: item.evidenceId,
+              candidateFingerprint: { capabilityId: item.capabilityId },
+              candidateIdentifier: item.evidenceId,
+              candidateFingerprintHash: item.candidateFingerprintHash,
+              interfaceEvidenceHash: item.interfaceEvidenceHash,
+              contradictionType: item.contradictionType,
+              failedInvariantId: item.failedInvariant,
+              reason: item.reason,
+              timestamp: item.timestamp,
+              originatingRouteId: item.routeVersion,
+              interfaceVersion: '1.0.0',
+              evidenceDetails: {},
+              confidence: 0.95,
+              previouslySelected: item.previouslySelected,
+              suppressionWeight: item.suppressionWeight,
+              failedCondition: item.failedInvariant,
+              affectedCapabilityId: item.capabilityId,
+              affectedRouteId: item.routeVersion,
+              quarantined: true,
+              canReconsider: false,
+            };
+            this.records.set(item.interfaceEvidenceHash, entry);
+            const idKey = `${item.capabilityId}::${item.evidenceId}`;
+            this.idIndex.set(idKey, item.interfaceEvidenceHash);
+          }
+        }
+      } catch {}
+    }
   }
 
   /**

@@ -876,9 +876,40 @@ export class IntentNavMachine {
     this.context.activationEvent = activationEvent;
     this.context.capturedWitnesses = collectedWitnesses;
 
-    // 8. CAUSAL TRANSITION VERIFICATION (Derived internally, >=2 independent witness classes)
-    this.state = 'TRANSITION_VERIFYING';
+    // 8. OBSERVE POST-STATE & COMPUTE CANONICAL OBSERVED POST-STATE FINGERPRINT (Step 5)
+    let postStateNode: InterfaceStateNode | null = null;
+    if (isDispatcher && (effectiveDispatcherOrWitnesses as ExecutionDispatcher).observePostState) {
+      try {
+        postStateNode = await (effectiveDispatcherOrWitnesses as ExecutionDispatcher).observePostState!();
+      } catch {}
+    }
+
+    let observedPostStateObj: import('../../types/transition').ObservedPostState | undefined = undefined;
     const targetRouteId = (this.context.provisionalRoute || routeToAuthorize)?.routeId || `route_${matchedCap.capabilityId}`;
+
+    if (postStateNode) {
+      const postStateFp = FingerprintConstructor.computePostStateFingerprint({
+        capabilityId: matchedCap.capabilityId,
+        routeId: targetRouteId,
+        activationEventId: activationEvent.eventId,
+        stateNode: postStateNode,
+      });
+      observedPostStateObj = {
+        postStateFingerprint: postStateFp,
+        observedApplicationState: postStateNode.observedApplicationState || {},
+        observedStateNode: postStateNode,
+        observedTimestamp: Date.now(),
+        activationEventId: activationEvent.eventId,
+        routeId: targetRouteId,
+        capabilityId: matchedCap.capabilityId,
+        isObserved: true,
+        observationSource: 'ExecutionDispatcher:observePostState',
+      };
+    }
+
+    // 9. CAUSAL TRANSITION VERIFICATION (Derived internally, >=2 independent witness classes)
+    this.state = 'TRANSITION_VERIFYING';
+    const postStateArg = observedPostStateObj || matchedCap.transitionEvidence.postStateFingerprint;
     const verificationResult = await this.causalVerifier.verifyTransitionAsync(
       {
         preStateFingerprint: matchedCap.transitionEvidence.preStateFingerprint,
@@ -894,7 +925,7 @@ export class IntentNavMachine {
       },
       activationEvent,
       collectedWitnesses,
-      matchedCap.transitionEvidence.postStateFingerprint,
+      postStateArg,
       targetRouteId
     );
     this.context.verificationResult = verificationResult;
@@ -903,21 +934,41 @@ export class IntentNavMachine {
     );
 
     if (!verificationResult.causallyVerified || verificationResult.status !== 'VERIFIED') {
+      if (
+        verificationResult.status === 'FAILED_POST_STATE_MISMATCH' ||
+        verificationResult.failureReason === 'post_state_mismatch'
+      ) {
+        this.context.postStateVerified = false;
+      }
       this.state = 'QUARANTINED';
       this.context.currentState = this.state;
+      this.quarantineController.quarantineFailedRoute(
+        matchedCap.capabilityId,
+        targetRouteId,
+        verificationResult.explanation,
+        {
+          failureReason: verificationResult.failureReason,
+          status: verificationResult.status,
+          activationEventId: activationEvent.eventId,
+          sequenceNumber: activationEvent.sequenceNumber,
+          witnessCount: collectedWitnesses.length,
+          observedWitnessClasses: verificationResult.verifiedWitnessClasses,
+          postStateFingerprint: observedPostStateObj?.postStateFingerprint,
+        },
+        {
+          failedCondition: verificationResult.status,
+          activationEventId: activationEvent.eventId,
+          sequenceNumber: activationEvent.sequenceNumber,
+          witnessIds: collectedWitnesses.map((w) => w.witnessId),
+          candidateIdentifier: candidateToExecute.candidateId,
+        }
+      );
       this.createAndSaveValidationRecord('QUARANTINED');
       this.logAudit('FAILED', verificationResult.explanation);
       return this.context;
     }
 
-    // 9. REAL POST-STATE VERIFICATION (Phase 4)
-    let postStateNode: InterfaceStateNode | null = null;
-    if (isDispatcher && (effectiveDispatcherOrWitnesses as ExecutionDispatcher).observePostState) {
-      try {
-        postStateNode = await (effectiveDispatcherOrWitnesses as ExecutionDispatcher).observePostState!();
-      } catch {}
-    }
-
+    // 10. REAL POST-STATE PREDICATE VERIFICATION (Phase 4)
     if (matchedCap.expectedPostState && matchedCap.expectedPostState.length > 0) {
       const observedAppState = postStateNode?.observedApplicationState || {};
       const mergedWitnessDeltas: Record<string, unknown> = {};

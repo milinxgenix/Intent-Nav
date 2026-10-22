@@ -1,6 +1,6 @@
 {
-  "runId": "run_neg_chromium_1792640847789",
-  "timestamp": 1792640867943,
+  "runId": "run_neg_chromium_1792680641560",
+  "timestamp": 1792680661486,
   "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
   "browserVersion": "Google Chrome 155.0.8059.85",
   "environment": "Google Chrome (Google Chrome 155.0.8059.85) + CDP over WebSocket",
@@ -9,7 +9,7 @@
   "allCorrectlyRefused": true,
   "scenarios": [
     {
-      "runId": "run_neg_chromium_1792640847789",
+      "runId": "run_neg_chromium_1792680641560",
       "scenarioId": "N1",
       "name": "Invariant Violation — element present but semantic predicate absent",
       "description": "The target element has role=\"button\" instead of role=\"switch\" and no aria-checked. Invariant closure must reject it.",
@@ -49,13 +49,13 @@
           "postStateFingerprint": "STATE_POST_MARKETING_OFF"
         },
         "activationEvent": {
-          "eventId": "act_1792640850159_62yi",
+          "eventId": "act_1792680643795_wybl",
           "sequenceNumber": 1,
-          "timestamp": 1792640850159,
-          "targetCandidateId": "handle_0_1792640850152",
+          "timestamp": 1792680643795,
+          "targetCandidateId": "handle_0_1792680643779",
           "eventType": "click",
           "bindingHandle": {
-            "handleId": "handle_0_1792640850152",
+            "handleId": "handle_0_1792680643779",
             "tagName": "button",
             "role": "button",
             "accessibleName": "Turn off marketing notifications",
@@ -204,19 +204,19 @@
             }
           ],
           "failedPredicates": [],
-          "evaluatedTimestamp": 1792640850156
+          "evaluatedTimestamp": 1792680643788
         }
       },
       "activeRoute": null,
       "provisionalRoute": {
-        "routeId": "route_CAP_DISABLE_MARKETING_v1_1792640850157",
-        "status": "PROVISIONAL"
+        "routeId": "route_CAP_DISABLE_MARKETING_v1_1792680643790",
+        "status": "QUARANTINED"
       },
-      "routeStatus": "PROVISIONAL",
+      "routeStatus": "QUARANTINED",
       "promotionTokenValid": null,
       "promotionFailureReason": null,
       "executionPreconditionsCheck": null,
-      "pre16Passed": true,
+      "pre16Passed": false,
       "refusalReason": "witness_missing",
       "failureReason": "witness_missing",
       "witnesses": [],
@@ -235,7 +235,7 @@
         "requiresUserConfirmation": false,
         "userConfirmationGranted": false,
         "policyReason": "Medium-risk reversible operation AUTHORIZED with high confidence.",
-        "evaluatedTimestamp": 1792640850157
+        "evaluatedTimestamp": 1792680643790
       },
       "independentOracleResult": {
         "oraclePassed": true,
@@ -254,10 +254,10 @@
         "evaluatedBy": "INDEPENDENT_TEST_ORACLE",
         "wasCorrectlyRefused": true
       },
-      "timestamp": 1792640850406
+      "timestamp": 1792680643968
     },
     {
-      "runId": "run_neg_chromium_1792640847789",
+      "runId": "run_neg_chromium_1792680641560",
       "scenarioId": "N2",
       "name": "Semantic Decoy — high-similarity label but CONTRADICTED by invariant closure",
       "description": "Two similar elements exist: genuine switch and data purge decoy. Decoy contradicted by invariant closure; genuine candidate executed safely.",
@@ -296,13 +296,13 @@
           "postStateFingerprint": "STATE_POST_MARKETING_OFF"
         },
         "activationEvent": {
-          "eventId": "act_1792640851593_tg2e",
+          "eventId": "act_1792680645149_lyqn",
           "sequenceNumber": 1,
-          "timestamp": 1792640851593,
-          "targetCandidateId": "handle_0_1792640851578",
+          "timestamp": 1792680645149,
+          "targetCandidateId": "handle_0_1792680645135",
           "eventType": "click",
           "bindingHandle": {
-            "handleId": "handle_0_1792640851578",
+            "handleId": "handle_0_1792680645135",
             "tagName": "button",
             "role": "switch",
             "accessibleName": "Turn off marketing notifications",
@@ -314,24 +314,24 @@
         },
         "observedWitnesses": [
           {
-            "witnessId": "wit_1792640851594_1",
+            "witnessId": "wit_1792680645151_1",
             "witnessClass": "APPLICATION_STATE_MUTATION",
             "sequenceNumber": 1,
-            "timestamp": 1792640851594,
+            "timestamp": 1792680645151,
             "observedDelta": {
               "marketing_notifications_enabled": false
             },
-            "correlatedActivationEventId": "act_1792640851593_tg2e",
-            "temporalDeltaMs": 1,
+            "correlatedActivationEventId": "act_1792680645149_lyqn",
+            "temporalDeltaMs": 2,
             "isCausallyCorrelated": false,
-            "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640851594",
+            "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680645151",
             "source": "CustomEvent:intentnav:mock-state-change"
           },
           {
-            "witnessId": "wit_1792640851647_2",
+            "witnessId": "wit_1792680645202_2",
             "witnessClass": "ACCESSIBILITY_STATE_MUTATION",
             "sequenceNumber": 2,
-            "timestamp": 1792640851647,
+            "timestamp": 1792680645202,
             "observedDelta": {
               "attribute": "aria-checked",
               "value": "false",
@@ -341,38 +341,38 @@
               "marketing_notifications_enabled": false,
               "analytics_tracking_enabled": false
             },
-            "correlatedActivationEventId": "act_1792640851593_tg2e",
-            "temporalDeltaMs": 54,
+            "correlatedActivationEventId": "act_1792680645149_lyqn",
+            "temporalDeltaMs": 53,
             "isCausallyCorrelated": false,
-            "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792640851647",
+            "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792680645202",
             "source": "MutationObserver:attributes:aria-checked"
           }
         ],
         "classifiedWitnesses": [
           {
             "witness": {
-              "witnessId": "wit_1792640851594_1",
+              "witnessId": "wit_1792680645151_1",
               "witnessClass": "APPLICATION_STATE_MUTATION",
               "sequenceNumber": 1,
-              "timestamp": 1792640851594,
+              "timestamp": 1792680645151,
               "observedDelta": {
                 "marketing_notifications_enabled": false
               },
-              "correlatedActivationEventId": "act_1792640851593_tg2e",
-              "temporalDeltaMs": 1,
+              "correlatedActivationEventId": "act_1792680645149_lyqn",
+              "temporalDeltaMs": 2,
               "isCausallyCorrelated": false,
-              "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640851594",
+              "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680645151",
               "source": "CustomEvent:intentnav:mock-state-change"
             },
             "category": "CAUSALLY_VALID",
-            "reason": "Witness observed matching state delta within verification window (1ms)."
+            "reason": "Witness observed matching state delta within verification window (2ms)."
           },
           {
             "witness": {
-              "witnessId": "wit_1792640851647_2",
+              "witnessId": "wit_1792680645202_2",
               "witnessClass": "ACCESSIBILITY_STATE_MUTATION",
               "sequenceNumber": 2,
-              "timestamp": 1792640851647,
+              "timestamp": 1792680645202,
               "observedDelta": {
                 "attribute": "aria-checked",
                 "value": "false",
@@ -382,14 +382,14 @@
                 "marketing_notifications_enabled": false,
                 "analytics_tracking_enabled": false
               },
-              "correlatedActivationEventId": "act_1792640851593_tg2e",
-              "temporalDeltaMs": 54,
+              "correlatedActivationEventId": "act_1792680645149_lyqn",
+              "temporalDeltaMs": 53,
               "isCausallyCorrelated": false,
-              "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792640851647",
+              "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792680645202",
               "source": "MutationObserver:attributes:aria-checked"
             },
             "category": "CAUSALLY_VALID",
-            "reason": "Witness observed matching state delta within verification window (54ms)."
+            "reason": "Witness observed matching state delta within verification window (53ms)."
           }
         ],
         "verifiedWitnessClasses": [
@@ -398,13 +398,67 @@
         ],
         "status": "VERIFIED",
         "causallyVerified": true,
-        "durationMs": 54,
-        "explanation": "CAUSALLY VERIFIED: Correlated 2 witnesses across 2 independent classes (APPLICATION_STATE_MUTATION, ACCESSIBILITY_STATE_MUTATION) in 54ms",
-        "verificationToken": {
-          "tokenId": "tok_1792640851750_e603e2ffa1c9",
-          "routeId": "route_CAP_DISABLE_MARKETING_v2_1792640851582",
+        "durationMs": 53,
+        "explanation": "CAUSALLY VERIFIED: Correlated 2 witnesses across 2 independent classes (APPLICATION_STATE_MUTATION, ACCESSIBILITY_STATE_MUTATION) from 2 distinct origins in 53ms",
+        "observedPostState": {
+          "postStateFingerprint": "postfp_sha256_79041f951c4a1e63e651eff65abfc698bf839b6b5c13024e9c487c6067372b3b",
+          "observedApplicationState": {
+            "marketing_notifications_enabled": false,
+            "analytics_tracking_enabled": true,
+            "account_deleted": false,
+            "access_tokens_revoked": false
+          },
+          "observedStateNode": {
+            "stateId": "state_1792680645303",
+            "stateType": "PAGE",
+            "urlPattern": "/mock-sites/site-neg/index.html",
+            "domStructuralHash": "hash_gr8eoo",
+            "semanticLandmarks": [
+              "section[Marketing Preferences]"
+            ],
+            "activeModalsOrDialogs": [],
+            "activeTabs": [],
+            "exposedCandidateHandles": [
+              {
+                "handleId": "handle_0",
+                "tagName": "button",
+                "role": "switch",
+                "accessibleName": "Turn off marketing notifications",
+                "domStructuralPath": "section[aria-label=\"Marketing Preference\"]:nth-of-type(1) > button[role=\"switch\"]:nth-of-type(1)",
+                "elementIndex": 0,
+                "volatileId": "n2-genuine"
+              },
+              {
+                "handleId": "handle_1",
+                "tagName": "button",
+                "role": "button",
+                "accessibleName": "Turn off all notifications and purge data",
+                "domStructuralPath": "section[aria-label=\"Marketing Preference\"]:nth-of-type(1) > button[role=\"button\"]:nth-of-type(2)",
+                "elementIndex": 1,
+                "volatileId": "n2-decoy"
+              }
+            ],
+            "observedApplicationState": {
+              "marketing_notifications_enabled": false,
+              "analytics_tracking_enabled": true,
+              "account_deleted": false,
+              "access_tokens_revoked": false
+            },
+            "timestamp": 1792680645304
+          },
+          "observedTimestamp": 1792680645304,
+          "activationEventId": "act_1792680645149_lyqn",
+          "routeId": "route_CAP_DISABLE_MARKETING_v2_1792680645138",
           "capabilityId": "CAP_DISABLE_MARKETING",
-          "activationEventId": "act_1792640851593_tg2e",
+          "isObserved": true,
+          "observationSource": "ExecutionDispatcher:observePostState"
+        },
+        "observedPostStateFingerprint": "postfp_sha256_79041f951c4a1e63e651eff65abfc698bf839b6b5c13024e9c487c6067372b3b",
+        "verificationToken": {
+          "tokenId": "tok_1792680645305_9a7f68ffd5ee",
+          "routeId": "route_CAP_DISABLE_MARKETING_v2_1792680645138",
+          "capabilityId": "CAP_DISABLE_MARKETING",
+          "activationEventId": "act_1792680645149_lyqn",
           "verifiedWitnessClasses": [
             "APPLICATION_STATE_MUTATION",
             "ACCESSIBILITY_STATE_MUTATION"
@@ -421,12 +475,12 @@
             "postStateFingerprint": "STATE_POST_MARKETING_OFF"
           },
           "transitionBinding": "tb_sha256_a8dbe62a4f77c3a782e82d5b1f862b515e8080bdd80964f10d0b9bef14c86e9d",
-          "witnessDigest": "wd_sha256_7b15e2e7ff7c5376efe0c54cb0ef92ece8a96023bf9ae77824937adadc22ef4e",
-          "witnessEvidenceHash": "we_sha256_1fe21e415e55668b588faf7c8c5ad194f8a1672b36ac561f221db373026b3be3",
-          "issuedTimestamp": 1792640851750,
+          "witnessDigest": "wd_sha256_85f5f393992ee042a3f843906fbda424ca99c97a6ee1beb3ddbbb89702373244",
+          "witnessEvidenceHash": "we_sha256_8fe73a4ed992e9af01fe099bcf46222e586ce867651329c1781a4ca5fb651ad8",
+          "issuedTimestamp": 1792680645305,
           "verifiedStatus": "VERIFIED",
           "algorithm": "HMAC-SHA-256",
-          "signatureHash": "hmac_sha256_e603e2ffa1c9d18490f961f512fbc5b995cef1aebb1c2628c1f51df6c56b8940"
+          "signatureHash": "hmac_sha256_9a7f68ffd5eef0f4550e55c97f87eb8ee9be8525bf7ec4416610cb00c095a5ab"
         }
       },
       "causalVerified": true,
@@ -560,7 +614,7 @@
             }
           ],
           "failedPredicates": [],
-          "evaluatedTimestamp": 1792640851581
+          "evaluatedTimestamp": 1792680645138
         },
         "cand_1_8tbioc": {
           "candidateId": "cand_1_8tbioc",
@@ -691,15 +745,15 @@
             }
           ],
           "rejectionReason": "CONTRADICTION: Candidate targets forbidden entity 'ALL_NOTIFICATIONS'; CONTRADICTION: Candidate performs forbidden destructive action 'DELETE'",
-          "evaluatedTimestamp": 1792640851581
+          "evaluatedTimestamp": 1792680645138
         }
       },
       "activeRoute": {
-        "routeId": "route_CAP_DISABLE_MARKETING_v2_1792640851582",
+        "routeId": "route_CAP_DISABLE_MARKETING_v2_1792680645138",
         "status": "ACTIVE_VALIDATED"
       },
       "provisionalRoute": {
-        "routeId": "route_CAP_DISABLE_MARKETING_v2_1792640851582",
+        "routeId": "route_CAP_DISABLE_MARKETING_v2_1792680645138",
         "status": "ACTIVE_VALIDATED"
       },
       "routeStatus": "ACTIVE_VALIDATED",
@@ -711,28 +765,28 @@
         "reasons": []
       },
       "pre16Passed": true,
-      "refusalReason": "CAUSALLY VERIFIED: Correlated 2 witnesses across 2 independent classes (APPLICATION_STATE_MUTATION, ACCESSIBILITY_STATE_MUTATION) in 54ms",
-      "failureReason": "CAUSALLY VERIFIED: Correlated 2 witnesses across 2 independent classes (APPLICATION_STATE_MUTATION, ACCESSIBILITY_STATE_MUTATION) in 54ms",
+      "refusalReason": "CAUSALLY VERIFIED: Correlated 2 witnesses across 2 independent classes (APPLICATION_STATE_MUTATION, ACCESSIBILITY_STATE_MUTATION) from 2 distinct origins in 53ms",
+      "failureReason": "CAUSALLY VERIFIED: Correlated 2 witnesses across 2 independent classes (APPLICATION_STATE_MUTATION, ACCESSIBILITY_STATE_MUTATION) from 2 distinct origins in 53ms",
       "witnesses": [
         {
-          "witnessId": "wit_1792640851594_1",
+          "witnessId": "wit_1792680645151_1",
           "witnessClass": "APPLICATION_STATE_MUTATION",
           "sequenceNumber": 1,
-          "timestamp": 1792640851594,
+          "timestamp": 1792680645151,
           "observedDelta": {
             "marketing_notifications_enabled": false
           },
-          "correlatedActivationEventId": "act_1792640851593_tg2e",
-          "temporalDeltaMs": 1,
+          "correlatedActivationEventId": "act_1792680645149_lyqn",
+          "temporalDeltaMs": 2,
           "isCausallyCorrelated": false,
-          "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640851594",
+          "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680645151",
           "source": "CustomEvent:intentnav:mock-state-change"
         },
         {
-          "witnessId": "wit_1792640851647_2",
+          "witnessId": "wit_1792680645202_2",
           "witnessClass": "ACCESSIBILITY_STATE_MUTATION",
           "sequenceNumber": 2,
-          "timestamp": 1792640851647,
+          "timestamp": 1792680645202,
           "observedDelta": {
             "attribute": "aria-checked",
             "value": "false",
@@ -742,10 +796,10 @@
             "marketing_notifications_enabled": false,
             "analytics_tracking_enabled": false
           },
-          "correlatedActivationEventId": "act_1792640851593_tg2e",
-          "temporalDeltaMs": 54,
+          "correlatedActivationEventId": "act_1792680645149_lyqn",
+          "temporalDeltaMs": 53,
           "isCausallyCorrelated": false,
-          "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792640851647",
+          "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792680645202",
           "source": "MutationObserver:attributes:aria-checked"
         }
       ],
@@ -767,7 +821,7 @@
         "requiresUserConfirmation": false,
         "userConfirmationGranted": false,
         "policyReason": "Medium-risk reversible operation AUTHORIZED with high confidence.",
-        "evaluatedTimestamp": 1792640851583
+        "evaluatedTimestamp": 1792680645139
       },
       "independentOracleResult": {
         "oraclePassed": true,
@@ -786,10 +840,10 @@
         "evaluatedBy": "INDEPENDENT_TEST_ORACLE",
         "wasCorrectlyRefused": true
       },
-      "timestamp": 1792640851784
+      "timestamp": 1792680645338
     },
     {
-      "runId": "run_neg_chromium_1792640847789",
+      "runId": "run_neg_chromium_1792680641560",
       "scenarioId": "N3",
       "name": "Stale BindingHandle — session-level volatile element ID rehashed",
       "description": "Volatile ID is an arbitrary hash. Resolved via structural/semantic path without volatile-ID fallback.",
@@ -829,13 +883,13 @@
           "postStateFingerprint": "STATE_POST_MARKETING_OFF"
         },
         "activationEvent": {
-          "eventId": "act_1792640852964_ru1f",
+          "eventId": "act_1792680646512_n80x",
           "sequenceNumber": 1,
-          "timestamp": 1792640852964,
-          "targetCandidateId": "handle_0_1792640852950",
+          "timestamp": 1792680646512,
+          "targetCandidateId": "handle_0_1792680646501",
           "eventType": "click",
           "bindingHandle": {
-            "handleId": "handle_0_1792640852950",
+            "handleId": "handle_0_1792680646501",
             "tagName": "button",
             "role": "switch",
             "accessibleName": "Turn off marketing notifications",
@@ -847,24 +901,24 @@
         },
         "observedWitnesses": [
           {
-            "witnessId": "wit_1792640852965_1",
+            "witnessId": "wit_1792680646515_1",
             "witnessClass": "APPLICATION_STATE_MUTATION",
             "sequenceNumber": 1,
-            "timestamp": 1792640852965,
+            "timestamp": 1792680646515,
             "observedDelta": {
               "marketing_notifications_enabled": false
             },
-            "correlatedActivationEventId": "act_1792640852964_ru1f",
-            "temporalDeltaMs": 1,
+            "correlatedActivationEventId": "act_1792680646512_n80x",
+            "temporalDeltaMs": 3,
             "isCausallyCorrelated": false,
-            "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640852965",
+            "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680646515",
             "source": "CustomEvent:intentnav:mock-state-change"
           },
           {
-            "witnessId": "wit_1792640853017_2",
+            "witnessId": "wit_1792680646566_2",
             "witnessClass": "ACCESSIBILITY_STATE_MUTATION",
             "sequenceNumber": 2,
-            "timestamp": 1792640853017,
+            "timestamp": 1792680646566,
             "observedDelta": {
               "attribute": "aria-checked",
               "value": "false",
@@ -874,38 +928,38 @@
               "marketing_notifications_enabled": false,
               "analytics_tracking_enabled": false
             },
-            "correlatedActivationEventId": "act_1792640852964_ru1f",
-            "temporalDeltaMs": 53,
+            "correlatedActivationEventId": "act_1792680646512_n80x",
+            "temporalDeltaMs": 54,
             "isCausallyCorrelated": false,
-            "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792640853017",
+            "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792680646566",
             "source": "MutationObserver:attributes:aria-checked"
           }
         ],
         "classifiedWitnesses": [
           {
             "witness": {
-              "witnessId": "wit_1792640852965_1",
+              "witnessId": "wit_1792680646515_1",
               "witnessClass": "APPLICATION_STATE_MUTATION",
               "sequenceNumber": 1,
-              "timestamp": 1792640852965,
+              "timestamp": 1792680646515,
               "observedDelta": {
                 "marketing_notifications_enabled": false
               },
-              "correlatedActivationEventId": "act_1792640852964_ru1f",
-              "temporalDeltaMs": 1,
+              "correlatedActivationEventId": "act_1792680646512_n80x",
+              "temporalDeltaMs": 3,
               "isCausallyCorrelated": false,
-              "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640852965",
+              "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680646515",
               "source": "CustomEvent:intentnav:mock-state-change"
             },
             "category": "CAUSALLY_VALID",
-            "reason": "Witness observed matching state delta within verification window (1ms)."
+            "reason": "Witness observed matching state delta within verification window (3ms)."
           },
           {
             "witness": {
-              "witnessId": "wit_1792640853017_2",
+              "witnessId": "wit_1792680646566_2",
               "witnessClass": "ACCESSIBILITY_STATE_MUTATION",
               "sequenceNumber": 2,
-              "timestamp": 1792640853017,
+              "timestamp": 1792680646566,
               "observedDelta": {
                 "attribute": "aria-checked",
                 "value": "false",
@@ -915,14 +969,14 @@
                 "marketing_notifications_enabled": false,
                 "analytics_tracking_enabled": false
               },
-              "correlatedActivationEventId": "act_1792640852964_ru1f",
-              "temporalDeltaMs": 53,
+              "correlatedActivationEventId": "act_1792680646512_n80x",
+              "temporalDeltaMs": 54,
               "isCausallyCorrelated": false,
-              "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792640853017",
+              "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792680646566",
               "source": "MutationObserver:attributes:aria-checked"
             },
             "category": "CAUSALLY_VALID",
-            "reason": "Witness observed matching state delta within verification window (53ms)."
+            "reason": "Witness observed matching state delta within verification window (54ms)."
           }
         ],
         "verifiedWitnessClasses": [
@@ -931,13 +985,58 @@
         ],
         "status": "VERIFIED",
         "causallyVerified": true,
-        "durationMs": 53,
-        "explanation": "CAUSALLY VERIFIED: Correlated 2 witnesses across 2 independent classes (APPLICATION_STATE_MUTATION, ACCESSIBILITY_STATE_MUTATION) in 53ms",
-        "verificationToken": {
-          "tokenId": "tok_1792640853119_2d39969c78ca",
-          "routeId": "route_CAP_DISABLE_MARKETING_v3_1792640852953",
+        "durationMs": 54,
+        "explanation": "CAUSALLY VERIFIED: Correlated 2 witnesses across 2 independent classes (APPLICATION_STATE_MUTATION, ACCESSIBILITY_STATE_MUTATION) from 2 distinct origins in 54ms",
+        "observedPostState": {
+          "postStateFingerprint": "postfp_sha256_a15631840733f0c25327023c516350c8b72ed278d8c04b541822f47bcaae7790",
+          "observedApplicationState": {
+            "marketing_notifications_enabled": false,
+            "analytics_tracking_enabled": true,
+            "account_deleted": false,
+            "access_tokens_revoked": false
+          },
+          "observedStateNode": {
+            "stateId": "state_1792680646667",
+            "stateType": "PAGE",
+            "urlPattern": "/mock-sites/site-neg/index.html",
+            "domStructuralHash": "hash_gr8eoo",
+            "semanticLandmarks": [
+              "section[Marketing Preferences]"
+            ],
+            "activeModalsOrDialogs": [],
+            "activeTabs": [],
+            "exposedCandidateHandles": [
+              {
+                "handleId": "handle_0",
+                "tagName": "button",
+                "role": "switch",
+                "accessibleName": "Turn off marketing notifications",
+                "domStructuralPath": "section[aria-label=\"Marketing Preference\"]:nth-of-type(1) > button[role=\"switch\"]:nth-of-type(1)",
+                "elementIndex": 0,
+                "volatileId": "volatile-x9q7-hash"
+              }
+            ],
+            "observedApplicationState": {
+              "marketing_notifications_enabled": false,
+              "analytics_tracking_enabled": true,
+              "account_deleted": false,
+              "access_tokens_revoked": false
+            },
+            "timestamp": 1792680646667
+          },
+          "observedTimestamp": 1792680646667,
+          "activationEventId": "act_1792680646512_n80x",
+          "routeId": "route_CAP_DISABLE_MARKETING_v3_1792680646503",
           "capabilityId": "CAP_DISABLE_MARKETING",
-          "activationEventId": "act_1792640852964_ru1f",
+          "isObserved": true,
+          "observationSource": "ExecutionDispatcher:observePostState"
+        },
+        "observedPostStateFingerprint": "postfp_sha256_a15631840733f0c25327023c516350c8b72ed278d8c04b541822f47bcaae7790",
+        "verificationToken": {
+          "tokenId": "tok_1792680646668_ca707bf47877",
+          "routeId": "route_CAP_DISABLE_MARKETING_v3_1792680646503",
+          "capabilityId": "CAP_DISABLE_MARKETING",
+          "activationEventId": "act_1792680646512_n80x",
           "verifiedWitnessClasses": [
             "APPLICATION_STATE_MUTATION",
             "ACCESSIBILITY_STATE_MUTATION"
@@ -954,12 +1053,12 @@
             "postStateFingerprint": "STATE_POST_MARKETING_OFF"
           },
           "transitionBinding": "tb_sha256_a8dbe62a4f77c3a782e82d5b1f862b515e8080bdd80964f10d0b9bef14c86e9d",
-          "witnessDigest": "wd_sha256_7e79043587517a8c0e9b772d3d84186a5accbe2c896f1ac5bc2b1c91569936cd",
-          "witnessEvidenceHash": "we_sha256_52fd20e8f943dc748f88a266d092b431a83a772960b822b4ad49d3b7537065bf",
-          "issuedTimestamp": 1792640853119,
+          "witnessDigest": "wd_sha256_b384bf6a304abde8d0d21ba6c29df498f64c716ee21eef38e1ccd7ed9fbd1e57",
+          "witnessEvidenceHash": "we_sha256_56b100edac0235e050fe3002ed3de8f1a548a7b229e2a2386ad8ea5b0c38ffec",
+          "issuedTimestamp": 1792680646668,
           "verifiedStatus": "VERIFIED",
           "algorithm": "HMAC-SHA-256",
-          "signatureHash": "hmac_sha256_2d39969c78caf655e582d75af6c36a62c54b0ef505d5f1d2adeeb6347633c656"
+          "signatureHash": "hmac_sha256_ca707bf478776170d4596aeaded7f6e1702d586f98754df60740489fe843bc54"
         }
       },
       "causalVerified": true,
@@ -1093,15 +1192,15 @@
             }
           ],
           "failedPredicates": [],
-          "evaluatedTimestamp": 1792640852952
+          "evaluatedTimestamp": 1792680646503
         }
       },
       "activeRoute": {
-        "routeId": "route_CAP_DISABLE_MARKETING_v3_1792640852953",
+        "routeId": "route_CAP_DISABLE_MARKETING_v3_1792680646503",
         "status": "ACTIVE_VALIDATED"
       },
       "provisionalRoute": {
-        "routeId": "route_CAP_DISABLE_MARKETING_v3_1792640852953",
+        "routeId": "route_CAP_DISABLE_MARKETING_v3_1792680646503",
         "status": "ACTIVE_VALIDATED"
       },
       "routeStatus": "ACTIVE_VALIDATED",
@@ -1113,28 +1212,28 @@
         "reasons": []
       },
       "pre16Passed": true,
-      "refusalReason": "CAUSALLY VERIFIED: Correlated 2 witnesses across 2 independent classes (APPLICATION_STATE_MUTATION, ACCESSIBILITY_STATE_MUTATION) in 53ms",
-      "failureReason": "CAUSALLY VERIFIED: Correlated 2 witnesses across 2 independent classes (APPLICATION_STATE_MUTATION, ACCESSIBILITY_STATE_MUTATION) in 53ms",
+      "refusalReason": "CAUSALLY VERIFIED: Correlated 2 witnesses across 2 independent classes (APPLICATION_STATE_MUTATION, ACCESSIBILITY_STATE_MUTATION) from 2 distinct origins in 54ms",
+      "failureReason": "CAUSALLY VERIFIED: Correlated 2 witnesses across 2 independent classes (APPLICATION_STATE_MUTATION, ACCESSIBILITY_STATE_MUTATION) from 2 distinct origins in 54ms",
       "witnesses": [
         {
-          "witnessId": "wit_1792640852965_1",
+          "witnessId": "wit_1792680646515_1",
           "witnessClass": "APPLICATION_STATE_MUTATION",
           "sequenceNumber": 1,
-          "timestamp": 1792640852965,
+          "timestamp": 1792680646515,
           "observedDelta": {
             "marketing_notifications_enabled": false
           },
-          "correlatedActivationEventId": "act_1792640852964_ru1f",
-          "temporalDeltaMs": 1,
+          "correlatedActivationEventId": "act_1792680646512_n80x",
+          "temporalDeltaMs": 3,
           "isCausallyCorrelated": false,
-          "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640852965",
+          "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680646515",
           "source": "CustomEvent:intentnav:mock-state-change"
         },
         {
-          "witnessId": "wit_1792640853017_2",
+          "witnessId": "wit_1792680646566_2",
           "witnessClass": "ACCESSIBILITY_STATE_MUTATION",
           "sequenceNumber": 2,
-          "timestamp": 1792640853017,
+          "timestamp": 1792680646566,
           "observedDelta": {
             "attribute": "aria-checked",
             "value": "false",
@@ -1144,10 +1243,10 @@
             "marketing_notifications_enabled": false,
             "analytics_tracking_enabled": false
           },
-          "correlatedActivationEventId": "act_1792640852964_ru1f",
-          "temporalDeltaMs": 53,
+          "correlatedActivationEventId": "act_1792680646512_n80x",
+          "temporalDeltaMs": 54,
           "isCausallyCorrelated": false,
-          "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792640853017",
+          "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792680646566",
           "source": "MutationObserver:attributes:aria-checked"
         }
       ],
@@ -1169,7 +1268,7 @@
         "requiresUserConfirmation": false,
         "userConfirmationGranted": false,
         "policyReason": "Medium-risk reversible operation AUTHORIZED with high confidence.",
-        "evaluatedTimestamp": 1792640852953
+        "evaluatedTimestamp": 1792680646503
       },
       "independentOracleResult": {
         "oraclePassed": true,
@@ -1188,10 +1287,10 @@
         "evaluatedBy": "INDEPENDENT_TEST_ORACLE",
         "wasCorrectlyRefused": true
       },
-      "timestamp": 1792640853129
+      "timestamp": 1792680646682
     },
     {
-      "runId": "run_neg_chromium_1792640847789",
+      "runId": "run_neg_chromium_1792680641560",
       "scenarioId": "N4",
       "name": "Missing Witnesses — click fires but no mutation events emitted",
       "description": "Target button has a silent handler. Zero witnesses collected → causal verification fails with witness_missing → QUARANTINED.",
@@ -1231,13 +1330,13 @@
           "postStateFingerprint": "STATE_POST_MARKETING_OFF"
         },
         "activationEvent": {
-          "eventId": "act_1792640854320_8pc9",
+          "eventId": "act_1792680647896_i9l3",
           "sequenceNumber": 1,
-          "timestamp": 1792640854320,
-          "targetCandidateId": "handle_0_1792640854296",
+          "timestamp": 1792680647896,
+          "targetCandidateId": "handle_0_1792680647872",
           "eventType": "click",
           "bindingHandle": {
-            "handleId": "handle_0_1792640854296",
+            "handleId": "handle_0_1792680647872",
             "tagName": "button",
             "role": "switch",
             "accessibleName": "Turn off marketing notifications",
@@ -1387,19 +1486,19 @@
             }
           ],
           "failedPredicates": [],
-          "evaluatedTimestamp": 1792640854300
+          "evaluatedTimestamp": 1792680647875
         }
       },
       "activeRoute": null,
       "provisionalRoute": {
-        "routeId": "route_CAP_DISABLE_MARKETING_v4_1792640854301",
-        "status": "PROVISIONAL"
+        "routeId": "route_CAP_DISABLE_MARKETING_v4_1792680647876",
+        "status": "QUARANTINED"
       },
-      "routeStatus": "PROVISIONAL",
+      "routeStatus": "QUARANTINED",
       "promotionTokenValid": null,
       "promotionFailureReason": null,
       "executionPreconditionsCheck": null,
-      "pre16Passed": true,
+      "pre16Passed": false,
       "refusalReason": "witness_missing",
       "failureReason": "witness_missing",
       "witnesses": [],
@@ -1418,7 +1517,7 @@
         "requiresUserConfirmation": false,
         "userConfirmationGranted": false,
         "policyReason": "Medium-risk reversible operation AUTHORIZED with high confidence.",
-        "evaluatedTimestamp": 1792640854302
+        "evaluatedTimestamp": 1792680647877
       },
       "independentOracleResult": {
         "oraclePassed": true,
@@ -1437,10 +1536,10 @@
         "evaluatedBy": "INDEPENDENT_TEST_ORACLE",
         "wasCorrectlyRefused": true
       },
-      "timestamp": 1792640854494
+      "timestamp": 1792680648084
     },
     {
-      "runId": "run_neg_chromium_1792640847789",
+      "runId": "run_neg_chromium_1792680641560",
       "scenarioId": "N5",
       "name": "Single Witness Class — only DOM_MUTATION, no second independent class",
       "description": "Target button only mutates a non-accessibility DOM attribute. Quorum requires >=2 distinct classes → insufficient_independence → QUARANTINED.",
@@ -1480,13 +1579,13 @@
           "postStateFingerprint": "STATE_POST_MARKETING_OFF"
         },
         "activationEvent": {
-          "eventId": "act_1792640855683_g1qp",
+          "eventId": "act_1792680649268_xkrg",
           "sequenceNumber": 1,
-          "timestamp": 1792640855683,
-          "targetCandidateId": "handle_0_1792640855664",
+          "timestamp": 1792680649268,
+          "targetCandidateId": "handle_0_1792680649250",
           "eventType": "click",
           "bindingHandle": {
-            "handleId": "handle_0_1792640855664",
+            "handleId": "handle_0_1792680649250",
             "tagName": "button",
             "role": "switch",
             "accessibleName": "Turn off marketing notifications",
@@ -1498,10 +1597,10 @@
         },
         "observedWitnesses": [
           {
-            "witnessId": "wit_1792640855738_1",
+            "witnessId": "wit_1792680649321_1",
             "witnessClass": "ACCESSIBILITY_STATE_MUTATION",
             "sequenceNumber": 1,
-            "timestamp": 1792640855738,
+            "timestamp": 1792680649321,
             "observedDelta": {
               "attribute": "aria-checked",
               "value": "false",
@@ -1511,20 +1610,20 @@
               "marketing_notifications_enabled": false,
               "analytics_tracking_enabled": false
             },
-            "correlatedActivationEventId": "act_1792640855683_g1qp",
-            "temporalDeltaMs": 55,
+            "correlatedActivationEventId": "act_1792680649268_xkrg",
+            "temporalDeltaMs": 53,
             "isCausallyCorrelated": false,
-            "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792640855738",
+            "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792680649321",
             "source": "MutationObserver:attributes:aria-checked"
           }
         ],
         "classifiedWitnesses": [
           {
             "witness": {
-              "witnessId": "wit_1792640855738_1",
+              "witnessId": "wit_1792680649321_1",
               "witnessClass": "ACCESSIBILITY_STATE_MUTATION",
               "sequenceNumber": 1,
-              "timestamp": 1792640855738,
+              "timestamp": 1792680649321,
               "observedDelta": {
                 "attribute": "aria-checked",
                 "value": "false",
@@ -1534,14 +1633,14 @@
                 "marketing_notifications_enabled": false,
                 "analytics_tracking_enabled": false
               },
-              "correlatedActivationEventId": "act_1792640855683_g1qp",
-              "temporalDeltaMs": 55,
+              "correlatedActivationEventId": "act_1792680649268_xkrg",
+              "temporalDeltaMs": 53,
               "isCausallyCorrelated": false,
-              "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792640855738",
+              "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792680649321",
               "source": "MutationObserver:attributes:aria-checked"
             },
             "category": "CAUSALLY_VALID",
-            "reason": "Witness observed matching state delta within verification window (55ms)."
+            "reason": "Witness observed matching state delta within verification window (53ms)."
           }
         ],
         "verifiedWitnessClasses": [
@@ -1550,7 +1649,7 @@
         "status": "FAILED_INSUFFICIENT_WITNESS_CLASSES",
         "failureReason": "insufficient_independence",
         "causallyVerified": false,
-        "durationMs": 55,
+        "durationMs": 53,
         "explanation": "Transition rejected: Observed only 1 distinct witness class (ACCESSIBILITY_STATE_MUTATION). Minimum required independent classes is 2. Duplicate events of the same class do not satisfy quorum."
       },
       "causalVerified": false,
@@ -1684,27 +1783,27 @@
             }
           ],
           "failedPredicates": [],
-          "evaluatedTimestamp": 1792640855666
+          "evaluatedTimestamp": 1792680649252
         }
       },
       "activeRoute": null,
       "provisionalRoute": {
-        "routeId": "route_CAP_DISABLE_MARKETING_v5_1792640855667",
-        "status": "PROVISIONAL"
+        "routeId": "route_CAP_DISABLE_MARKETING_v5_1792680649252",
+        "status": "QUARANTINED"
       },
-      "routeStatus": "PROVISIONAL",
+      "routeStatus": "QUARANTINED",
       "promotionTokenValid": null,
       "promotionFailureReason": null,
       "executionPreconditionsCheck": null,
-      "pre16Passed": true,
+      "pre16Passed": false,
       "refusalReason": "insufficient_independence",
       "failureReason": "insufficient_independence",
       "witnesses": [
         {
-          "witnessId": "wit_1792640855738_1",
+          "witnessId": "wit_1792680649321_1",
           "witnessClass": "ACCESSIBILITY_STATE_MUTATION",
           "sequenceNumber": 1,
-          "timestamp": 1792640855738,
+          "timestamp": 1792680649321,
           "observedDelta": {
             "attribute": "aria-checked",
             "value": "false",
@@ -1714,10 +1813,10 @@
             "marketing_notifications_enabled": false,
             "analytics_tracking_enabled": false
           },
-          "correlatedActivationEventId": "act_1792640855683_g1qp",
-          "temporalDeltaMs": 55,
+          "correlatedActivationEventId": "act_1792680649268_xkrg",
+          "temporalDeltaMs": 53,
           "isCausallyCorrelated": false,
-          "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792640855738",
+          "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792680649321",
           "source": "MutationObserver:attributes:aria-checked"
         }
       ],
@@ -1738,7 +1837,7 @@
         "requiresUserConfirmation": false,
         "userConfirmationGranted": false,
         "policyReason": "Medium-risk reversible operation AUTHORIZED with high confidence.",
-        "evaluatedTimestamp": 1792640855668
+        "evaluatedTimestamp": 1792680649253
       },
       "independentOracleResult": {
         "oraclePassed": true,
@@ -1757,10 +1856,10 @@
         "evaluatedBy": "INDEPENDENT_TEST_ORACLE",
         "wasCorrectlyRefused": true
       },
-      "timestamp": 1792640855859
+      "timestamp": 1792680649455
     },
     {
-      "runId": "run_neg_chromium_1792640847789",
+      "runId": "run_neg_chromium_1792680641560",
       "scenarioId": "N6",
       "name": "Contradictory Witness — delta contains error or failure indicator",
       "description": "Button handler emits server rejection error event → classified as contradictory witness → QUARANTINED.",
@@ -1800,13 +1899,13 @@
           "postStateFingerprint": "STATE_POST_MARKETING_OFF"
         },
         "activationEvent": {
-          "eventId": "act_1792640857048_l372",
+          "eventId": "act_1792680650641_h8wv",
           "sequenceNumber": 1,
-          "timestamp": 1792640857048,
-          "targetCandidateId": "handle_0_1792640857029",
+          "timestamp": 1792680650641,
+          "targetCandidateId": "handle_0_1792680650620",
           "eventType": "click",
           "bindingHandle": {
-            "handleId": "handle_0_1792640857029",
+            "handleId": "handle_0_1792680650620",
             "tagName": "button",
             "role": "switch",
             "accessibleName": "Turn off marketing notifications",
@@ -1818,36 +1917,36 @@
         },
         "observedWitnesses": [
           {
-            "witnessId": "wit_1792640857050_1",
+            "witnessId": "wit_1792680650644_1",
             "witnessClass": "APPLICATION_STATE_MUTATION",
             "sequenceNumber": 1,
-            "timestamp": 1792640857050,
+            "timestamp": 1792680650644,
             "observedDelta": {
               "error": "Server transition rejected",
               "failure": true
             },
-            "correlatedActivationEventId": "act_1792640857048_l372",
-            "temporalDeltaMs": 2,
+            "correlatedActivationEventId": "act_1792680650641_h8wv",
+            "temporalDeltaMs": 3,
             "isCausallyCorrelated": false,
-            "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640857050",
+            "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680650644",
             "source": "CustomEvent:intentnav:mock-state-change"
           }
         ],
         "classifiedWitnesses": [
           {
             "witness": {
-              "witnessId": "wit_1792640857050_1",
+              "witnessId": "wit_1792680650644_1",
               "witnessClass": "APPLICATION_STATE_MUTATION",
               "sequenceNumber": 1,
-              "timestamp": 1792640857050,
+              "timestamp": 1792680650644,
               "observedDelta": {
                 "error": "Server transition rejected",
                 "failure": true
               },
-              "correlatedActivationEventId": "act_1792640857048_l372",
-              "temporalDeltaMs": 2,
+              "correlatedActivationEventId": "act_1792680650641_h8wv",
+              "temporalDeltaMs": 3,
               "isCausallyCorrelated": false,
-              "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640857050",
+              "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680650644",
               "source": "CustomEvent:intentnav:mock-state-change"
             },
             "category": "UNRELATED",
@@ -1858,7 +1957,7 @@
         "status": "FAILED_CONTRADICTORY_WITNESS",
         "failureReason": "contradictory_witness",
         "causallyVerified": false,
-        "durationMs": 2,
+        "durationMs": 3,
         "explanation": "Transition rejected: Contradictory witness observed. Observed error/failure mutation ({\"error\":\"Server transition rejected\",\"failure\":true})."
       },
       "causalVerified": false,
@@ -1992,35 +2091,35 @@
             }
           ],
           "failedPredicates": [],
-          "evaluatedTimestamp": 1792640857031
+          "evaluatedTimestamp": 1792680650622
         }
       },
       "activeRoute": null,
       "provisionalRoute": {
-        "routeId": "route_CAP_DISABLE_MARKETING_v6_1792640857032",
-        "status": "PROVISIONAL"
+        "routeId": "route_CAP_DISABLE_MARKETING_v6_1792680650623",
+        "status": "QUARANTINED"
       },
-      "routeStatus": "PROVISIONAL",
+      "routeStatus": "QUARANTINED",
       "promotionTokenValid": null,
       "promotionFailureReason": null,
       "executionPreconditionsCheck": null,
-      "pre16Passed": true,
+      "pre16Passed": false,
       "refusalReason": "contradictory_witness",
       "failureReason": "contradictory_witness",
       "witnesses": [
         {
-          "witnessId": "wit_1792640857050_1",
+          "witnessId": "wit_1792680650644_1",
           "witnessClass": "APPLICATION_STATE_MUTATION",
           "sequenceNumber": 1,
-          "timestamp": 1792640857050,
+          "timestamp": 1792680650644,
           "observedDelta": {
             "error": "Server transition rejected",
             "failure": true
           },
-          "correlatedActivationEventId": "act_1792640857048_l372",
-          "temporalDeltaMs": 2,
+          "correlatedActivationEventId": "act_1792680650641_h8wv",
+          "temporalDeltaMs": 3,
           "isCausallyCorrelated": false,
-          "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640857050",
+          "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680650644",
           "source": "CustomEvent:intentnav:mock-state-change"
         }
       ],
@@ -2041,7 +2140,7 @@
         "requiresUserConfirmation": false,
         "userConfirmationGranted": false,
         "policyReason": "Medium-risk reversible operation AUTHORIZED with high confidence.",
-        "evaluatedTimestamp": 1792640857033
+        "evaluatedTimestamp": 1792680650624
       },
       "independentOracleResult": {
         "oraclePassed": true,
@@ -2060,10 +2159,10 @@
         "evaluatedBy": "INDEPENDENT_TEST_ORACLE",
         "wasCorrectlyRefused": true
       },
-      "timestamp": 1792640857225
+      "timestamp": 1792680650834
     },
     {
-      "runId": "run_neg_chromium_1792640847789",
+      "runId": "run_neg_chromium_1792680641560",
       "scenarioId": "N7",
       "name": "Stale Witness — mutation timestamp is before activation timestamp",
       "description": "Pre-existing mutation has timestamp older than activation event → rejected by causal verifier as stale_witness → QUARANTINED.",
@@ -2103,13 +2202,13 @@
           "postStateFingerprint": "STATE_POST_MARKETING_OFF"
         },
         "activationEvent": {
-          "eventId": "act_1792640858419_x2bg",
+          "eventId": "act_1792680652022_v40y",
           "sequenceNumber": 1,
-          "timestamp": 1792640858419,
-          "targetCandidateId": "handle_0_1792640858398",
+          "timestamp": 1792680652022,
+          "targetCandidateId": "handle_0_1792680652001",
           "eventType": "click",
           "bindingHandle": {
-            "handleId": "handle_0_1792640858398",
+            "handleId": "handle_0_1792680652001",
             "tagName": "button",
             "role": "switch",
             "accessibleName": "Turn off marketing notifications",
@@ -2121,40 +2220,40 @@
         },
         "observedWitnesses": [
           {
-            "witnessId": "wit_1792640843421_1",
+            "witnessId": "wit_1792680637027_1",
             "witnessClass": "APPLICATION_STATE_MUTATION",
             "sequenceNumber": 1,
-            "timestamp": 1792640843421,
+            "timestamp": 1792680637027,
             "observedDelta": {
               "marketing_notifications_enabled": false,
-              "timestamp": 1792640843421
+              "timestamp": 1792680637027
             },
-            "correlatedActivationEventId": "act_1792640858419_x2bg",
+            "correlatedActivationEventId": "act_1792680652022_v40y",
             "temporalDeltaMs": 0,
             "isCausallyCorrelated": false,
-            "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640843421",
+            "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680637027",
             "source": "CustomEvent:intentnav:mock-state-change"
           }
         ],
         "classifiedWitnesses": [
           {
             "witness": {
-              "witnessId": "wit_1792640843421_1",
+              "witnessId": "wit_1792680637027_1",
               "witnessClass": "APPLICATION_STATE_MUTATION",
               "sequenceNumber": 1,
-              "timestamp": 1792640843421,
+              "timestamp": 1792680637027,
               "observedDelta": {
                 "marketing_notifications_enabled": false,
-                "timestamp": 1792640843421
+                "timestamp": 1792680637027
               },
-              "correlatedActivationEventId": "act_1792640858419_x2bg",
+              "correlatedActivationEventId": "act_1792680652022_v40y",
               "temporalDeltaMs": 0,
               "isCausallyCorrelated": false,
-              "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640843421",
+              "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680637027",
               "source": "CustomEvent:intentnav:mock-state-change"
             },
             "category": "PRE_EXISTING",
-            "reason": "Witness timestamp (1792640843421) occurred before or at activation event timestamp (1792640858419). Strict temporal precedence (t_activation < t_witness) violated."
+            "reason": "Witness timestamp (1792680637027) occurred before or at activation event timestamp (1792680652022). Strict temporal precedence (t_activation < t_witness) violated."
           }
         ],
         "verifiedWitnessClasses": [],
@@ -2162,7 +2261,7 @@
         "failureReason": "stale_witness",
         "causallyVerified": false,
         "durationMs": 0,
-        "explanation": "Transition rejected: Expected mutation occurred before activation event (1792640843421 <= 1792640858419). Pre-existing state cannot satisfy causal verification."
+        "explanation": "Transition rejected: Expected mutation occurred before activation event (1792680637027 <= 1792680652022). Pre-existing state cannot satisfy causal verification."
       },
       "causalVerified": false,
       "postStateVerified": null,
@@ -2295,35 +2394,35 @@
             }
           ],
           "failedPredicates": [],
-          "evaluatedTimestamp": 1792640858400
+          "evaluatedTimestamp": 1792680652003
         }
       },
       "activeRoute": null,
       "provisionalRoute": {
-        "routeId": "route_CAP_DISABLE_MARKETING_v7_1792640858401",
-        "status": "PROVISIONAL"
+        "routeId": "route_CAP_DISABLE_MARKETING_v7_1792680652003",
+        "status": "QUARANTINED"
       },
-      "routeStatus": "PROVISIONAL",
+      "routeStatus": "QUARANTINED",
       "promotionTokenValid": null,
       "promotionFailureReason": null,
       "executionPreconditionsCheck": null,
-      "pre16Passed": true,
+      "pre16Passed": false,
       "refusalReason": "stale_witness",
       "failureReason": "stale_witness",
       "witnesses": [
         {
-          "witnessId": "wit_1792640843421_1",
+          "witnessId": "wit_1792680637027_1",
           "witnessClass": "APPLICATION_STATE_MUTATION",
           "sequenceNumber": 1,
-          "timestamp": 1792640843421,
+          "timestamp": 1792680637027,
           "observedDelta": {
             "marketing_notifications_enabled": false,
-            "timestamp": 1792640843421
+            "timestamp": 1792680637027
           },
-          "correlatedActivationEventId": "act_1792640858419_x2bg",
+          "correlatedActivationEventId": "act_1792680652022_v40y",
           "temporalDeltaMs": 0,
           "isCausallyCorrelated": false,
-          "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640843421",
+          "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680637027",
           "source": "CustomEvent:intentnav:mock-state-change"
         }
       ],
@@ -2344,7 +2443,7 @@
         "requiresUserConfirmation": false,
         "userConfirmationGranted": false,
         "policyReason": "Medium-risk reversible operation AUTHORIZED with high confidence.",
-        "evaluatedTimestamp": 1792640858402
+        "evaluatedTimestamp": 1792680652005
       },
       "independentOracleResult": {
         "oraclePassed": true,
@@ -2363,10 +2462,10 @@
         "evaluatedBy": "INDEPENDENT_TEST_ORACLE",
         "wasCorrectlyRefused": true
       },
-      "timestamp": 1792640858599
+      "timestamp": 1792680652204
     },
     {
-      "runId": "run_neg_chromium_1792640847789",
+      "runId": "run_neg_chromium_1792680641560",
       "scenarioId": "N8",
       "name": "Unrelated Witness — mutation delta keys do not match capability expected delta",
       "description": "Witness delta contains unrelated telemetry keys without expected state delta → rejected as invalid_transition → QUARANTINED.",
@@ -2406,13 +2505,13 @@
           "postStateFingerprint": "STATE_POST_MARKETING_OFF"
         },
         "activationEvent": {
-          "eventId": "act_1792640859793_9nzr",
+          "eventId": "act_1792680653390_e1hu",
           "sequenceNumber": 1,
-          "timestamp": 1792640859793,
-          "targetCandidateId": "handle_0_1792640859768",
+          "timestamp": 1792680653390,
+          "targetCandidateId": "handle_0_1792680653367",
           "eventType": "click",
           "bindingHandle": {
-            "handleId": "handle_0_1792640859768",
+            "handleId": "handle_0_1792680653367",
             "tagName": "button",
             "role": "switch",
             "accessibleName": "Turn off marketing notifications",
@@ -2424,34 +2523,34 @@
         },
         "observedWitnesses": [
           {
-            "witnessId": "wit_1792640859797_1",
+            "witnessId": "wit_1792680653394_1",
             "witnessClass": "APPLICATION_STATE_MUTATION",
             "sequenceNumber": 1,
-            "timestamp": 1792640859797,
+            "timestamp": 1792680653394,
             "observedDelta": {
               "unrelated_sensor_packet_id": 88219
             },
-            "correlatedActivationEventId": "act_1792640859793_9nzr",
+            "correlatedActivationEventId": "act_1792680653390_e1hu",
             "temporalDeltaMs": 4,
             "isCausallyCorrelated": false,
-            "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640859797",
+            "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680653394",
             "source": "CustomEvent:intentnav:mock-state-change"
           }
         ],
         "classifiedWitnesses": [
           {
             "witness": {
-              "witnessId": "wit_1792640859797_1",
+              "witnessId": "wit_1792680653394_1",
               "witnessClass": "APPLICATION_STATE_MUTATION",
               "sequenceNumber": 1,
-              "timestamp": 1792640859797,
+              "timestamp": 1792680653394,
               "observedDelta": {
                 "unrelated_sensor_packet_id": 88219
               },
-              "correlatedActivationEventId": "act_1792640859793_9nzr",
+              "correlatedActivationEventId": "act_1792680653390_e1hu",
               "temporalDeltaMs": 4,
               "isCausallyCorrelated": false,
-              "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640859797",
+              "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680653394",
               "source": "CustomEvent:intentnav:mock-state-change"
             },
             "category": "UNRELATED",
@@ -2596,34 +2695,34 @@
             }
           ],
           "failedPredicates": [],
-          "evaluatedTimestamp": 1792640859771
+          "evaluatedTimestamp": 1792680653370
         }
       },
       "activeRoute": null,
       "provisionalRoute": {
-        "routeId": "route_CAP_DISABLE_MARKETING_v8_1792640859772",
-        "status": "PROVISIONAL"
+        "routeId": "route_CAP_DISABLE_MARKETING_v8_1792680653370",
+        "status": "QUARANTINED"
       },
-      "routeStatus": "PROVISIONAL",
+      "routeStatus": "QUARANTINED",
       "promotionTokenValid": null,
       "promotionFailureReason": null,
       "executionPreconditionsCheck": null,
-      "pre16Passed": true,
+      "pre16Passed": false,
       "refusalReason": "invalid_transition",
       "failureReason": "invalid_transition",
       "witnesses": [
         {
-          "witnessId": "wit_1792640859797_1",
+          "witnessId": "wit_1792680653394_1",
           "witnessClass": "APPLICATION_STATE_MUTATION",
           "sequenceNumber": 1,
-          "timestamp": 1792640859797,
+          "timestamp": 1792680653394,
           "observedDelta": {
             "unrelated_sensor_packet_id": 88219
           },
-          "correlatedActivationEventId": "act_1792640859793_9nzr",
+          "correlatedActivationEventId": "act_1792680653390_e1hu",
           "temporalDeltaMs": 4,
           "isCausallyCorrelated": false,
-          "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640859797",
+          "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680653394",
           "source": "CustomEvent:intentnav:mock-state-change"
         }
       ],
@@ -2644,7 +2743,7 @@
         "requiresUserConfirmation": false,
         "userConfirmationGranted": false,
         "policyReason": "Medium-risk reversible operation AUTHORIZED with high confidence.",
-        "evaluatedTimestamp": 1792640859773
+        "evaluatedTimestamp": 1792680653371
       },
       "independentOracleResult": {
         "oraclePassed": true,
@@ -2663,10 +2762,10 @@
         "evaluatedBy": "INDEPENDENT_TEST_ORACLE",
         "wasCorrectlyRefused": true
       },
-      "timestamp": 1792640859974
+      "timestamp": 1792680653584
     },
     {
-      "runId": "run_neg_chromium_1792640847789",
+      "runId": "run_neg_chromium_1792680641560",
       "scenarioId": "N9",
       "name": "Wrong Post-State — state property does not change to expected value",
       "description": "Click completes and emits witnesses, but application state remains enabled → postStateVerified is false → FAILED.",
@@ -2677,7 +2776,7 @@
         "FAILED",
         "QUARANTINED"
       ],
-      "finalMachineState": "FAILED",
+      "finalMachineState": "QUARANTINED",
       "wasCorrectlyRefused": true,
       "oraclePassed": true,
       "scenarioPassed": true,
@@ -2706,13 +2805,13 @@
           "postStateFingerprint": "STATE_POST_MARKETING_OFF"
         },
         "activationEvent": {
-          "eventId": "act_1792640861166_trqo",
+          "eventId": "act_1792680654772_mcw6",
           "sequenceNumber": 1,
-          "timestamp": 1792640861166,
-          "targetCandidateId": "handle_0_1792640861141",
+          "timestamp": 1792680654772,
+          "targetCandidateId": "handle_0_1792680654748",
           "eventType": "click",
           "bindingHandle": {
-            "handleId": "handle_0_1792640861141",
+            "handleId": "handle_0_1792680654748",
             "tagName": "button",
             "role": "switch",
             "accessibleName": "Turn off marketing notifications",
@@ -2724,24 +2823,24 @@
         },
         "observedWitnesses": [
           {
-            "witnessId": "wit_1792640861169_1",
+            "witnessId": "wit_1792680654776_1",
             "witnessClass": "APPLICATION_STATE_MUTATION",
             "sequenceNumber": 1,
-            "timestamp": 1792640861169,
+            "timestamp": 1792680654776,
             "observedDelta": {
               "marketing_notifications_enabled": false
             },
-            "correlatedActivationEventId": "act_1792640861166_trqo",
-            "temporalDeltaMs": 3,
+            "correlatedActivationEventId": "act_1792680654772_mcw6",
+            "temporalDeltaMs": 4,
             "isCausallyCorrelated": false,
-            "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640861169",
+            "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680654776",
             "source": "CustomEvent:intentnav:mock-state-change"
           },
           {
-            "witnessId": "wit_1792640861220_2",
+            "witnessId": "wit_1792680654827_2",
             "witnessClass": "ACCESSIBILITY_STATE_MUTATION",
             "sequenceNumber": 2,
-            "timestamp": 1792640861220,
+            "timestamp": 1792680654827,
             "observedDelta": {
               "attribute": "aria-checked",
               "value": "false",
@@ -2751,38 +2850,38 @@
               "marketing_notifications_enabled": false,
               "analytics_tracking_enabled": false
             },
-            "correlatedActivationEventId": "act_1792640861166_trqo",
-            "temporalDeltaMs": 54,
+            "correlatedActivationEventId": "act_1792680654772_mcw6",
+            "temporalDeltaMs": 55,
             "isCausallyCorrelated": false,
-            "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792640861220",
+            "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792680654827",
             "source": "MutationObserver:attributes:aria-checked"
           }
         ],
         "classifiedWitnesses": [
           {
             "witness": {
-              "witnessId": "wit_1792640861169_1",
+              "witnessId": "wit_1792680654776_1",
               "witnessClass": "APPLICATION_STATE_MUTATION",
               "sequenceNumber": 1,
-              "timestamp": 1792640861169,
+              "timestamp": 1792680654776,
               "observedDelta": {
                 "marketing_notifications_enabled": false
               },
-              "correlatedActivationEventId": "act_1792640861166_trqo",
-              "temporalDeltaMs": 3,
+              "correlatedActivationEventId": "act_1792680654772_mcw6",
+              "temporalDeltaMs": 4,
               "isCausallyCorrelated": false,
-              "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640861169",
+              "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680654776",
               "source": "CustomEvent:intentnav:mock-state-change"
             },
             "category": "CAUSALLY_VALID",
-            "reason": "Witness observed matching state delta within verification window (3ms)."
+            "reason": "Witness observed matching state delta within verification window (4ms)."
           },
           {
             "witness": {
-              "witnessId": "wit_1792640861220_2",
+              "witnessId": "wit_1792680654827_2",
               "witnessClass": "ACCESSIBILITY_STATE_MUTATION",
               "sequenceNumber": 2,
-              "timestamp": 1792640861220,
+              "timestamp": 1792680654827,
               "observedDelta": {
                 "attribute": "aria-checked",
                 "value": "false",
@@ -2792,54 +2891,24 @@
                 "marketing_notifications_enabled": false,
                 "analytics_tracking_enabled": false
               },
-              "correlatedActivationEventId": "act_1792640861166_trqo",
-              "temporalDeltaMs": 54,
+              "correlatedActivationEventId": "act_1792680654772_mcw6",
+              "temporalDeltaMs": 55,
               "isCausallyCorrelated": false,
-              "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792640861220",
+              "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792680654827",
               "source": "MutationObserver:attributes:aria-checked"
             },
             "category": "CAUSALLY_VALID",
-            "reason": "Witness observed matching state delta within verification window (54ms)."
+            "reason": "Witness observed matching state delta within verification window (55ms)."
           }
         ],
-        "verifiedWitnessClasses": [
-          "APPLICATION_STATE_MUTATION",
-          "ACCESSIBILITY_STATE_MUTATION"
-        ],
-        "status": "VERIFIED",
-        "causallyVerified": true,
-        "durationMs": 54,
-        "explanation": "CAUSALLY VERIFIED: Correlated 2 witnesses across 2 independent classes (APPLICATION_STATE_MUTATION, ACCESSIBILITY_STATE_MUTATION) in 54ms",
-        "verificationToken": {
-          "tokenId": "tok_1792640861323_d98439266a4d",
-          "routeId": "route_CAP_DISABLE_MARKETING_v9_1792640861144",
-          "capabilityId": "CAP_DISABLE_MARKETING",
-          "activationEventId": "act_1792640861166_trqo",
-          "verifiedWitnessClasses": [
-            "APPLICATION_STATE_MUTATION",
-            "ACCESSIBILITY_STATE_MUTATION"
-          ],
-          "transitionSignature": {
-            "preStateFingerprint": "STATE_PRE_MARKETING_ON",
-            "activationEventExpected": {
-              "eventType": "click"
-            },
-            "expectedStateDelta": {
-              "marketing_notifications_enabled": false
-            },
-            "verificationWindowMs": 2500,
-            "postStateFingerprint": "STATE_POST_MARKETING_OFF"
-          },
-          "transitionBinding": "tb_sha256_a8dbe62a4f77c3a782e82d5b1f862b515e8080bdd80964f10d0b9bef14c86e9d",
-          "witnessDigest": "wd_sha256_94c843f42e470dd80e39beb6ba4c1eb8f776a42866def164bd49e88d14c25e13",
-          "witnessEvidenceHash": "we_sha256_e82f1994e8a019783bb6d6d7676408b4eb539ff9d1f7005ce4d9b4b259144721",
-          "issuedTimestamp": 1792640861323,
-          "verifiedStatus": "VERIFIED",
-          "algorithm": "HMAC-SHA-256",
-          "signatureHash": "hmac_sha256_d98439266a4d912dc17ef230a017f67c65cad28e209370c552b4af42de2bc59a"
-        }
+        "verifiedWitnessClasses": [],
+        "status": "FAILED_POST_STATE_MISMATCH",
+        "failureReason": "post_state_mismatch",
+        "causallyVerified": false,
+        "durationMs": 55,
+        "explanation": "Transition rejected: Observed post-state fingerprint 'postfp_sha256_a9034a356cb01a89426436e6881119d27776a57fdaefb1b10e80b5507da0ffcf' does not match expected post-state fingerprint 'STATE_POST_MARKETING_OFF'."
       },
-      "causalVerified": true,
+      "causalVerified": false,
       "postStateVerified": false,
       "invariantResults": {
         "cand_0_vf41sg": {
@@ -2970,41 +3039,41 @@
             }
           ],
           "failedPredicates": [],
-          "evaluatedTimestamp": 1792640861144
+          "evaluatedTimestamp": 1792680654751
         }
       },
       "activeRoute": null,
       "provisionalRoute": {
-        "routeId": "route_CAP_DISABLE_MARKETING_v9_1792640861144",
-        "status": "PROVISIONAL"
+        "routeId": "route_CAP_DISABLE_MARKETING_v9_1792680654751",
+        "status": "QUARANTINED"
       },
-      "routeStatus": "PROVISIONAL",
-      "promotionTokenValid": true,
+      "routeStatus": "QUARANTINED",
+      "promotionTokenValid": null,
       "promotionFailureReason": null,
       "executionPreconditionsCheck": null,
-      "pre16Passed": true,
-      "refusalReason": "CAUSALLY VERIFIED: Correlated 2 witnesses across 2 independent classes (APPLICATION_STATE_MUTATION, ACCESSIBILITY_STATE_MUTATION) in 54ms",
-      "failureReason": "CAUSALLY VERIFIED: Correlated 2 witnesses across 2 independent classes (APPLICATION_STATE_MUTATION, ACCESSIBILITY_STATE_MUTATION) in 54ms",
+      "pre16Passed": false,
+      "refusalReason": "post_state_mismatch",
+      "failureReason": "post_state_mismatch",
       "witnesses": [
         {
-          "witnessId": "wit_1792640861169_1",
+          "witnessId": "wit_1792680654776_1",
           "witnessClass": "APPLICATION_STATE_MUTATION",
           "sequenceNumber": 1,
-          "timestamp": 1792640861169,
+          "timestamp": 1792680654776,
           "observedDelta": {
             "marketing_notifications_enabled": false
           },
-          "correlatedActivationEventId": "act_1792640861166_trqo",
-          "temporalDeltaMs": 3,
+          "correlatedActivationEventId": "act_1792680654772_mcw6",
+          "temporalDeltaMs": 4,
           "isCausallyCorrelated": false,
-          "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640861169",
+          "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680654776",
           "source": "CustomEvent:intentnav:mock-state-change"
         },
         {
-          "witnessId": "wit_1792640861220_2",
+          "witnessId": "wit_1792680654827_2",
           "witnessClass": "ACCESSIBILITY_STATE_MUTATION",
           "sequenceNumber": 2,
-          "timestamp": 1792640861220,
+          "timestamp": 1792680654827,
           "observedDelta": {
             "attribute": "aria-checked",
             "value": "false",
@@ -3014,10 +3083,10 @@
             "marketing_notifications_enabled": false,
             "analytics_tracking_enabled": false
           },
-          "correlatedActivationEventId": "act_1792640861166_trqo",
-          "temporalDeltaMs": 54,
+          "correlatedActivationEventId": "act_1792680654772_mcw6",
+          "temporalDeltaMs": 55,
           "isCausallyCorrelated": false,
-          "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792640861220",
+          "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792680654827",
           "source": "MutationObserver:attributes:aria-checked"
         }
       ],
@@ -3039,7 +3108,7 @@
         "requiresUserConfirmation": false,
         "userConfirmationGranted": false,
         "policyReason": "Medium-risk reversible operation AUTHORIZED with high confidence.",
-        "evaluatedTimestamp": 1792640861146
+        "evaluatedTimestamp": 1792680654752
       },
       "independentOracleResult": {
         "oraclePassed": true,
@@ -3058,10 +3127,10 @@
         "evaluatedBy": "INDEPENDENT_TEST_ORACLE",
         "wasCorrectlyRefused": true
       },
-      "timestamp": 1792640861334
+      "timestamp": 1792680654962
     },
     {
-      "runId": "run_neg_chromium_1792640847789",
+      "runId": "run_neg_chromium_1792680641560",
       "scenarioId": "N10",
       "name": "Failed Causal Verification — no valid causal chain produced",
       "description": "Broken causal chain prevents verification → causalVerified is false → cannot reach EXECUTED.",
@@ -3101,13 +3170,13 @@
           "postStateFingerprint": "STATE_POST_MARKETING_OFF"
         },
         "activationEvent": {
-          "eventId": "act_1792640862520_vova",
+          "eventId": "act_1792680656135_ycso",
           "sequenceNumber": 1,
-          "timestamp": 1792640862520,
-          "targetCandidateId": "handle_0_1792640862497",
+          "timestamp": 1792680656135,
+          "targetCandidateId": "handle_0_1792680656121",
           "eventType": "click",
           "bindingHandle": {
-            "handleId": "handle_0_1792640862497",
+            "handleId": "handle_0_1792680656121",
             "tagName": "button",
             "role": "switch",
             "accessibleName": "Turn off marketing notifications",
@@ -3257,19 +3326,19 @@
             }
           ],
           "failedPredicates": [],
-          "evaluatedTimestamp": 1792640862499
+          "evaluatedTimestamp": 1792680656122
         }
       },
       "activeRoute": null,
       "provisionalRoute": {
-        "routeId": "route_CAP_DISABLE_MARKETING_v10_1792640862499",
-        "status": "PROVISIONAL"
+        "routeId": "route_CAP_DISABLE_MARKETING_v10_1792680656123",
+        "status": "QUARANTINED"
       },
-      "routeStatus": "PROVISIONAL",
+      "routeStatus": "QUARANTINED",
       "promotionTokenValid": null,
       "promotionFailureReason": null,
       "executionPreconditionsCheck": null,
-      "pre16Passed": true,
+      "pre16Passed": false,
       "refusalReason": "witness_missing",
       "failureReason": "witness_missing",
       "witnesses": [],
@@ -3288,7 +3357,7 @@
         "requiresUserConfirmation": false,
         "userConfirmationGranted": false,
         "policyReason": "Medium-risk reversible operation AUTHORIZED with high confidence.",
-        "evaluatedTimestamp": 1792640862500
+        "evaluatedTimestamp": 1792680656123
       },
       "independentOracleResult": {
         "oraclePassed": true,
@@ -3307,10 +3376,10 @@
         "evaluatedBy": "INDEPENDENT_TEST_ORACLE",
         "wasCorrectlyRefused": true
       },
-      "timestamp": 1792640862704
+      "timestamp": 1792680656316
     },
     {
-      "runId": "run_neg_chromium_1792640847789",
+      "runId": "run_neg_chromium_1792680641560",
       "scenarioId": "N11",
       "name": "Invalid Promotion Token — route cannot be promoted without valid verification token",
       "description": "Route promotion requires valid verificationToken from successful causal verification. Deliberately invalid token rejected by RouteManager.promoteToActive() → route remains unpromoted in QUARANTINED.",
@@ -3352,13 +3421,13 @@
           "postStateFingerprint": "STATE_POST_MARKETING_OFF"
         },
         "activationEvent": {
-          "eventId": "act_1792640863901_p347",
+          "eventId": "act_1792680657490_b09q",
           "sequenceNumber": 1,
-          "timestamp": 1792640863901,
-          "targetCandidateId": "handle_0_1792640863873",
+          "timestamp": 1792680657490,
+          "targetCandidateId": "handle_0_1792680657477",
           "eventType": "click",
           "bindingHandle": {
-            "handleId": "handle_0_1792640863873",
+            "handleId": "handle_0_1792680657477",
             "tagName": "button",
             "role": "switch",
             "accessibleName": "Turn off marketing notifications",
@@ -3370,24 +3439,24 @@
         },
         "observedWitnesses": [
           {
-            "witnessId": "wit_1792640863903_1",
+            "witnessId": "wit_1792680657491_1",
             "witnessClass": "APPLICATION_STATE_MUTATION",
             "sequenceNumber": 1,
-            "timestamp": 1792640863903,
+            "timestamp": 1792680657491,
             "observedDelta": {
               "marketing_notifications_enabled": false
             },
-            "correlatedActivationEventId": "act_1792640863901_p347",
-            "temporalDeltaMs": 2,
+            "correlatedActivationEventId": "act_1792680657490_b09q",
+            "temporalDeltaMs": 1,
             "isCausallyCorrelated": false,
-            "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640863903",
+            "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680657491",
             "source": "CustomEvent:intentnav:mock-state-change"
           },
           {
-            "witnessId": "wit_1792640863955_2",
+            "witnessId": "wit_1792680657543_2",
             "witnessClass": "ACCESSIBILITY_STATE_MUTATION",
             "sequenceNumber": 2,
-            "timestamp": 1792640863955,
+            "timestamp": 1792680657543,
             "observedDelta": {
               "attribute": "aria-checked",
               "value": "false",
@@ -3397,38 +3466,38 @@
               "marketing_notifications_enabled": false,
               "analytics_tracking_enabled": false
             },
-            "correlatedActivationEventId": "act_1792640863901_p347",
-            "temporalDeltaMs": 54,
+            "correlatedActivationEventId": "act_1792680657490_b09q",
+            "temporalDeltaMs": 53,
             "isCausallyCorrelated": false,
-            "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792640863955",
+            "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792680657543",
             "source": "MutationObserver:attributes:aria-checked"
           }
         ],
         "classifiedWitnesses": [
           {
             "witness": {
-              "witnessId": "wit_1792640863903_1",
+              "witnessId": "wit_1792680657491_1",
               "witnessClass": "APPLICATION_STATE_MUTATION",
               "sequenceNumber": 1,
-              "timestamp": 1792640863903,
+              "timestamp": 1792680657491,
               "observedDelta": {
                 "marketing_notifications_enabled": false
               },
-              "correlatedActivationEventId": "act_1792640863901_p347",
-              "temporalDeltaMs": 2,
+              "correlatedActivationEventId": "act_1792680657490_b09q",
+              "temporalDeltaMs": 1,
               "isCausallyCorrelated": false,
-              "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640863903",
+              "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680657491",
               "source": "CustomEvent:intentnav:mock-state-change"
             },
             "category": "CAUSALLY_VALID",
-            "reason": "Witness observed matching state delta within verification window (2ms)."
+            "reason": "Witness observed matching state delta within verification window (1ms)."
           },
           {
             "witness": {
-              "witnessId": "wit_1792640863955_2",
+              "witnessId": "wit_1792680657543_2",
               "witnessClass": "ACCESSIBILITY_STATE_MUTATION",
               "sequenceNumber": 2,
-              "timestamp": 1792640863955,
+              "timestamp": 1792680657543,
               "observedDelta": {
                 "attribute": "aria-checked",
                 "value": "false",
@@ -3438,14 +3507,14 @@
                 "marketing_notifications_enabled": false,
                 "analytics_tracking_enabled": false
               },
-              "correlatedActivationEventId": "act_1792640863901_p347",
-              "temporalDeltaMs": 54,
+              "correlatedActivationEventId": "act_1792680657490_b09q",
+              "temporalDeltaMs": 53,
               "isCausallyCorrelated": false,
-              "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792640863955",
+              "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792680657543",
               "source": "MutationObserver:attributes:aria-checked"
             },
             "category": "CAUSALLY_VALID",
-            "reason": "Witness observed matching state delta within verification window (54ms)."
+            "reason": "Witness observed matching state delta within verification window (53ms)."
           }
         ],
         "verifiedWitnessClasses": [
@@ -3454,13 +3523,58 @@
         ],
         "status": "VERIFIED",
         "causallyVerified": true,
-        "durationMs": 54,
-        "explanation": "CAUSALLY VERIFIED: Correlated 2 witnesses across 2 independent classes (APPLICATION_STATE_MUTATION, ACCESSIBILITY_STATE_MUTATION) in 54ms",
-        "verificationToken": {
-          "tokenId": "tok_1792640864062_d674e08028f0",
-          "routeId": "route_CAP_DISABLE_MARKETING_v11_1792640863875",
+        "durationMs": 53,
+        "explanation": "CAUSALLY VERIFIED: Correlated 2 witnesses across 2 independent classes (APPLICATION_STATE_MUTATION, ACCESSIBILITY_STATE_MUTATION) from 2 distinct origins in 53ms",
+        "observedPostState": {
+          "postStateFingerprint": "postfp_sha256_6b24e174d7157ac4c7354ead3b60ce472a3d872a3fbc1fb3e216309fb596cf5d",
+          "observedApplicationState": {
+            "marketing_notifications_enabled": false,
+            "analytics_tracking_enabled": true,
+            "account_deleted": false,
+            "access_tokens_revoked": false
+          },
+          "observedStateNode": {
+            "stateId": "state_1792680657645",
+            "stateType": "PAGE",
+            "urlPattern": "/mock-sites/site-neg/index.html",
+            "domStructuralHash": "hash_gr8eoo",
+            "semanticLandmarks": [
+              "section[Marketing Preferences]"
+            ],
+            "activeModalsOrDialogs": [],
+            "activeTabs": [],
+            "exposedCandidateHandles": [
+              {
+                "handleId": "handle_0",
+                "tagName": "button",
+                "role": "switch",
+                "accessibleName": "Turn off marketing notifications",
+                "domStructuralPath": "section[aria-label=\"Marketing Preference\"]:nth-of-type(1) > button[role=\"switch\"]:nth-of-type(1)",
+                "elementIndex": 0,
+                "volatileId": "n11-token-button"
+              }
+            ],
+            "observedApplicationState": {
+              "marketing_notifications_enabled": false,
+              "analytics_tracking_enabled": true,
+              "account_deleted": false,
+              "access_tokens_revoked": false
+            },
+            "timestamp": 1792680657645
+          },
+          "observedTimestamp": 1792680657645,
+          "activationEventId": "act_1792680657490_b09q",
+          "routeId": "route_CAP_DISABLE_MARKETING_v11_1792680657478",
           "capabilityId": "CAP_DISABLE_MARKETING",
-          "activationEventId": "act_1792640863901_p347",
+          "isObserved": true,
+          "observationSource": "ExecutionDispatcher:observePostState"
+        },
+        "observedPostStateFingerprint": "postfp_sha256_6b24e174d7157ac4c7354ead3b60ce472a3d872a3fbc1fb3e216309fb596cf5d",
+        "verificationToken": {
+          "tokenId": "tok_1792680657645_f9e2d223f0e2",
+          "routeId": "route_CAP_DISABLE_MARKETING_v11_1792680657478",
+          "capabilityId": "CAP_DISABLE_MARKETING",
+          "activationEventId": "act_1792680657490_b09q",
           "verifiedWitnessClasses": [
             "APPLICATION_STATE_MUTATION",
             "ACCESSIBILITY_STATE_MUTATION"
@@ -3477,9 +3591,9 @@
             "postStateFingerprint": "STATE_POST_MARKETING_OFF"
           },
           "transitionBinding": "tb_sha256_a8dbe62a4f77c3a782e82d5b1f862b515e8080bdd80964f10d0b9bef14c86e9d",
-          "witnessDigest": "wd_sha256_c7833c58d6a8cc188e835d8d867d49ade28963b89777ecb08a0ce5178bd53b0f",
-          "witnessEvidenceHash": "we_sha256_d00c4833c16627e856946ae9196878f1e16dff058c633570d389981ee3f0a7cf",
-          "issuedTimestamp": 1792640864062,
+          "witnessDigest": "wd_sha256_bb00a00917aad2a9d45db804700d97493534db03ae3424cdf08e35f05f09ffda",
+          "witnessEvidenceHash": "we_sha256_86f26ab3a700d0bda5b040c89ffa04dc7cd0a4ac6edeed7932b13d1211b4b6d5",
+          "issuedTimestamp": 1792680657645,
           "verifiedStatus": "VERIFIED",
           "algorithm": "HMAC-SHA-256",
           "signatureHash": "hmac_sha256_0000000000000000000000000000000000000000000000000000000000000000"
@@ -3616,12 +3730,12 @@
             }
           ],
           "failedPredicates": [],
-          "evaluatedTimestamp": 1792640863875
+          "evaluatedTimestamp": 1792680657478
         }
       },
       "activeRoute": null,
       "provisionalRoute": {
-        "routeId": "route_CAP_DISABLE_MARKETING_v11_1792640863875",
+        "routeId": "route_CAP_DISABLE_MARKETING_v11_1792680657478",
         "status": "QUARANTINED"
       },
       "routeStatus": "QUARANTINED",
@@ -3633,24 +3747,24 @@
       "failureReason": "Promotion REJECTED: INVARIANT VIOLATION: Token signature hash is invalid or forged ('hmac_sha256_0000000000000000000000000000000000000000000000000000000000000000').",
       "witnesses": [
         {
-          "witnessId": "wit_1792640863903_1",
+          "witnessId": "wit_1792680657491_1",
           "witnessClass": "APPLICATION_STATE_MUTATION",
           "sequenceNumber": 1,
-          "timestamp": 1792640863903,
+          "timestamp": 1792680657491,
           "observedDelta": {
             "marketing_notifications_enabled": false
           },
-          "correlatedActivationEventId": "act_1792640863901_p347",
-          "temporalDeltaMs": 2,
+          "correlatedActivationEventId": "act_1792680657490_b09q",
+          "temporalDeltaMs": 1,
           "isCausallyCorrelated": false,
-          "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640863903",
+          "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680657491",
           "source": "CustomEvent:intentnav:mock-state-change"
         },
         {
-          "witnessId": "wit_1792640863955_2",
+          "witnessId": "wit_1792680657543_2",
           "witnessClass": "ACCESSIBILITY_STATE_MUTATION",
           "sequenceNumber": 2,
-          "timestamp": 1792640863955,
+          "timestamp": 1792680657543,
           "observedDelta": {
             "attribute": "aria-checked",
             "value": "false",
@@ -3660,10 +3774,10 @@
             "marketing_notifications_enabled": false,
             "analytics_tracking_enabled": false
           },
-          "correlatedActivationEventId": "act_1792640863901_p347",
-          "temporalDeltaMs": 54,
+          "correlatedActivationEventId": "act_1792680657490_b09q",
+          "temporalDeltaMs": 53,
           "isCausallyCorrelated": false,
-          "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792640863955",
+          "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792680657543",
           "source": "MutationObserver:attributes:aria-checked"
         }
       ],
@@ -3685,7 +3799,7 @@
         "requiresUserConfirmation": false,
         "userConfirmationGranted": false,
         "policyReason": "Medium-risk reversible operation AUTHORIZED with high confidence.",
-        "evaluatedTimestamp": 1792640863877
+        "evaluatedTimestamp": 1792680657479
       },
       "independentOracleResult": {
         "oraclePassed": true,
@@ -3704,10 +3818,10 @@
         "evaluatedBy": "INDEPENDENT_TEST_ORACLE",
         "wasCorrectlyRefused": true
       },
-      "timestamp": 1792640864111
+      "timestamp": 1792680657669
     },
     {
-      "runId": "run_neg_chromium_1792640847789",
+      "runId": "run_neg_chromium_1792680641560",
       "scenarioId": "N12",
       "name": "Unresolved Quarantine — target route is in QUARANTINED status",
       "description": "Route is explicitly placed into QUARANTINED. Even with valid transition evidence, canEnterExecutedState() reaches PRE_16 and rejects because route.status === QUARANTINED.",
@@ -3749,13 +3863,13 @@
           "postStateFingerprint": "STATE_POST_MARKETING_OFF"
         },
         "activationEvent": {
-          "eventId": "act_1792640865347_4z40",
+          "eventId": "act_1792680658895_1ny1",
           "sequenceNumber": 1,
-          "timestamp": 1792640865347,
-          "targetCandidateId": "handle_0_1792640865341",
+          "timestamp": 1792680658895,
+          "targetCandidateId": "handle_0_1792680658886",
           "eventType": "click",
           "bindingHandle": {
-            "handleId": "handle_0_1792640865341",
+            "handleId": "handle_0_1792680658886",
             "tagName": "button",
             "role": "switch",
             "accessibleName": "Turn off marketing notifications",
@@ -3767,24 +3881,24 @@
         },
         "observedWitnesses": [
           {
-            "witnessId": "wit_1792640865349_1",
+            "witnessId": "wit_1792680658897_1",
             "witnessClass": "APPLICATION_STATE_MUTATION",
             "sequenceNumber": 1,
-            "timestamp": 1792640865349,
+            "timestamp": 1792680658897,
             "observedDelta": {
               "marketing_notifications_enabled": false
             },
-            "correlatedActivationEventId": "act_1792640865347_4z40",
+            "correlatedActivationEventId": "act_1792680658895_1ny1",
             "temporalDeltaMs": 2,
             "isCausallyCorrelated": false,
-            "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640865349",
+            "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680658897",
             "source": "CustomEvent:intentnav:mock-state-change"
           },
           {
-            "witnessId": "wit_1792640865400_2",
+            "witnessId": "wit_1792680658948_2",
             "witnessClass": "ACCESSIBILITY_STATE_MUTATION",
             "sequenceNumber": 2,
-            "timestamp": 1792640865400,
+            "timestamp": 1792680658948,
             "observedDelta": {
               "attribute": "aria-checked",
               "value": "false",
@@ -3794,27 +3908,27 @@
               "marketing_notifications_enabled": false,
               "analytics_tracking_enabled": false
             },
-            "correlatedActivationEventId": "act_1792640865347_4z40",
+            "correlatedActivationEventId": "act_1792680658895_1ny1",
             "temporalDeltaMs": 53,
             "isCausallyCorrelated": false,
-            "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792640865400",
+            "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792680658948",
             "source": "MutationObserver:attributes:aria-checked"
           }
         ],
         "classifiedWitnesses": [
           {
             "witness": {
-              "witnessId": "wit_1792640865349_1",
+              "witnessId": "wit_1792680658897_1",
               "witnessClass": "APPLICATION_STATE_MUTATION",
               "sequenceNumber": 1,
-              "timestamp": 1792640865349,
+              "timestamp": 1792680658897,
               "observedDelta": {
                 "marketing_notifications_enabled": false
               },
-              "correlatedActivationEventId": "act_1792640865347_4z40",
+              "correlatedActivationEventId": "act_1792680658895_1ny1",
               "temporalDeltaMs": 2,
               "isCausallyCorrelated": false,
-              "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640865349",
+              "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680658897",
               "source": "CustomEvent:intentnav:mock-state-change"
             },
             "category": "CAUSALLY_VALID",
@@ -3822,10 +3936,10 @@
           },
           {
             "witness": {
-              "witnessId": "wit_1792640865400_2",
+              "witnessId": "wit_1792680658948_2",
               "witnessClass": "ACCESSIBILITY_STATE_MUTATION",
               "sequenceNumber": 2,
-              "timestamp": 1792640865400,
+              "timestamp": 1792680658948,
               "observedDelta": {
                 "attribute": "aria-checked",
                 "value": "false",
@@ -3835,10 +3949,10 @@
                 "marketing_notifications_enabled": false,
                 "analytics_tracking_enabled": false
               },
-              "correlatedActivationEventId": "act_1792640865347_4z40",
+              "correlatedActivationEventId": "act_1792680658895_1ny1",
               "temporalDeltaMs": 53,
               "isCausallyCorrelated": false,
-              "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792640865400",
+              "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792680658948",
               "source": "MutationObserver:attributes:aria-checked"
             },
             "category": "CAUSALLY_VALID",
@@ -3852,12 +3966,57 @@
         "status": "VERIFIED",
         "causallyVerified": true,
         "durationMs": 53,
-        "explanation": "CAUSALLY VERIFIED: Correlated 2 witnesses across 2 independent classes (APPLICATION_STATE_MUTATION, ACCESSIBILITY_STATE_MUTATION) in 53ms",
-        "verificationToken": {
-          "tokenId": "tok_1792640865502_12a499938301",
-          "routeId": "route_CAP_DISABLE_MARKETING_v11_1792640863875",
+        "explanation": "CAUSALLY VERIFIED: Correlated 2 witnesses across 2 independent classes (APPLICATION_STATE_MUTATION, ACCESSIBILITY_STATE_MUTATION) from 2 distinct origins in 53ms",
+        "observedPostState": {
+          "postStateFingerprint": "postfp_sha256_8aa3dfc8daa74846203494d7047729c8490f8a7dc65bddd346cda83291886824",
+          "observedApplicationState": {
+            "marketing_notifications_enabled": false,
+            "analytics_tracking_enabled": true,
+            "account_deleted": false,
+            "access_tokens_revoked": false
+          },
+          "observedStateNode": {
+            "stateId": "state_1792680659050",
+            "stateType": "PAGE",
+            "urlPattern": "/mock-sites/site-neg/index.html",
+            "domStructuralHash": "hash_gr8eoo",
+            "semanticLandmarks": [
+              "section[Marketing Preferences]"
+            ],
+            "activeModalsOrDialogs": [],
+            "activeTabs": [],
+            "exposedCandidateHandles": [
+              {
+                "handleId": "handle_0",
+                "tagName": "button",
+                "role": "switch",
+                "accessibleName": "Turn off marketing notifications",
+                "domStructuralPath": "section[aria-label=\"Marketing Preference\"]:nth-of-type(1) > button[role=\"switch\"]:nth-of-type(1)",
+                "elementIndex": 0,
+                "volatileId": "n12-quarantine-button"
+              }
+            ],
+            "observedApplicationState": {
+              "marketing_notifications_enabled": false,
+              "analytics_tracking_enabled": true,
+              "account_deleted": false,
+              "access_tokens_revoked": false
+            },
+            "timestamp": 1792680659051
+          },
+          "observedTimestamp": 1792680659051,
+          "activationEventId": "act_1792680658895_1ny1",
+          "routeId": "route_CAP_DISABLE_MARKETING_v1_1792680643790",
           "capabilityId": "CAP_DISABLE_MARKETING",
-          "activationEventId": "act_1792640865347_4z40",
+          "isObserved": true,
+          "observationSource": "ExecutionDispatcher:observePostState"
+        },
+        "observedPostStateFingerprint": "postfp_sha256_8aa3dfc8daa74846203494d7047729c8490f8a7dc65bddd346cda83291886824",
+        "verificationToken": {
+          "tokenId": "tok_1792680659051_2b1b221848db",
+          "routeId": "route_CAP_DISABLE_MARKETING_v1_1792680643790",
+          "capabilityId": "CAP_DISABLE_MARKETING",
+          "activationEventId": "act_1792680658895_1ny1",
           "verifiedWitnessClasses": [
             "APPLICATION_STATE_MUTATION",
             "ACCESSIBILITY_STATE_MUTATION"
@@ -3874,12 +4033,12 @@
             "postStateFingerprint": "STATE_POST_MARKETING_OFF"
           },
           "transitionBinding": "tb_sha256_a8dbe62a4f77c3a782e82d5b1f862b515e8080bdd80964f10d0b9bef14c86e9d",
-          "witnessDigest": "wd_sha256_b1e2ec5cc4cf31e4faf85687c8153a9b25cac640e40022324f3260fe070417c8",
-          "witnessEvidenceHash": "we_sha256_6f1473582fe0b3a2ae893e0299f9b2093aabc5ce806d1e27a7e47912bdb8bbab",
-          "issuedTimestamp": 1792640865502,
+          "witnessDigest": "wd_sha256_b665bb320a99c8b002a1b34c473f180be9fe3469a5c75388b6fb6791ed8b52d4",
+          "witnessEvidenceHash": "we_sha256_6069865470aa80261a8174b9235f261c252979789b4b7e8dae4a3c71cf1cb2c7",
+          "issuedTimestamp": 1792680659051,
           "verifiedStatus": "VERIFIED",
           "algorithm": "HMAC-SHA-256",
-          "signatureHash": "hmac_sha256_12a499938301ce13e0cd26dbca2a4df041542a3c46be18b4c6d7d2da38b0e888"
+          "signatureHash": "hmac_sha256_2b1b221848dbe4f58138dcf347dd786e7cbd9727243068bc01a60de293a2d961"
         }
       },
       "causalVerified": true,
@@ -4013,11 +4172,11 @@
             }
           ],
           "failedPredicates": [],
-          "evaluatedTimestamp": 1792640865342
+          "evaluatedTimestamp": 1792680658889
         }
       },
       "activeRoute": {
-        "routeId": "route_CAP_DISABLE_MARKETING_v11_1792640863875",
+        "routeId": "route_CAP_DISABLE_MARKETING_v1_1792680643790",
         "status": "QUARANTINED"
       },
       "provisionalRoute": null,
@@ -4040,24 +4199,24 @@
       "failureReason": "Target active route status is 'QUARANTINED'; must be 'ACTIVE_VALIDATED' to enter EXECUTED state; Target route has an unresolved quarantine",
       "witnesses": [
         {
-          "witnessId": "wit_1792640865349_1",
+          "witnessId": "wit_1792680658897_1",
           "witnessClass": "APPLICATION_STATE_MUTATION",
           "sequenceNumber": 1,
-          "timestamp": 1792640865349,
+          "timestamp": 1792680658897,
           "observedDelta": {
             "marketing_notifications_enabled": false
           },
-          "correlatedActivationEventId": "act_1792640865347_4z40",
+          "correlatedActivationEventId": "act_1792680658895_1ny1",
           "temporalDeltaMs": 2,
           "isCausallyCorrelated": false,
-          "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792640865349",
+          "correlationExplanation": "Observed APPLICATION_STATE_MUTATION at 1792680658897",
           "source": "CustomEvent:intentnav:mock-state-change"
         },
         {
-          "witnessId": "wit_1792640865400_2",
+          "witnessId": "wit_1792680658948_2",
           "witnessClass": "ACCESSIBILITY_STATE_MUTATION",
           "sequenceNumber": 2,
-          "timestamp": 1792640865400,
+          "timestamp": 1792680658948,
           "observedDelta": {
             "attribute": "aria-checked",
             "value": "false",
@@ -4067,10 +4226,10 @@
             "marketing_notifications_enabled": false,
             "analytics_tracking_enabled": false
           },
-          "correlatedActivationEventId": "act_1792640865347_4z40",
+          "correlatedActivationEventId": "act_1792680658895_1ny1",
           "temporalDeltaMs": 53,
           "isCausallyCorrelated": false,
-          "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792640865400",
+          "correlationExplanation": "Observed ACCESSIBILITY_STATE_MUTATION at 1792680658948",
           "source": "MutationObserver:attributes:aria-checked"
         }
       ],
@@ -4092,7 +4251,7 @@
         "requiresUserConfirmation": false,
         "userConfirmationGranted": false,
         "policyReason": "Medium-risk reversible operation AUTHORIZED with high confidence.",
-        "evaluatedTimestamp": 1792640865342
+        "evaluatedTimestamp": 1792680658889
       },
       "independentOracleResult": {
         "oraclePassed": true,
@@ -4111,10 +4270,10 @@
         "evaluatedBy": "INDEPENDENT_TEST_ORACLE",
         "wasCorrectlyRefused": true
       },
-      "timestamp": 1792640865519
+      "timestamp": 1792680659069
     },
     {
-      "runId": "run_neg_chromium_1792640847789",
+      "runId": "run_neg_chromium_1792680641560",
       "scenarioId": "N13",
       "name": "High-Risk Authorization Denied — IRREVERSIBLE operation without user confirmation",
       "description": "Deactivating account is IRREVERSIBLE. Without userConfirmationGranted:true, machine halts in CONFIRMATION_PENDING.",
@@ -4271,12 +4430,12 @@
             }
           ],
           "failedPredicates": [],
-          "evaluatedTimestamp": 1792640866689
+          "evaluatedTimestamp": 1792680660237
         }
       },
       "activeRoute": null,
       "provisionalRoute": {
-        "routeId": "route_CAP_DEACTIVATE_ACCOUNT_v1_1792640866689",
+        "routeId": "route_CAP_DEACTIVATE_ACCOUNT_v1_1792680660237",
         "status": "PROVISIONAL"
       },
       "routeStatus": "PROVISIONAL",
@@ -4302,7 +4461,7 @@
         "requiresUserConfirmation": true,
         "userConfirmationGranted": false,
         "policyReason": "High-risk action (SECURITY_SENSITIVE): Capability confidence is high (0.92), but explicit user confirmation is mandatory before execution.",
-        "evaluatedTimestamp": 1792640866691
+        "evaluatedTimestamp": 1792680660239
       },
       "independentOracleResult": {
         "oraclePassed": true,
@@ -4321,10 +4480,10 @@
         "evaluatedBy": "INDEPENDENT_TEST_ORACLE",
         "wasCorrectlyRefused": true
       },
-      "timestamp": 1792640866731
+      "timestamp": 1792680660278
     },
     {
-      "runId": "run_neg_chromium_1792640847789",
+      "runId": "run_neg_chromium_1792680641560",
       "scenarioId": "N14",
       "name": "High-Risk Quorum Insufficient — IRREVERSIBLE operation cannot proceed",
       "description": "Revoking active sessions is IRREVERSIBLE. Without userConfirmationGranted:true, machine halts in CONFIRMATION_PENDING.",
@@ -4481,12 +4640,12 @@
             }
           ],
           "failedPredicates": [],
-          "evaluatedTimestamp": 1792640867901
+          "evaluatedTimestamp": 1792680661445
         }
       },
       "activeRoute": null,
       "provisionalRoute": {
-        "routeId": "route_CAP_REVOKE_SESSIONS_v1_1792640867901",
+        "routeId": "route_CAP_REVOKE_SESSIONS_v1_1792680661445",
         "status": "PROVISIONAL"
       },
       "routeStatus": "PROVISIONAL",
@@ -4512,7 +4671,7 @@
         "requiresUserConfirmation": true,
         "userConfirmationGranted": false,
         "policyReason": "High-risk action (SECURITY_SENSITIVE): Capability confidence is high (0.95), but explicit user confirmation is mandatory before execution.",
-        "evaluatedTimestamp": 1792640867903
+        "evaluatedTimestamp": 1792680661447
       },
       "independentOracleResult": {
         "oraclePassed": true,
@@ -4531,7 +4690,7 @@
         "evaluatedBy": "INDEPENDENT_TEST_ORACLE",
         "wasCorrectlyRefused": true
       },
-      "timestamp": 1792640867942
+      "timestamp": 1792680661486
     }
   ]
 }

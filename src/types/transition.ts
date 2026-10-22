@@ -9,7 +9,7 @@
  */
 
 import { FunctionalCapabilityFingerprint, BindingHandle } from './capability';
-import { RouteVersion } from './state';
+import { RouteVersion, InterfaceStateNode } from './state';
 import { TypedDriftVector } from './drift';
 import { InvariantClosureResult } from './invariant';
 import { CandidateRebindScore } from './ranking';
@@ -40,6 +40,15 @@ export interface ActivationEventRecord {
 // Alias for first-class ActivationEvent entity
 export type ActivationEvent = ActivationEventRecord;
 
+export interface WitnessProvenance {
+  origin: string; // e.g. 'MutationObserver:attributes:aria-checked', 'NetworkInterceptor:response', 'HistoryAPI:popstate'
+  observerId?: string;
+  channel?: string;
+  sourceFile?: string;
+  sequenceId?: number;
+  observedAt?: number;
+}
+
 export interface TransitionWitness {
   witnessId: string;
   witnessClass: WitnessClass;
@@ -52,6 +61,26 @@ export interface TransitionWitness {
   correlationExplanation: string;
   source?: string;
   targetInfo?: string;
+
+  // Step 4 raw evidence enhancements:
+  observationType?: string; // e.g. 'DOM_ATTRIBUTE_CHANGE', 'CHILD_LIST_MUTATION', 'ASYNC_ACK', 'APPLICATION_STATE'
+  rawObservation?: Record<string, unknown>; // Unprocessed raw event data preserved for independent interpretation
+  routeId?: string; // bound route ID
+  capabilityId?: string; // bound capability ID
+  provenance?: WitnessProvenance;
+  eventSequenceId?: string;
+}
+
+export interface ObservedPostState {
+  postStateFingerprint: string;
+  observedApplicationState?: Record<string, unknown>;
+  observedStateNode?: Partial<InterfaceStateNode> | Record<string, unknown> | null;
+  observedTimestamp: number;
+  activationEventId: string;
+  routeId: string;
+  capabilityId: string;
+  isObserved: boolean; // Must be true, establishing genuine observation rather than predicted/caller-supplied
+  observationSource: string; // e.g. 'ExecutionDispatcher:observePostState', 'BrowserObserver:InterfaceState'
 }
 
 export interface TransitionSignature {
@@ -118,6 +147,8 @@ export interface CausalVerificationResult {
   durationMs: number;
   explanation: string;
   verificationToken?: TransitionVerificationToken;
+  observedPostState?: ObservedPostState;
+  observedPostStateFingerprint?: string;
 }
 
 /**
