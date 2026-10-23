@@ -200,3 +200,42 @@ export interface ValidationRecord {
   authorizationDecision: ExecutionAuthorizationDecision | null;
   finalOutcome: 'EXECUTED' | 'QUARANTINED' | 'DEMOTED' | 'ABSTAINED' | 'CONFIRMATION_PENDING' | 'FAILED';
 }
+
+export type AcknowledgementStatus =
+  | 'COMPLETED'
+  | 'REJECTED'
+  | 'TIMEOUT'
+  | 'ERROR'
+  | 'UNAVAILABLE';
+
+export type AcknowledgementChannel =
+  | 'FETCH_RESPONSE'
+  | 'XHR_RESPONSE'
+  | 'WEBSOCKET_ACK'
+  | 'CUSTOM_ACK_EVENT'
+  | 'LOCAL_HTTP_MOCK';
+
+export interface AcknowledgementRecord {
+  acknowledgementId: string;
+  operation: string;
+  status: AcknowledgementStatus;
+  timestamp: number;
+  activationEventId: string;
+  routeId: string;
+  capabilityId: string;
+  sourceChannel: AcknowledgementChannel;
+  payloadHash?: string;
+  latencyMs?: number;
+  rawPayload?: Record<string, unknown>;
+  verified: boolean;
+  rejectionReason?: string;
+}
+
+export interface RollbackVerificationOutcome {
+  rollbackAttempted: boolean;
+  restoredRouteId: string | null;
+  status: 'ROLLBACK_VERIFIED' | 'ROLLBACK_PARTIAL' | 'ROLLBACK_UNAVAILABLE' | 'ROLLBACK_FAILED';
+  invariantsPassed: boolean;
+  explanation: string;
+  timestamp: number;
+}

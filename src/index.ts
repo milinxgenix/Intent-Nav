@@ -22,4 +22,8 @@ export * from './core/authorization/quorum';
 export * from './core/authorization/controller';
 export * from './core/audit/logger';
 export * from './core/stateMachine/machine';
+export * from './core/capability/acquisition';
+export * from './core/graph/planner';
+export * from './core/causal/safeVerification';
+export * from './core/network/acknowledgement';
 

@@ -102,3 +102,48 @@ export interface CapabilityNode {
   creationTimestamp: number;
   lastUsedTimestamp?: number;
 }
+
+export type RoutePlanningFailureReason =
+  | 'NO_PATH'
+  | 'DEPTH_EXHAUSTED'
+  | 'CYCLE_DETECTED'
+  | 'FORBIDDEN_STATE_ENCOUNTERED'
+  | 'STALE_EDGE'
+  | 'INTERMEDIATE_PRECONDITION_FAILED'
+  | 'AMBIGUOUS_ROUTE';
+
+export interface RoutePlanningQuery {
+  initialStateId: string;
+  targetCapabilityId: string;
+  targetStateId?: string;
+  maxDepth?: number;
+  maxPathCost?: number;
+  forbiddenStateIds?: string[];
+  context?: Record<string, unknown>;
+}
+
+export interface RoutePlanResult {
+  success: boolean;
+  route?: RouteVersion;
+  exploredNodesCount: number;
+  planningLatencyMs: number;
+  failureReason?: RoutePlanningFailureReason;
+  explanation: string;
+  stepsCount: number;
+}
+
+export interface MultiStepExecutionProgress {
+  totalSteps: number;
+  completedSteps: number;
+  currentStepIndex: number;
+  failedStepIndex?: number;
+  stepResults: Array<{
+    stepIndex: number;
+    fromStateId: string;
+    toStateId: string;
+    success: boolean;
+    reason?: string;
+    activationEventId?: string;
+    witnessCount?: number;
+  }>;
+}

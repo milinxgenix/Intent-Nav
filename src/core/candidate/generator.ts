@@ -244,6 +244,10 @@ export class CandidateGenerator {
         disabled:
           (el as HTMLButtonElement).disabled ??
           (el.hasAttribute('disabled') || el.getAttribute('aria-disabled') === 'true'),
+        hidden:
+          el.getAttribute('aria-hidden') === 'true' ||
+          el.hasAttribute('hidden') ||
+          ((el as HTMLElement).style && ((el as HTMLElement).style.display === 'none' || (el as HTMLElement).style.visibility === 'hidden')),
         ...(hasAriaChecked
           ? { checked: el.getAttribute('aria-checked') === 'true' }
           : isInputCheckable

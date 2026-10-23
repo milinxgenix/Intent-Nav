@@ -73,6 +73,11 @@ import { ExecutionAuthorizationController } from '../authorization/controller';
 import { AuditLogger } from '../audit/logger';
 import { PersistentCapabilityStore } from '../storage/persistentStore';
 import { FingerprintConstructor } from '../fingerprint/constructor';
+import { MultiStepRoutePlanner } from '../graph/planner';
+import { AcknowledgementTracker } from '../network/acknowledgement';
+import { SafeVerificationController } from '../causal/safeVerification';
+import { RollbackVerificationOutcome } from '../../types/transition';
+
 
 export type SystemMachineState =
   | 'IDLE'
@@ -166,6 +171,8 @@ export class IntentNavMachine {
   public promotionController: RoutePromotionController;
   public auditLogger: AuditLogger;
   public persistentStore: PersistentCapabilityStore;
+  public planner: MultiStepRoutePlanner;
+  public acknowledgementTracker: AcknowledgementTracker;
   public defaultDispatcher?: ExecutionDispatcher;
 
   // Registered capability catalog
@@ -199,6 +206,8 @@ export class IntentNavMachine {
       this.quarantineController
     );
     this.auditLogger = auditLogger || new AuditLogger();
+    this.planner = new MultiStepRoutePlanner(this.graph);
+    this.acknowledgementTracker = new AcknowledgementTracker();
   }
 
   public async init(): Promise<void> {
@@ -1257,6 +1266,189 @@ export class IntentNavMachine {
       allowed: failedPreconditions.length === 0,
       failedPreconditions,
       reasons,
+    };
+  }
+
+  /**
+   * Executes an ordered multi-step route sequentially (Step 8 & Step 9).
+   * - Evaluates intermediate preconditions and postconditions.
+   * - Halts immediately upon any intermediate failure, preventing unsafe downstream actions.
+   * - Quarantines the failing route and triggers verified rollback if a prior validated route exists.
+   */
+  public async executeMultiStepRouteAsync(
+    route: RouteVersion,
+    dispatcher: ExecutionDispatcher,
+    capability: FunctionalCapabilityFingerprint,
+    options?: { userConfirmationGranted?: boolean }
+  ): Promise<{
+    success: boolean;
+    completedStepsCount: number;
+    failedStepIndex?: number;
+    failureReason?: string;
+    finalState: SystemMachineState;
+    rollbackOutcome?: RollbackVerificationOutcome;
+  }> {
+    // 1. Initial Route Status Check
+    if (route.status === 'QUARANTINED' || route.status === 'DEMOTED') {
+      this.state = 'FAILED';
+      this.context.currentState = this.state;
+      return {
+        success: false,
+        completedStepsCount: 0,
+        failureReason: `Cannot execute route with status '${route.status}'.`,
+        finalState: this.state,
+      };
+    }
+
+    // 2. High-Risk Safety & Authorization Pre-Check (Step 9)
+    const safetyAssessment = SafeVerificationController.assessVerificationSafety(
+      capability,
+      options?.userConfirmationGranted
+    );
+    if (!safetyAssessment.isSafeToProbe && safetyAssessment.probeType === 'PROHIBITED_UNSAFE_PROBE') {
+      this.state = 'CONFIRMATION_PENDING';
+      this.context.currentState = this.state;
+      return {
+        success: false,
+        completedStepsCount: 0,
+        failureReason: safetyAssessment.policyReason,
+        finalState: this.state,
+      };
+    }
+
+    let completedSteps = 0;
+
+    for (const step of route.steps) {
+      // Step Precondition check: candidate context
+      const stepCandidate: CandidateEvaluationContext = {
+        candidateId: step.bindingHandle?.handleId || `step_${step.stepIndex}_target`,
+        candidateLabel: step.targetAccessibleName || step.actionDescription,
+        observedActionType: capability.actionType,
+        observedTargetEntity: capability.targetEntity,
+        observedRole: step.targetRole || 'button',
+        bindingHandle: step.bindingHandle,
+      };
+
+      const activationEventId = `act_step_${step.stepIndex}_${Date.now()}`;
+      const dispatchResult = await dispatcher.dispatchActivation(
+        activationEventId,
+        stepCandidate,
+        capability.capabilityId,
+        capability.transitionEvidence?.activationEventCharacteristics || {
+          eventType: 'click',
+          bubbles: true,
+          cancelable: true,
+        }
+      );
+
+      if (!dispatchResult.success) {
+        // Intermediate dispatch failure -> halt immediately!
+        this.state = 'FAILED';
+        this.context.currentState = this.state;
+        const rollbackOutcome = SafeVerificationController.verifyAndExecuteRollback(
+          this.routeManager,
+          capability,
+          route.routeId,
+          stepCandidate,
+          `Intermediate step ${step.stepIndex} dispatch failure: ${dispatchResult.reason || 'Dispatch failed'}`
+        );
+
+        return {
+          success: false,
+          completedStepsCount: completedSteps,
+          failedStepIndex: step.stepIndex,
+          failureReason: `Intermediate step ${step.stepIndex} dispatch failed: ${dispatchResult.reason || 'Dispatch failed'}`,
+          finalState: this.state,
+          rollbackOutcome,
+        };
+      }
+
+      // Collect witnesses for this step
+      const stepWitnesses = await dispatcher.collectWitnesses(
+        capability.transitionEvidence?.verificationWindowMs || 2500
+      );
+
+      // Observe post-state for this step
+      let stepPostState: InterfaceStateNode | undefined;
+      if (dispatcher.observePostState) {
+        try {
+          stepPostState = await dispatcher.observePostState();
+        } catch {}
+      }
+
+      // Causal verification for this step
+      const stepVerification = await this.causalVerifier.verifyTransitionAsync(
+        {
+          preStateFingerprint: capability.transitionEvidence.preStateFingerprint,
+          activationEventExpected: {
+            eventType: capability.transitionEvidence.activationEventCharacteristics.eventType,
+          },
+          expectedStateDelta: step.expectedTransitionDelta || capability.transitionEvidence.expectedDelta,
+          verificationWindowMs: capability.transitionEvidence.verificationWindowMs,
+          postStateFingerprint: capability.transitionEvidence.postStateFingerprint,
+        },
+        dispatchResult.activationEvent || {
+          eventId: activationEventId,
+          sequenceNumber: step.stepIndex,
+          timestamp: Date.now(),
+          targetCandidateId: stepCandidate.candidateId,
+          eventType: 'click',
+          initiatingCapabilityId: capability.capabilityId,
+        },
+        stepWitnesses,
+        stepPostState
+          ? {
+              postStateFingerprint: FingerprintConstructor.computePostStateFingerprint({
+                capabilityId: capability.capabilityId,
+                routeId: route.routeId,
+                activationEventId,
+                stateNode: stepPostState,
+              }),
+              observedApplicationState: stepPostState.observedApplicationState || {},
+              observedStateNode: stepPostState,
+              observedTimestamp: Date.now(),
+              activationEventId,
+              routeId: route.routeId,
+              capabilityId: capability.capabilityId,
+              isObserved: true,
+              observationSource: 'ExecutionDispatcher:observePostState',
+            }
+          : undefined,
+        route.routeId
+      );
+
+      if (!stepVerification.causallyVerified || stepVerification.status !== 'VERIFIED') {
+        // Intermediate causal failure -> halt downstream execution!
+        this.state = 'QUARANTINED';
+        this.context.currentState = this.state;
+        const rollbackOutcome = SafeVerificationController.verifyAndExecuteRollback(
+          this.routeManager,
+          capability,
+          route.routeId,
+          stepCandidate,
+          `Intermediate step ${step.stepIndex} causal verification failed: ${stepVerification.explanation}`
+        );
+
+        return {
+          success: false,
+          completedStepsCount: completedSteps,
+          failedStepIndex: step.stepIndex,
+          failureReason: `Intermediate step ${step.stepIndex} causal verification failed: ${stepVerification.explanation}`,
+          finalState: this.state,
+          rollbackOutcome,
+        };
+      }
+
+      completedSteps++;
+    }
+
+    // All steps succeeded!
+    this.state = 'EXECUTED';
+    this.context.currentState = this.state;
+    return {
+      success: true,
+      completedStepsCount: completedSteps,
+      finalState: this.state,
     };
   }
 

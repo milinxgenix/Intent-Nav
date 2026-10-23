@@ -296,3 +296,29 @@ export interface FunctionalCapability {
   bindings: Record<string, CurrentInterfaceBinding>; // bindingId -> CurrentInterfaceBinding
   activeBindingId?: string | null;
 }
+
+export type CapabilityIneligibilityReason =
+  | 'CREDENTIAL_OR_SENSITIVE_INPUT'
+  | 'ELEMENT_INACCESSIBLE_OR_HIDDEN'
+  | 'AMBIGUOUS_SEMANTICS'
+  | 'MISSING_INTERACTIVE_ROLE'
+  | 'VOLATILE_ONLY_IDENTIFIER'
+  | 'GENERIC_UNSUPPORTED_TARGET'
+  | 'CONTRADICTORY_CONTEXT';
+
+export interface CapabilityEligibilityResult {
+  eligible: boolean;
+  classification?: 'ELIGIBLE_CANDIDATE' | 'INELIGIBLE_CANDIDATE';
+  rejectionReason?: CapabilityIneligibilityReason | string;
+  confidencePenalty?: number;
+}
+
+export interface DiscoveredCapabilityCandidate {
+  candidateId: string;
+  fingerprint: FunctionalCapabilityFingerprint;
+  bindingHandle: BindingHandle;
+  eligibility: CapabilityEligibilityResult;
+  discoveredAt: number;
+  sourceUrl?: string;
+  interfaceStateId?: string;
+}

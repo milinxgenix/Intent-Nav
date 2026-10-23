@@ -5,6 +5,12 @@
 
 import { RiskClass, ActionType, TargetEntity } from '../../types/capability';
 
+export interface RiskClassificationResult {
+  riskClass: RiskClass;
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
+  isDestructive: boolean;
+}
+
 export class RiskClassifier {
   /**
    * Classifies the operational risk category
@@ -13,7 +19,7 @@ export class RiskClassifier {
     actionType: ActionType,
     targetEntity: TargetEntity,
     explicitRiskClass?: RiskClass
-  ): { riskClass: RiskClass; riskLevel: 'LOW' | 'MEDIUM' | 'HIGH'; isDestructive: boolean } {
+  ): RiskClassificationResult {
     if (explicitRiskClass) {
       if (['DESTRUCTIVE', 'IRREVERSIBLE', 'FINANCIAL', 'SECURITY_SENSITIVE'].includes(explicitRiskClass)) {
         return { riskClass: explicitRiskClass, riskLevel: 'HIGH', isDestructive: true };
