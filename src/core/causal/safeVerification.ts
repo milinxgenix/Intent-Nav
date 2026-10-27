@@ -90,7 +90,7 @@ export class SafeVerificationController {
     currentCandidate: CandidateEvaluationContext | null,
     failureReason: string
   ): RollbackVerificationOutcome {
-    const capabilityNode = (routeManager as any).graph?.getCapability(capability.capabilityId);
+    const capabilityNode = routeManager.graph?.getCapability(capability.capabilityId);
     if (!capabilityNode) {
       return {
         rollbackAttempted: false,

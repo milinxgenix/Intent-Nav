@@ -1,0 +1,106 @@
+{
+  "timestamp": 1793031721256,
+  "totalTrialsMeasured": 65,
+  "e2eLatencyDistribution": {
+    "sampleSize": 65,
+    "min": 0.03,
+    "max": 65.7,
+    "mean": 9.545,
+    "median": 8.91,
+    "p95": 18.29,
+    "stdDev": 9.164,
+    "unit": "ms"
+  },
+  "memoryDeltaMbDistribution": {
+    "sampleSize": 65,
+    "min": -26.372,
+    "max": 11.22,
+    "mean": 1.48,
+    "median": 0.015,
+    "p95": 8.862,
+    "stdDev": 5.487,
+    "unit": "MB"
+  },
+  "cpuTimeMsDistribution": {
+    "sampleSize": 65,
+    "min": 0.033,
+    "max": 82.86,
+    "mean": 17.123,
+    "median": 13.719,
+    "p95": 37.832,
+    "stdDev": 15.804,
+    "unit": "ms"
+  },
+  "candidateEvaluationsDistribution": {
+    "sampleSize": 65,
+    "min": 0,
+    "max": 10,
+    "mean": 8,
+    "median": 10,
+    "p95": 10,
+    "stdDev": 4.031,
+    "unit": "candidates"
+  },
+  "fingerprintComputationsDistribution": {
+    "sampleSize": 65,
+    "min": 0,
+    "max": 1,
+    "mean": 0.2,
+    "median": 0,
+    "p95": 1,
+    "stdDev": 0.403,
+    "unit": "computations"
+  },
+  "perSystemLatency": {
+    "B1": {
+      "sampleSize": 13,
+      "min": 7.75,
+      "max": 65.7,
+      "mean": 14.114,
+      "median": 9.46,
+      "p95": 65.7,
+      "stdDev": 15.572,
+      "unit": "ms"
+    },
+    "B2": {
+      "sampleSize": 13,
+      "min": 6.72,
+      "max": 18.29,
+      "mean": 9.383,
+      "median": 7.9,
+      "p95": 18.29,
+      "stdDev": 3.347,
+      "unit": "ms"
+    },
+    "B3": {
+      "sampleSize": 13,
+      "min": 7.83,
+      "max": 12.41,
+      "mean": 9.05,
+      "median": 8.7,
+      "p95": 12.41,
+      "stdDev": 1.273,
+      "unit": "ms"
+    },
+    "B4": {
+      "sampleSize": 13,
+      "min": 0.03,
+      "max": 0.15,
+      "mean": 0.046,
+      "median": 0.04,
+      "p95": 0.15,
+      "stdDev": 0.032,
+      "unit": "ms"
+    },
+    "B5": {
+      "sampleSize": 13,
+      "min": 10.37,
+      "max": 32.3,
+      "mean": 15.134,
+      "median": 13.24,
+      "p95": 32.3,
+      "stdDev": 6.169,
+      "unit": "ms"
+    }
+  }
+}

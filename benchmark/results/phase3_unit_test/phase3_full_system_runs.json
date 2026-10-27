@@ -1,0 +1,32 @@
+[
+  {
+    "experimentId": "EXP_MUT_PRES_01_B4",
+    "runId": "PHASE3_RUN_1793116910946",
+    "trialId": "TRIAL_MUT_MUT_PRES_01_B4_1793116911122_50cz",
+    "timestamp": 1793116911122,
+    "systemId": "B4",
+    "systemName": "Baseline 4: Intent-to-Page Navigation",
+    "mutationId": "MUT_PRES_01",
+    "category": "PRESENTATION",
+    "applicable": false,
+    "inapplicableReason": "Baseline 4 resolves PAGE_URL routes only; cannot select or activate in-page DOM elements.",
+    "selectedTargetId": null,
+    "targetSelectedCorrectly": false,
+    "executionAttempted": false,
+    "executionSucceeded": false,
+    "verificationStatus": "NOT_APPLICABLE",
+    "trialStatus": "NOT_APPLICABLE",
+    "causallyVerified": false,
+    "telemetry": {
+      "e2eLatencyMs": 0.14,
+      "stageLatenciesMs": {},
+      "candidateCount": 10,
+      "evaluatedCandidateCount": 0,
+      "fingerprintComputationCount": 0,
+      "heapMemoryDeltaBytes": 4320,
+      "heapMemoryDeltaMb": 0.0041,
+      "cpuUserMicroseconds": 118,
+      "cpuSystemMicroseconds": 9
+    }
+  }
+]

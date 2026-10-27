@@ -111,7 +111,12 @@ export class CausalTransitionVerifier {
     return (
       observedDelta['error'] !== undefined ||
       observedDelta['failure'] === true ||
-      observedDelta['aborted'] === true
+      observedDelta['aborted'] === true ||
+      observedDelta['rejected'] === true ||
+      observedDelta['status'] === 'REJECTED' ||
+      observedDelta['status'] === 'ERROR' ||
+      (typeof observedDelta['statusCode'] === 'number' && observedDelta['statusCode'] >= 400) ||
+      (typeof observedDelta['code'] === 'number' && observedDelta['code'] >= 400)
     );
   }
 

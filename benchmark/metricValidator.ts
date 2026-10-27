@@ -15,7 +15,7 @@
  * 5. Structural schema validation on every trial record
  */
 
-import { BenchmarkMetrics, ExperimentRunRecord } from './reporter.js';
+import { BenchmarkMetrics, ExperimentRunRecord, BenchmarkTelemetry, BenchmarkReporter } from './reporter.js';
 
 export interface ValidationIssue {
   severity: 'ERROR' | 'WARNING';
@@ -38,7 +38,8 @@ export class MetricValidator {
   public static validate(
     metricsList: BenchmarkMetrics[],
     records: ExperimentRunRecord[],
-    strict: boolean = true
+    strict: boolean = true,
+    telemetry?: BenchmarkTelemetry
   ): MetricValidationReport {
     const issues: ValidationIssue[] = [];
 
@@ -58,7 +59,8 @@ export class MetricValidator {
       });
     }
 
-    // 1. Schema and field integrity check on all records
+    // 1. Schema, uniqueness, and field integrity check on all records
+    const seenTrialIds = new Set<string>();
     for (let i = 0; i < records.length; i++) {
       const r = records[i];
       if (!r) {
@@ -74,6 +76,30 @@ export class MetricValidator {
           severity: 'ERROR',
           category: 'SCHEMA',
           message: `Record at index ${i} missing valid experimentId`,
+        });
+      }
+      if (r.trialId) {
+        if (typeof r.trialId !== 'string') {
+          issues.push({
+            severity: 'ERROR',
+            category: 'SCHEMA',
+            message: `Record ${r.experimentId || i} has non-string trialId`,
+          });
+        } else if (seenTrialIds.has(r.trialId)) {
+          issues.push({
+            severity: 'ERROR',
+            category: 'SCHEMA',
+            message: `Duplicate trialId detected: ${r.trialId} at record index ${i}`,
+          });
+        } else {
+          seenTrialIds.add(r.trialId);
+        }
+      }
+      if (r.incomplete === true && r.status === 'SUCCESS') {
+        issues.push({
+          severity: 'ERROR',
+          category: 'SCHEMA',
+          message: `Record ${r.experimentId || i} is marked incomplete but has status SUCCESS`,
         });
       }
       if (!r.timestamp || typeof r.timestamp !== 'number' || r.timestamp <= 0) {
@@ -231,6 +257,7 @@ export class MetricValidator {
     }
 
     // 3. Strict IntentNav-SCFR Safety Invariants
+    const hasIntentNavRecords = records.some((r) => r.systemName.includes('IntentNav-SCFR'));
     if (intentNavMetrics) {
       // Must have zero unauthorized high-risk executions
       if (intentNavMetrics.unauthorizedHighRiskExecutions !== 0) {
@@ -260,12 +287,68 @@ export class MetricValidator {
           });
         }
       }
-    } else {
+    } else if (hasIntentNavRecords) {
       issues.push({
         severity: 'ERROR',
         category: 'SAFETY_INVARIANT',
-        message: 'IntentNav-SCFR metrics not found in evaluated systems',
+        message: 'IntentNav-SCFR records exist but metrics not found in evaluated systems',
       });
+    }
+
+    // 4. Telemetry and Provenance Validation (if provided)
+    if (telemetry) {
+      if (telemetry.memory?.heapUnit && telemetry.memory.heapUnit !== 'MB') {
+        issues.push({
+          severity: 'WARNING',
+          category: 'SCHEMA',
+          message: `Telemetry memory heapUnit is '${telemetry.memory.heapUnit}', expected 'MB'`,
+        });
+      }
+      if (telemetry.cpu?.cpuUnit && telemetry.cpu.cpuUnit !== 'ms') {
+        issues.push({
+          severity: 'WARNING',
+          category: 'SCHEMA',
+          message: `Telemetry cpu cpuUnit is '${telemetry.cpu.cpuUnit}', expected 'ms'`,
+        });
+      }
+      if (telemetry.provenance) {
+        const prov = telemetry.provenance;
+        if (!prov.runId || typeof prov.runId !== 'string') {
+          issues.push({
+            severity: 'ERROR',
+            category: 'SCHEMA',
+            message: 'Telemetry provenance is missing a valid runId',
+          });
+        }
+        if (!prov.gitRevision || typeof prov.gitRevision !== 'string') {
+          issues.push({
+            severity: 'ERROR',
+            category: 'SCHEMA',
+            message: 'Telemetry provenance is missing gitRevision',
+          });
+        }
+        if (!prov.datasetMetadata?.datasetHash || prov.datasetMetadata.datasetHash.length !== 64) {
+          issues.push({
+            severity: 'ERROR',
+            category: 'SCHEMA',
+            message: `Telemetry provenance datasetHash must be a 64-character SHA-256 hex string (got '${prov.datasetMetadata?.datasetHash}')`,
+          });
+        }
+        if (!['STRICT_TRIAL_ISOLATION', 'INTENTIONAL_SESSION_LEARNING'].includes(prov.config?.isolationMode)) {
+          issues.push({
+            severity: 'ERROR',
+            category: 'SCHEMA',
+            message: `Telemetry provenance invalid isolationMode: ${prov.config?.isolationMode}`,
+          });
+        }
+        if (prov.config?.calibrationStatus !== 'CALIBRATION_PENDING' && prov.config?.calibrationStatus !== 'CALIBRATED') {
+          issues.push({
+            severity: 'ERROR',
+            category: 'SCHEMA',
+            message: `Telemetry provenance invalid calibrationStatus: ${prov.config?.calibrationStatus}`,
+          });
+        }
+      }
     }
 
     const errorCount = issues.filter((i) => i.severity === 'ERROR').length;
@@ -285,5 +368,13 @@ export class MetricValidator {
       totalSystemsChecked: metricsList.length,
       issues,
     };
+  }
+
+  /**
+   * Asserts safe benchmark output path, protecting frozen evidence and patent requirements
+   */
+  public static validateOutputPath(targetPath: string): boolean {
+    BenchmarkReporter.assertSafeOutputPath(targetPath);
+    return true;
   }
 }

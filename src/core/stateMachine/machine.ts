@@ -76,7 +76,7 @@ import { FingerprintConstructor } from '../fingerprint/constructor';
 import { MultiStepRoutePlanner } from '../graph/planner';
 import { AcknowledgementTracker } from '../network/acknowledgement';
 import { SafeVerificationController } from '../causal/safeVerification';
-import { RollbackVerificationOutcome } from '../../types/transition';
+import { RollbackVerificationOutcome, AcknowledgementStatus } from '../../types/transition';
 
 
 export type SystemMachineState =
@@ -916,6 +916,46 @@ export class IntentNavMachine {
       };
     }
 
+    // 8b. GENUINE NETWORK ACKNOWLEDGEMENT VALIDATION (Step 10)
+    for (const w of collectedWitnesses) {
+      if (w.witnessClass === 'ASYNC_ACKNOWLEDGEMENT') {
+        const ackRecord = this.acknowledgementTracker.recordAcknowledgement({
+          acknowledgementId: w.witnessId,
+          operation: (w.observedDelta?.['operation'] as string) || matchedCap.canonicalFunction,
+          status: (w.observedDelta?.['status'] as AcknowledgementStatus) || 'COMPLETED',
+          timestamp: w.timestamp,
+          activationEventId: w.correlatedActivationEventId || activationEvent.eventId,
+          routeId: (w as any).routeId || targetRouteId,
+          capabilityId: (w as any).capabilityId || matchedCap.capabilityId,
+          sourceChannel: (w.provenance?.origin as any) || 'LOCAL_HTTP_MOCK',
+          rawPayload: w.observedDelta,
+        });
+
+        const ackValidation = this.acknowledgementTracker.validateAcknowledgement(
+          ackRecord,
+          activationEvent,
+          targetRouteId,
+          matchedCap.capabilityId,
+          matchedCap.transitionEvidence?.verificationWindowMs || 3000
+        );
+
+        if (!ackValidation.valid) {
+          this.state = 'QUARANTINED';
+          this.context.currentState = this.state;
+          const reason = `Network acknowledgement rejected: ${ackValidation.rejectionReason}`;
+          this.quarantineController.quarantineFailedRoute(
+            matchedCap.capabilityId,
+            targetRouteId,
+            reason,
+            { failureReason: 'contradictory_delta', status: 'FAILED_CONTRADICTORY_WITNESS' }
+          );
+          this.createAndSaveValidationRecord('QUARANTINED');
+          this.logAudit('FAILED', reason);
+          return this.context;
+        }
+      }
+    }
+
     // 9. CAUSAL TRANSITION VERIFICATION (Derived internally, >=2 independent witness classes)
     this.state = 'TRANSITION_VERIFYING';
     const postStateArg = observedPostStateObj || matchedCap.transitionEvidence.postStateFingerprint;
@@ -1279,7 +1319,10 @@ export class IntentNavMachine {
     route: RouteVersion,
     dispatcher: ExecutionDispatcher,
     capability: FunctionalCapabilityFingerprint,
-    options?: { userConfirmationGranted?: boolean }
+    options?: {
+      userConfirmationGranted?: boolean;
+      corruptPromotionToken?: boolean;
+    }
   ): Promise<{
     success: boolean;
     completedStepsCount: number;
@@ -1287,8 +1330,9 @@ export class IntentNavMachine {
     failureReason?: string;
     finalState: SystemMachineState;
     rollbackOutcome?: RollbackVerificationOutcome;
+    promotedRoute?: RouteVersion;
   }> {
-    // 1. Initial Route Status Check
+    // 1. Initial Route Status & Steps Check
     if (route.status === 'QUARANTINED' || route.status === 'DEMOTED') {
       this.state = 'FAILED';
       this.context.currentState = this.state;
@@ -1296,6 +1340,17 @@ export class IntentNavMachine {
         success: false,
         completedStepsCount: 0,
         failureReason: `Cannot execute route with status '${route.status}'.`,
+        finalState: this.state,
+      };
+    }
+
+    if (!route.steps || !Array.isArray(route.steps) || route.steps.length === 0) {
+      this.state = 'FAILED';
+      this.context.currentState = this.state;
+      return {
+        success: false,
+        completedStepsCount: 0,
+        failureReason: 'Cannot execute empty route with zero steps.',
         finalState: this.state,
       };
     }
@@ -1316,7 +1371,45 @@ export class IntentNavMachine {
       };
     }
 
+    // Enforce high-risk check on individual route steps
+    const hasHighRiskStep = route.steps.some((step) => {
+      const rm = (step as { riskMetadata?: any }).riskMetadata;
+      return (
+        rm?.financial ||
+        rm?.security ||
+        rm?.destructive ||
+        rm?.requiresConfirmation ||
+        rm?.riskClass === 'DESTRUCTIVE' ||
+        rm?.riskClass === 'FINANCIAL' ||
+        rm?.reversible === false
+      );
+    });
+    if (hasHighRiskStep && !options?.userConfirmationGranted) {
+      this.state = 'CONFIRMATION_PENDING';
+      this.context.currentState = this.state;
+      return {
+        success: false,
+        completedStepsCount: 0,
+        failureReason:
+          'Multi-step route contains high-risk/irreversible operations that require explicit user confirmation.',
+        finalState: this.state,
+      };
+    }
+
+    // Ensure capability node exists in graph and route is registered
+    let capNode = this.graph.getCapability(capability.capabilityId);
+    if (!capNode) {
+      capNode = this.graph.registerCapability(
+        capability.capabilityId,
+        capability.canonicalFunction
+      );
+    }
+    if (!capNode.routeVersions[route.routeId]) {
+      this.graph.attachRouteVersion(capability.capabilityId, route);
+    }
+
     let completedSteps = 0;
+    let lastStepVerification: CausalVerificationResult | undefined;
 
     for (const step of route.steps) {
       // Step Precondition check: candidate context
@@ -1345,6 +1438,25 @@ export class IntentNavMachine {
         // Intermediate dispatch failure -> halt immediately!
         this.state = 'FAILED';
         this.context.currentState = this.state;
+        route.status = 'QUARANTINED';
+        route.quarantineReason = `Intermediate step ${step.stepIndex} dispatch failure: ${dispatchResult.reason || 'Dispatch failed'}`;
+
+        // Record negative evidence contradiction for dispatch failure
+        this.negativeEvidenceStore.recordContradiction(
+          stepCandidate.candidateId,
+          'REPEATED_VALIDATION_FAILURE',
+          'DISPATCH_FAILURE',
+          `Intermediate step ${step.stepIndex} dispatch failure: ${dispatchResult.reason || 'Dispatch failed'}`,
+          {
+            stepIndex: step.stepIndex,
+            reason: dispatchResult.reason,
+            activationEventId,
+          },
+          { capabilityId: capability.capabilityId },
+          route.routeId,
+          stepCandidate
+        );
+
         const rollbackOutcome = SafeVerificationController.verifyAndExecuteRollback(
           this.routeManager,
           capability,
@@ -1376,38 +1488,123 @@ export class IntentNavMachine {
         } catch {}
       }
 
+      // Step transition signature grounding
+      const stepPreStateFingerprint =
+        step.transitionSignature?.preStateFingerprint ||
+        capability.transitionEvidence?.preStateFingerprint ||
+        'STATE_PRE';
+      const stepPostStateFingerprint =
+        step.transitionSignature?.postStateFingerprint ||
+        capability.transitionEvidence?.postStateFingerprint ||
+        'STATE_POST';
+      const stepExpectedDelta =
+        step.expectedTransitionDelta ||
+        step.transitionSignature?.expectedStateDelta ||
+        capability.transitionEvidence?.expectedDelta ||
+        {};
+      const stepEventType =
+        step.transitionSignature?.activationEventExpected?.eventType ||
+        capability.transitionEvidence?.activationEventCharacteristics?.eventType ||
+        'click';
+
       // Causal verification for this step
+      const effectiveActivationEvent = dispatchResult.activationEvent || {
+        eventId: activationEventId,
+        sequenceNumber: step.stepIndex,
+        timestamp: Date.now(),
+        targetCandidateId: stepCandidate.candidateId,
+        eventType: stepEventType,
+        initiatingCapabilityId: capability.capabilityId,
+      };
+      const effectiveActivationEventId = effectiveActivationEvent.eventId;
+
+      // Validate any ASYNC_ACKNOWLEDGEMENT witnesses with AcknowledgementTracker (Step 10)
+      for (const w of stepWitnesses) {
+        if (w.witnessClass === 'ASYNC_ACKNOWLEDGEMENT') {
+          const ackRecord = this.acknowledgementTracker.recordAcknowledgement({
+            acknowledgementId: w.witnessId,
+            operation: (w.observedDelta?.['operation'] as string) || capability.canonicalFunction,
+            status: (w.observedDelta?.['status'] as AcknowledgementStatus) || 'COMPLETED',
+            timestamp: w.timestamp,
+            activationEventId: w.correlatedActivationEventId || effectiveActivationEventId,
+            routeId: (w as any).routeId || route.routeId,
+            capabilityId: (w as any).capabilityId || capability.capabilityId,
+            sourceChannel: (w.provenance?.origin as any) || 'LOCAL_HTTP_MOCK',
+            rawPayload: w.observedDelta,
+          });
+
+          const ackValidation = this.acknowledgementTracker.validateAcknowledgement(
+            ackRecord,
+            effectiveActivationEvent,
+            route.routeId,
+            capability.capabilityId,
+            capability.transitionEvidence?.verificationWindowMs || 3000
+          );
+
+          if (!ackValidation.valid) {
+            this.state = 'QUARANTINED';
+            this.context.currentState = this.state;
+            route.status = 'QUARANTINED';
+            route.quarantineReason = `Intermediate step ${step.stepIndex} network acknowledgement rejected: ${ackValidation.rejectionReason}`;
+
+            this.negativeEvidenceStore.recordCausalFailure({
+              capabilityId: capability.capabilityId,
+              routeId: route.routeId,
+              candidateIdentifier: route.routeId,
+              verificationStatus: 'FAILED_CONTRADICTORY_WITNESS',
+              failureReason: 'contradictory_delta',
+              explanation: route.quarantineReason,
+              activationEventId: effectiveActivationEventId,
+              sequenceNumber: step.stepIndex,
+              witnessIds: [w.witnessId],
+              observedWitnessClasses: ['ASYNC_ACKNOWLEDGEMENT'],
+              candidateContext: stepCandidate,
+            });
+
+            const rollbackOutcome = SafeVerificationController.verifyAndExecuteRollback(
+              this.routeManager,
+              capability,
+              route.routeId,
+              stepCandidate,
+              route.quarantineReason
+            );
+
+            return {
+              success: false,
+              completedStepsCount: completedSteps,
+              failedStepIndex: step.stepIndex,
+              failureReason: route.quarantineReason,
+              finalState: this.state,
+              rollbackOutcome,
+            };
+          }
+        }
+      }
+
       const stepVerification = await this.causalVerifier.verifyTransitionAsync(
         {
-          preStateFingerprint: capability.transitionEvidence.preStateFingerprint,
+          preStateFingerprint: stepPreStateFingerprint,
           activationEventExpected: {
-            eventType: capability.transitionEvidence.activationEventCharacteristics.eventType,
+            eventType: stepEventType,
           },
-          expectedStateDelta: step.expectedTransitionDelta || capability.transitionEvidence.expectedDelta,
-          verificationWindowMs: capability.transitionEvidence.verificationWindowMs,
-          postStateFingerprint: capability.transitionEvidence.postStateFingerprint,
+          expectedStateDelta: stepExpectedDelta,
+          verificationWindowMs: capability.transitionEvidence?.verificationWindowMs || 2500,
+          postStateFingerprint: stepPostStateFingerprint,
         },
-        dispatchResult.activationEvent || {
-          eventId: activationEventId,
-          sequenceNumber: step.stepIndex,
-          timestamp: Date.now(),
-          targetCandidateId: stepCandidate.candidateId,
-          eventType: 'click',
-          initiatingCapabilityId: capability.capabilityId,
-        },
+        effectiveActivationEvent,
         stepWitnesses,
         stepPostState
           ? {
               postStateFingerprint: FingerprintConstructor.computePostStateFingerprint({
                 capabilityId: capability.capabilityId,
                 routeId: route.routeId,
-                activationEventId,
+                activationEventId: effectiveActivationEventId,
                 stateNode: stepPostState,
               }),
               observedApplicationState: stepPostState.observedApplicationState || {},
               observedStateNode: stepPostState,
               observedTimestamp: Date.now(),
-              activationEventId,
+              activationEventId: effectiveActivationEventId,
               routeId: route.routeId,
               capabilityId: capability.capabilityId,
               isObserved: true,
@@ -1421,6 +1618,24 @@ export class IntentNavMachine {
         // Intermediate causal failure -> halt downstream execution!
         this.state = 'QUARANTINED';
         this.context.currentState = this.state;
+        route.status = 'QUARANTINED';
+        route.quarantineReason = `Intermediate step ${step.stepIndex} causal verification failed: ${stepVerification.explanation}`;
+
+        // Record negative evidence contradiction for causal verification failure
+        this.negativeEvidenceStore.recordCausalFailure({
+          capabilityId: capability.capabilityId,
+          routeId: route.routeId,
+          candidateIdentifier: route.routeId,
+          verificationStatus: stepVerification.status,
+          failureReason: stepVerification.failureReason,
+          explanation: stepVerification.explanation,
+          activationEventId: effectiveActivationEventId,
+          sequenceNumber: step.stepIndex,
+          witnessIds: stepWitnesses.map((w) => w.witnessId),
+          observedWitnessClasses: stepVerification.verifiedWitnessClasses,
+          candidateContext: stepCandidate,
+        });
+
         const rollbackOutcome = SafeVerificationController.verifyAndExecuteRollback(
           this.routeManager,
           capability,
@@ -1440,15 +1655,61 @@ export class IntentNavMachine {
       }
 
       completedSteps++;
+      lastStepVerification = stepVerification;
     }
 
-    // All steps succeeded!
+    if (completedSteps !== route.steps.length || !lastStepVerification) {
+      this.state = 'FAILED';
+      this.context.currentState = this.state;
+      return {
+        success: false,
+        completedStepsCount: completedSteps,
+        failureReason: `Execution halted before all ${route.steps.length} steps completed (${completedSteps} completed).`,
+        finalState: this.state,
+      };
+    }
+
+    // Support simulated token tampering for testing
+    let verificationForPromotion = lastStepVerification;
+    if (options?.corruptPromotionToken && lastStepVerification.verificationToken) {
+      verificationForPromotion = {
+        ...lastStepVerification,
+        verificationToken: {
+          ...lastStepVerification.verificationToken,
+          signatureHash: 'hmac_sha256_' + '0'.repeat(64),
+        },
+      };
+    }
+
+    // Promote provisional route to ACTIVE_VALIDATED using terminal step's verified token
+    const promoDecision = await this.promotionController.evaluateAndPromoteAsync(
+      capability.capabilityId,
+      route.routeId,
+      verificationForPromotion
+    );
+
+    if (!promoDecision.promoted) {
+      this.state = 'QUARANTINED';
+      this.context.currentState = this.state;
+      route.status = 'QUARANTINED';
+      route.quarantineReason = promoDecision.reason;
+      return {
+        success: false,
+        completedStepsCount: completedSteps,
+        failureReason: promoDecision.reason,
+        finalState: this.state,
+      };
+    }
+
+    // All steps succeeded and route promoted to ACTIVE_VALIDATED
     this.state = 'EXECUTED';
     this.context.currentState = this.state;
+    this.context.activeRoute = promoDecision.route;
     return {
       success: true,
       completedStepsCount: completedSteps,
       finalState: this.state,
+      promotedRoute: promoDecision.route,
     };
   }
 

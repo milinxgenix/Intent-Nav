@@ -18,10 +18,14 @@ export interface BenchmarkMetrics {
   causalVerificationRate: number; // Retained for backwards compatibility
   unauthorizedHighRiskExecutions: number; // Target = 0
   avgLatencyMs: number;
+  incompleteTrials?: number;
 }
 
 export interface ExperimentRunRecord {
   experimentId: string;
+  runId?: string;
+  trialId?: string;
+  trialIndex?: number;
   timestamp: number;
   systemName: string;
   siteVersion: string;
@@ -34,6 +38,39 @@ export interface ExperimentRunRecord {
   causallyVerified: boolean;
   authorized: boolean;
   latencyMs: number;
+  memoryDeltaMb?: number;
+  incomplete?: boolean;
+  missingMetadata?: boolean;
+  sessionLearning?: boolean;
+  sessionId?: string;
+  notes?: string;
+}
+
+export interface BenchmarkProvenance {
+  runId: string;
+  gitRevision: string;
+  environment: string;
+  platform: string;
+  arch: string;
+  osRelease: string;
+  nodeVersion: string;
+  browserVersion: string;
+  datasetMetadata: {
+    datasetName: string;
+    datasetPath: string;
+    datasetHash: string;
+    datasetVersion: string;
+    totalIntents: number;
+  };
+  config: {
+    sites: string[];
+    isolationMode: 'STRICT_TRIAL_ISOLATION' | 'INTENTIONAL_SESSION_LEARNING';
+    warmupRuns: number;
+    gcExecuted: boolean;
+    calibrationStatus: 'CALIBRATION_PENDING' | 'CALIBRATED';
+    targetOutputDir: string;
+    enabledSystems?: string[];
+  };
 }
 
 export interface BenchmarkTelemetry {
@@ -41,17 +78,20 @@ export interface BenchmarkTelemetry {
   platform: string;
   nodeVersion: string;
   totalElapsedMs: number;
+  provenance?: BenchmarkProvenance;
   memory: {
     startHeapUsedMb: number;
     endHeapUsedMb: number;
     endHeapTotalMb: number;
     endRssMb: number;
     deltaHeapUsedMb: number;
+    heapUnit?: 'MB';
   };
   cpu: {
     userCpuMs: number;
     systemCpuMs: number;
     totalCpuMs: number;
+    cpuUnit?: 'ms';
   };
   clicksSavedStatus: 'NOT_MEASURED';
   clicksSavedReason: string;
@@ -169,6 +209,39 @@ export class BenchmarkReporter {
   }
 
   /**
+   * Protected frozen evidence files that must NEVER be overwritten by benchmark outputs.
+   */
+  public static readonly FROZEN_EVIDENCE_FILES = [
+    'evidence/chromium_e2e_evidence.json',
+    'evidence/chromium_e2e_negative_evidence.json',
+    'evidence/chromium_network_privacy_evidence.json',
+    'evidence/chromium_route_rollback_evidence.json',
+    'evidence/chromium_witness_class_evidence.json',
+    'evidence/chromium_e2e_positive_evidence.json',
+  ];
+
+  /**
+   * Asserts that a target file path does not collide with or overwrite frozen evidence.
+   */
+  public static assertSafeOutputPath(targetPath: string): void {
+    const normalized = path.normalize(targetPath).replace(/\\/g, '/');
+
+    for (const frozen of BenchmarkReporter.FROZEN_EVIDENCE_FILES) {
+      if (normalized.endsWith(frozen) || normalized.includes(`/${frozen}`) || normalized === frozen) {
+        throw new Error(
+          `BENCHMARK INTEGRITY VIOLATION: Cannot overwrite frozen baseline evidence file '${targetPath}'. Phase 3 benchmark outputs must be directed to a dedicated Phase 3 directory.`
+        );
+      }
+    }
+
+    if (normalized.includes('docs/patent-requirements/')) {
+      throw new Error(
+        `BENCHMARK INTEGRITY VIOLATION: Cannot write to authoritative patent requirements directory '${targetPath}'.`
+      );
+    }
+  }
+
+  /**
    * Exports an individual experiment package to /evidence/experiment-id/
    */
   public static exportEvidencePackage(
@@ -177,14 +250,68 @@ export class BenchmarkReporter {
     evidenceData: Record<string, unknown>
   ): void {
     const targetDir = path.join(baseDir, 'evidence', experimentId);
+    const targetFile = path.join(targetDir, 'experiment.json');
+    BenchmarkReporter.assertSafeOutputPath(targetFile);
+
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir, { recursive: true });
     }
 
     fs.writeFileSync(
-      path.join(targetDir, 'experiment.json'),
+      targetFile,
       JSON.stringify(evidenceData, null, 2),
       'utf8'
     );
+  }
+
+  /**
+   * Exports complete Phase 3 benchmark results to a dedicated directory without touching frozen baseline evidence.
+   */
+  public static exportPhase3Package(
+    outputDir: string,
+    metricsList: BenchmarkMetrics[],
+    records: ExperimentRunRecord[],
+    telemetry?: BenchmarkTelemetry
+  ): {
+    rawRunsPath: string;
+    summaryPath: string;
+    csvPath: string;
+    reportPath: string;
+  } {
+    BenchmarkReporter.assertSafeOutputPath(outputDir);
+
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
+
+    const rawRunsPath = path.join(outputDir, 'phase3_raw_runs.json');
+    const summaryPath = path.join(outputDir, 'phase3_summary.json');
+    const csvPath = path.join(outputDir, 'phase3_results.csv');
+    const reportPath = path.join(outputDir, 'phase3_report.md');
+
+    BenchmarkReporter.assertSafeOutputPath(rawRunsPath);
+    BenchmarkReporter.assertSafeOutputPath(summaryPath);
+    BenchmarkReporter.assertSafeOutputPath(csvPath);
+    BenchmarkReporter.assertSafeOutputPath(reportPath);
+
+    fs.writeFileSync(rawRunsPath, JSON.stringify(records, null, 2), 'utf8');
+    fs.writeFileSync(
+      summaryPath,
+      JSON.stringify(
+        {
+          timestamp: Date.now(),
+          totalRuns: records.length,
+          metrics: metricsList,
+          telemetry,
+        },
+        null,
+        2
+      ),
+      'utf8'
+    );
+    fs.writeFileSync(csvPath, BenchmarkReporter.generateCSV(records), 'utf8');
+    fs.writeFileSync(reportPath, BenchmarkReporter.generateMarkdownReport(metricsList, records, telemetry), 'utf8');
+
+    return { rawRunsPath, summaryPath, csvPath, reportPath };
   }
 }

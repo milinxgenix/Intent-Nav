@@ -1,8 +1,8 @@
 # IntentNav-SCFR: Controlled Simulated / JSDOM Benchmark Evaluation Report
-*Generated at: 2026-09-21T06:21:28.544Z*
+*Generated at: 2026-10-26T16:21:44.959Z*
 
 > [!NOTE]
-> **Controlled Simulated JSDOM Benchmark**: This report evaluates comparative algorithmic disambiguation, invariant closure, and candidate ranking across simulated mock sites in a controlled JSDOM environment. Real browser execution evidence (including real Blink DOM mutations, live MV3 content scripts, CDP over WebSocket, and verified deterministic authorization tokens) is separately evaluated and reported in `evidence/chromium_e2e_evidence.json` and `evidence/chromium_e2e_negative_evidence.json`.
+> **Controlled Simulated JSDOM Benchmark**: This report evaluates comparative algorithmic disambiguation, invariant closure, and candidate ranking across simulated mock sites in a controlled JSDOM environment. Real browser execution evidence (including real Blink DOM mutations, live MV3 content scripts, CDP over WebSocket, and cryptographic authorization tokens) is separately evaluated and reported in `evidence/chromium_e2e_positive_evidence.json` and `evidence/chromium_e2e_negative_evidence.json`.
 >
 > **Scope Note on Simulated Transition Validation Rate**: This controlled JSDOM metric measures whether independently observed state/DOM changes match the expected capability delta. It does not constitute independent real-browser causal-transition verification.
 
@@ -12,9 +12,9 @@ Comparative evaluation of **IntentNav-SCFR** against 4 alternative architectural
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Baseline 1: Fixed Selector Replay** | 25.0% | 0.0% | 100.0% | 0.0% | **0** | 0.0ms |
 | **Baseline 2: Keyword String Matching** | 42.4% | 41.4% | 56.0% | 0.0% | **98** | 0.0ms |
-| **Baseline 3: Semantic-Only Matching** | 35.0% | 35.8% | 84.0% | 0.0% | **70** | 0.1ms |
+| **Baseline 3: Semantic-Only Matching** | 35.0% | 35.8% | 84.0% | 0.0% | **70** | 0.0ms |
 | **Baseline 4: Intent-to-Page Navigation** | 79.0% | 0.0% | 0.0% | 0.0% | **0** | 0.0ms |
-| **IntentNav-SCFR (Invention Prototype)** | 59.0% | 56.1% | 100.0% | 28.5% | **0** | 9.3ms |
+| **IntentNav-SCFR (Invention Prototype)** | 57.4% | 54.7% | 100.0% | 27.0% | **0** | 3.1ms |
 
 ## 2. Key Empirical Findings
 
@@ -27,11 +27,11 @@ Comparative evaluation of **IntentNav-SCFR** against 4 alternative architectural
 
 | Metric | Measured Value | Scope / Environment |
 | :--- | :--- | :--- |
-| **Benchmark Duration** | 6214 ms | Node.js Test Harness (v20.17.0) |
-| **Process Peak RSS** | 680.8 MB | OS Process Level (darwin arm64) |
-| **Process Heap Used (End)** | 586.4 MB | V8 Heap Allocation |
-| **Process Heap Delta** | +547.1 MB | Net Heap Growth Across Trials |
-| **Process CPU Time** | User: 7826ms / Sys: 354ms | Total: 8180ms |
+| **Benchmark Duration** | 4449 ms | Node.js Test Harness (v20.17.0) |
+| **Process Peak RSS** | 672.3 MB | OS Process Level (darwin arm64) |
+| **Process Heap Used (End)** | 574.4 MB | V8 Heap Allocation |
+| **Process Heap Delta** | +530.2 MB | Net Heap Growth Across Trials |
+| **Process CPU Time** | User: 6118ms / Sys: 362ms | Total: 6480ms |
 | **Clicks Saved Metric** | `NOT_MEASURED` | Single-page mock application architectures have flat DOM access with all controls co-located; measuring manual clicks saved requires assuming arbitrary user navigation depth baselines without ground-truth recordings. |
 
 ## 4. Detailed Experiment Logs (2000 Total Runs)

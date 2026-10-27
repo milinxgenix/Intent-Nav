@@ -226,4 +226,78 @@ describe('Step 9: Safe and Reversible Verification Controller', () => {
     expect(outcome.status).toBe('ROLLBACK_UNAVAILABLE');
     expect(outcome.restoredRouteId).toBeNull();
   });
+
+  it('never rolls back to a previously QUARANTINED or DEMOTED prior route version', () => {
+    const testCap = createFunctionalCapability({
+      capabilityId: 'CAP_SECURE_ROLLBACK',
+      canonicalFunction: 'secure_rollback',
+      actionType: 'MODIFY_PREFERENCE',
+      targetEntity: 'SECURITY_SETTINGS',
+    });
+
+    graph.registerCapability(testCap.capabilityId, testCap.canonicalFunction);
+    const authKey = new Uint8Array(32).fill(0x3c);
+    const mockAuth = new PromotionTokenAuthenticator(authKey);
+    const rm = new RouteManager(graph, mockAuth);
+
+    // Create v1, promote it, but subsequently quarantine it
+    const v1 = rm.createProvisionalRoute(testCap.capabilityId, [], 0.9);
+    const tokenV1 = mockAuth.issueToken({
+      tokenId: 'tok_v1',
+      routeId: v1.routeId,
+      capabilityId: testCap.capabilityId,
+      activationEventId: 'act_v1',
+      verifiedWitnessClasses: ['DOM_MUTATION', 'APPLICATION_STATE_MUTATION'],
+      issuedTimestamp: 1000,
+    });
+    rm.promoteToActive(testCap.capabilityId, v1.routeId, tokenV1);
+    rm.quarantineRoute(testCap.capabilityId, v1.routeId, 'Explicit quarantine of v1');
+
+    // Create v2 and promote it
+    const v2 = rm.createProvisionalRoute(testCap.capabilityId, [], 0.85);
+    const tokenV2 = mockAuth.issueToken({
+      tokenId: 'tok_v2',
+      routeId: v2.routeId,
+      capabilityId: testCap.capabilityId,
+      activationEventId: 'act_v2',
+      verifiedWitnessClasses: ['DOM_MUTATION', 'APPLICATION_STATE_MUTATION'],
+      issuedTimestamp: 2000,
+    });
+    rm.promoteToActive(testCap.capabilityId, v2.routeId, tokenV2);
+
+    // Demote v2 and execute rollback - should NOT restore quarantined v1!
+    const outcome = SafeVerificationController.verifyAndExecuteRollback(
+      rm,
+      testCap,
+      v2.routeId,
+      null,
+      'v2 failed'
+    );
+
+    expect(outcome.status).toBe('ROLLBACK_UNAVAILABLE');
+    expect(outcome.restoredRouteId).toBeNull();
+    expect(graph.getActiveRoute(testCap.capabilityId)).toBeNull();
+  });
+
+  it('correctly classifies REVERSIBLE_PROBE for reversible preference modifications', () => {
+    const revCap = createFunctionalCapability({
+      capabilityId: 'CAP_TOGGLE_SETTING',
+      canonicalFunction: 'toggle_setting',
+      actionType: 'MODIFY_PREFERENCE',
+      targetEntity: 'USER_INTERFACE',
+      riskMetadata: {
+        riskClass: 'REVERSIBLE',
+        reversible: true,
+        destructive: false,
+        financial: false,
+        security: false,
+        requiresConfirmation: false,
+      },
+    });
+
+    const assessment = SafeVerificationController.assessVerificationSafety(revCap, false);
+    expect(assessment.isSafeToProbe).toBe(true);
+    expect(assessment.probeType).toBe('REVERSIBLE_PROBE');
+    expect(assessment.requiresUserConfirmation).toBe(false);
+  });
 });

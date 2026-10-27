@@ -1,0 +1,70 @@
+{
+  "manifestVersion": "1.0.0",
+  "generatedAt": "2026-10-27T16:01:51.125Z",
+  "provenance": {
+    "runId": "PHASE3_RUN_1793116910946",
+    "timestamp": 1793116911122,
+    "gitRevision": "bc4a34be60dc58e45dab60a657d4e0009ab77798",
+    "isWorkingTreeDirty": true,
+    "environmentType": "MOCK_JSDOM",
+    "platform": "darwin",
+    "arch": "arm64",
+    "osRelease": "25.6.0",
+    "nodeVersion": "v20.17.0",
+    "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "browserVersion": "Google Chrome 156.0.8078.48",
+    "datasetChecksumSha256": "5ff5a72ea3f55c01f39148f172f97c6c6a27286e2f5e568caa6ffa5a15c2d0c6",
+    "mutationConfigChecksumSha256": "85895187be10d17e5291569f3f911c6ac6747aec9f0df378c66796c7ffeb5c8e",
+    "commandExecuted": "Phase3ExperimentRunner.execute()"
+  },
+  "totalTrials": {
+    "fullSystem": 1,
+    "ablation": 0,
+    "total": 1
+  },
+  "artifacts": [
+    {
+      "path": "/Users/kumarmilind/Desktop/Navigation/benchmark/results/phase3_unit_test/phase3_full_system_runs.json",
+      "filename": "phase3_full_system_runs.json",
+      "sha256": "fa9fc4d99b42125f2178a5bdf950693df727b60528762349e2af9c5bdb86bc45",
+      "sizeBytes": 1049,
+      "description": "Raw full-system trial records"
+    },
+    {
+      "path": "/Users/kumarmilind/Desktop/Navigation/benchmark/results/phase3_unit_test/phase3_ablation_runs.json",
+      "filename": "phase3_ablation_runs.json",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "sizeBytes": 2,
+      "description": "Raw ablation trial records"
+    },
+    {
+      "path": "/Users/kumarmilind/Desktop/Navigation/benchmark/results/phase3_unit_test/phase3_computational_report.json",
+      "filename": "phase3_computational_report.json",
+      "sha256": "40849a65adac40c42d13abfeb9797d1f9d7a4149a451a5ff98ffd04e6b495241",
+      "sizeBytes": 1185,
+      "description": "Computational resource report"
+    },
+    {
+      "path": "/Users/kumarmilind/Desktop/Navigation/benchmark/results/phase3_unit_test/phase3_results.csv",
+      "filename": "phase3_results.csv",
+      "sha256": "72b3c6febcb54840df5ad6e3a02a6f301211b6b9727bb964a823525471c35f21",
+      "sizeBytes": 335,
+      "description": "Reconciled tabular trial export"
+    },
+    {
+      "path": "/Users/kumarmilind/Desktop/Navigation/benchmark/results/phase3_unit_test/phase3_comprehensive_report.md",
+      "filename": "phase3_comprehensive_report.md",
+      "sha256": "dba3c43e04c81f9b47cdacea4e79860de325c5e3397a66b37827c309b3693912",
+      "sizeBytes": 1719,
+      "description": "Comprehensive experimental report"
+    }
+  ],
+  "reproductionInstructions": {
+    "command": "node scripts/runPhase3Validation.js",
+    "environmentPrerequisites": [
+      "Node.js >= 20.0.0",
+      "npm install completed",
+      "Google Chrome or Chromium installed for browser validation"
+    ]
+  }
+}

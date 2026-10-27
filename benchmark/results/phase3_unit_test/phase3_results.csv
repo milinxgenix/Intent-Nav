@@ -1,0 +1,2 @@
+trialId,runId,systemId,mutationId,category,applicable,targetSelectedCorrectly,executionSucceeded,verificationStatus,trialStatus,causallyVerified,latencyMs,heapMemoryDeltaMb
+TRIAL_MUT_MUT_PRES_01_B4_1793116911122_50cz,PHASE3_RUN_1793116910946,B4,MUT_PRES_01,PRESENTATION,false,false,false,NOT_APPLICABLE,NOT_APPLICABLE,false,0.14,0.0041

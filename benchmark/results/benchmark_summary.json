@@ -1,5 +1,5 @@
 {
-  "timestamp": 1789971688541,
+  "timestamp": 1793031704955,
   "totalRuns": 2000,
   "metrics": [
     {
@@ -13,7 +13,8 @@
       "simulatedTransitionValidationRate": 0,
       "causalVerificationRate": 0,
       "unauthorizedHighRiskExecutions": 0,
-      "avgLatencyMs": 0
+      "avgLatencyMs": 0,
+      "incompleteTrials": 0
     },
     {
       "systemName": "Baseline 2: Keyword String Matching",
@@ -26,7 +27,8 @@
       "simulatedTransitionValidationRate": 0,
       "causalVerificationRate": 0,
       "unauthorizedHighRiskExecutions": 98,
-      "avgLatencyMs": 0.01
+      "avgLatencyMs": 0.01,
+      "incompleteTrials": 0
     },
     {
       "systemName": "Baseline 3: Semantic-Only Matching",
@@ -39,7 +41,8 @@
       "simulatedTransitionValidationRate": 0,
       "causalVerificationRate": 0,
       "unauthorizedHighRiskExecutions": 70,
-      "avgLatencyMs": 0.05
+      "avgLatencyMs": 0.04,
+      "incompleteTrials": 0
     },
     {
       "systemName": "Baseline 4: Intent-to-Page Navigation",
@@ -52,38 +55,79 @@
       "simulatedTransitionValidationRate": 0,
       "causalVerificationRate": 0,
       "unauthorizedHighRiskExecutions": 0,
-      "avgLatencyMs": 0
+      "avgLatencyMs": 0,
+      "incompleteTrials": 0
     },
     {
       "systemName": "IntentNav-SCFR (Invention Prototype)",
       "totalQueries": 400,
-      "top1Accuracy": 0.5895,
-      "top3Accuracy": 0.6737,
+      "top1Accuracy": 0.5737,
+      "top3Accuracy": 0.6579,
       "decoyRejectionRate": 1,
       "falseDiscoveryRate": 0,
-      "uiChangeRecoveryRate": 0.5614,
-      "simulatedTransitionValidationRate": 0.285,
-      "causalVerificationRate": 0.285,
+      "uiChangeRecoveryRate": 0.5474,
+      "simulatedTransitionValidationRate": 0.27,
+      "causalVerificationRate": 0.27,
       "unauthorizedHighRiskExecutions": 0,
-      "avgLatencyMs": 9.27
+      "avgLatencyMs": 3.14,
+      "incompleteTrials": 0
     }
   ],
   "telemetry": {
     "environment": "CONTROLLED SIMULATED / JSDOM BENCHMARK",
     "platform": "darwin arm64",
     "nodeVersion": "v20.17.0",
-    "totalElapsedMs": 6214.459334,
+    "totalElapsedMs": 4449.045541,
+    "provenance": {
+      "runId": "run_1793031700464_b52898b2",
+      "gitRevision": "bc4a34be60dc58e45dab60a657d4e0009ab77798",
+      "environment": "CONTROLLED SIMULATED / JSDOM BENCHMARK",
+      "platform": "darwin arm64",
+      "arch": "arm64",
+      "osRelease": "25.6.0",
+      "nodeVersion": "v20.17.0",
+      "browserVersion": "JSDOM-Simulated-Environment",
+      "datasetMetadata": {
+        "datasetName": "intents.json",
+        "datasetPath": "/Users/kumarmilind/Desktop/Navigation/benchmark/dataset/intents.json",
+        "datasetHash": "5ff5a72ea3f55c01f39148f172f97c6c6a27286e2f5e568caa6ffa5a15c2d0c6",
+        "datasetVersion": "v1.0",
+        "totalIntents": 100
+      },
+      "config": {
+        "sites": [
+          "SiteA",
+          "SiteB",
+          "SiteC",
+          "SiteD"
+        ],
+        "isolationMode": "STRICT_TRIAL_ISOLATION",
+        "warmupRuns": 0,
+        "gcExecuted": false,
+        "calibrationStatus": "CALIBRATION_PENDING",
+        "targetOutputDir": "benchmark/results/phase3",
+        "enabledSystems": [
+          "Baseline 1: Fixed Selector Replay",
+          "Baseline 2: Keyword String Matching",
+          "Baseline 3: Semantic-Only Matching",
+          "Baseline 4: Intent-to-Page Navigation",
+          "IntentNav-SCFR (Invention Prototype)"
+        ]
+      }
+    },
     "memory": {
-      "startHeapUsedMb": 39.3,
-      "endHeapUsedMb": 586.4,
-      "endHeapTotalMb": 624.2,
-      "endRssMb": 680.8,
-      "deltaHeapUsedMb": 547.1
+      "startHeapUsedMb": 44.1,
+      "endHeapUsedMb": 574.4,
+      "endHeapTotalMb": 611.8,
+      "endRssMb": 672.3,
+      "deltaHeapUsedMb": 530.2,
+      "heapUnit": "MB"
     },
     "cpu": {
-      "userCpuMs": 7826.4,
-      "systemCpuMs": 354,
-      "totalCpuMs": 8180.4
+      "userCpuMs": 6117.9,
+      "systemCpuMs": 361.8,
+      "totalCpuMs": 6479.7,
+      "cpuUnit": "ms"
     },
     "clicksSavedStatus": "NOT_MEASURED",
     "clicksSavedReason": "Single-page mock application architectures have flat DOM access with all controls co-located; measuring manual clicks saved requires assuming arbitrary user navigation depth baselines without ground-truth recordings."

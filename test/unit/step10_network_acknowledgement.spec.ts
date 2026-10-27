@@ -13,7 +13,10 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { AcknowledgementTracker } from '../../src/core/network/acknowledgement';
-import { ActivationEventRecord } from '../../src/types/transition';
+import { ActivationEventRecord, TransitionWitness } from '../../src/types/transition';
+import { CausalTransitionVerifier } from '../../src/core/causal/verifier';
+import { IntentNavMachine, ExecutionDispatcher } from '../../src/core/stateMachine/machine';
+import { createFunctionalCapability } from '../../src/core/capability/catalog';
 
 describe('Step 10: Genuine Network Acknowledgement Engine', () => {
   let tracker: AcknowledgementTracker;
@@ -185,5 +188,233 @@ describe('Step 10: Genuine Network Acknowledgement Engine', () => {
     );
     expect(v2.valid).toBe(false);
     expect(v2.rejectionReason).toContain('DUPLICATE_ACKNOWLEDGEMENT');
+  });
+
+  it('demonstrates operational separation: network acknowledgement alone cannot prove state change or satisfy causal verification', async () => {
+    const verifier = new CausalTransitionVerifier();
+    const actEvent: ActivationEventRecord = {
+      eventId: 'act_ack_only',
+      sequenceNumber: 1,
+      timestamp: 10000,
+      targetCandidateId: 'cand_export',
+      eventType: 'click',
+      initiatingCapabilityId: 'CAP_EXPORT_DATA',
+    };
+
+    // Only ASYNC_ACKNOWLEDGEMENT witness provided (no independent DOM/app state change witness)
+    const ackWitnesses: TransitionWitness[] = [
+      {
+        witnessId: 'wit_ack_1',
+        witnessClass: 'ASYNC_ACKNOWLEDGEMENT',
+        source: 'NetworkInterceptor:response',
+        timestamp: 10150,
+        correlatedActivationEventId: 'act_ack_only',
+        observedDelta: { status: 'COMPLETED', operation: 'export_data', download_ready: true },
+      } as any,
+    ];
+
+    // 1. Verification fails due to insufficient independent witness classes (quorum >= 2)
+    const result1 = await verifier.verifyTransitionAsync(
+      {
+        preStateFingerprint: 'STATE_PRE_DOWNLOAD',
+        activationEventExpected: { eventType: 'click' },
+        expectedStateDelta: { download_ready: true },
+        verificationWindowMs: 2500,
+        postStateFingerprint: 'STATE_POST_DOWNLOAD',
+      },
+      actEvent,
+      ackWitnesses
+    );
+
+    expect(result1.causallyVerified).toBe(false);
+    expect(result1.status).toBe('FAILED_INSUFFICIENT_WITNESS_CLASSES');
+
+    // 2. Even if a 2nd witness exists, if post-state is unchanged from pre-state, verification fails
+    const secondWitnesses: TransitionWitness[] = [
+      ...ackWitnesses,
+      {
+        witnessId: 'wit_dom_1',
+        witnessClass: 'DOM_MUTATION',
+        source: 'MutationObserver',
+        timestamp: 10200,
+        correlatedActivationEventId: 'act_ack_only',
+        observedDelta: { download_ready: true },
+      } as any,
+    ];
+
+    const result2 = await verifier.verifyTransitionAsync(
+      {
+        preStateFingerprint: 'STATE_PRE_DOWNLOAD',
+        activationEventExpected: { eventType: 'click' },
+        expectedStateDelta: { download_ready: true },
+        verificationWindowMs: 2500,
+        postStateFingerprint: 'STATE_PRE_DOWNLOAD', // UNCHANGED post-state!
+      },
+      actEvent,
+      secondWitnesses,
+      'STATE_PRE_DOWNLOAD' // Post-state fingerprint identical to pre-state
+    );
+
+    expect(result2.causallyVerified).toBe(false);
+    expect(result2.status).toBe('FAILED_POST_STATE_MISMATCH');
+    expect(result2.explanation).toContain('Post-state fingerprint identical to pre-state');
+  });
+
+  it('state machine halts execution and quarantines route when network acknowledgement indicates server rejection', async () => {
+    const machine = new IntentNavMachine();
+    const testCap = createFunctionalCapability({
+      capabilityId: 'CAP_EXPORT_DATA',
+      canonicalFunction: 'export_data',
+      actionType: 'NAVIGATE',
+      targetEntity: 'USER_DATA',
+    });
+
+    const route = {
+      routeId: 'route_server_reject_test',
+      capabilityId: 'CAP_EXPORT_DATA',
+      versionNumber: 1,
+      status: 'PROVISIONAL' as const,
+      steps: [
+        {
+          stepIndex: 1,
+          fromStateId: 'STATE_HOME',
+          toStateId: 'STATE_DOWNLOAD',
+          actionDescription: 'Export Data',
+        },
+      ],
+      creationTimestamp: Date.now(),
+      confidenceScore: 0.9,
+      pathCost: 1.0,
+    };
+
+    let eventId = 'act_reject_01';
+    const rejectingDispatcher: ExecutionDispatcher = {
+      async dispatchActivation() {
+        return {
+          success: true,
+          activationEvent: {
+            eventId,
+            sequenceNumber: 1,
+            timestamp: Date.now(),
+            targetCandidateId: 'cand_export',
+            eventType: 'click',
+            initiatingCapabilityId: 'CAP_EXPORT_DATA',
+          },
+        };
+      },
+      async collectWitnesses() {
+        return [
+          {
+            witnessId: 'wit_server_rej',
+            witnessClass: 'ASYNC_ACKNOWLEDGEMENT',
+            source: 'NetworkInterceptor:fetch',
+            timestamp: Date.now() + 50,
+            correlatedActivationEventId: eventId,
+            observedDelta: {
+              status: 'REJECTED',
+              statusCode: 429,
+              error: 'Rate limit exceeded',
+            },
+          },
+        ] as any;
+      },
+    };
+
+    const outcome = await machine.executeMultiStepRouteAsync(
+      route,
+      rejectingDispatcher,
+      testCap
+    );
+
+    expect(outcome.success).toBe(false);
+    expect(outcome.finalState).toBe('QUARANTINED');
+    expect(outcome.failureReason).toContain('SERVER_REJECTION');
+    expect(['QUARANTINED', 'DEMOTED']).toContain(route.status);
+  });
+
+  it('state machine detects and halts execution on duplicate/replayed network acknowledgement across sequential steps', async () => {
+    const machine = new IntentNavMachine();
+    const testCap = createFunctionalCapability({
+      capabilityId: 'CAP_EXPORT_DATA',
+      canonicalFunction: 'export_data',
+      actionType: 'NAVIGATE',
+      targetEntity: 'USER_DATA',
+    });
+
+    const twoStepRoute = {
+      routeId: 'route_dup_ack_test',
+      capabilityId: 'CAP_EXPORT_DATA',
+      versionNumber: 1,
+      status: 'PROVISIONAL' as const,
+      steps: [
+        {
+          stepIndex: 1,
+          fromStateId: 'STATE_A',
+          toStateId: 'STATE_B',
+          actionDescription: 'Step 1',
+        },
+        {
+          stepIndex: 2,
+          fromStateId: 'STATE_B',
+          toStateId: 'STATE_C',
+          actionDescription: 'Step 2',
+        },
+      ],
+      creationTimestamp: Date.now(),
+      confidenceScore: 0.9,
+      pathCost: 2.0,
+    };
+
+    let currentEventId = '';
+    const replayingDispatcher: ExecutionDispatcher = {
+      async dispatchActivation() {
+        currentEventId = `act_dup_${Date.now()}_${Math.random()}`;
+        return {
+          success: true,
+          activationEvent: {
+            eventId: currentEventId,
+            sequenceNumber: 1,
+            timestamp: Date.now(),
+            targetCandidateId: 'cand_export',
+            eventType: 'click',
+            initiatingCapabilityId: 'CAP_EXPORT_DATA',
+          },
+        };
+      },
+      async collectWitnesses() {
+        return [
+          {
+            witnessId: `wit_ack_${Math.random()}`,
+            witnessClass: 'ASYNC_ACKNOWLEDGEMENT',
+            source: 'NetworkInterceptor:response',
+            timestamp: Date.now() + 20,
+            correlatedActivationEventId: currentEventId,
+            // Exactly identical raw payload repeated across both steps
+            observedDelta: { transaction_token: 'STATIC_NONCE_TOKEN_123', status: 'COMPLETED' },
+          },
+          {
+            witnessId: `wit_dom_${Math.random()}`,
+            witnessClass: 'DOM_MUTATION',
+            source: 'MutationObserver',
+            timestamp: Date.now() + 30,
+            correlatedActivationEventId: currentEventId,
+            observedDelta: { step_done: true },
+          },
+        ] as any;
+      },
+    };
+
+    const outcome = await machine.executeMultiStepRouteAsync(
+      twoStepRoute,
+      replayingDispatcher,
+      testCap
+    );
+
+    // Step 1 consumed the payload hash. Step 2 replaying the same payload hash must be flagged and rejected!
+    expect(outcome.success).toBe(false);
+    expect(outcome.completedStepsCount).toBe(1); // Step 1 succeeded
+    expect(outcome.failedStepIndex).toBe(2);     // Step 2 failed on replay!
+    expect(outcome.failureReason).toContain('DUPLICATE_ACKNOWLEDGEMENT');
+    expect(outcome.finalState).toBe('QUARANTINED');
   });
 });

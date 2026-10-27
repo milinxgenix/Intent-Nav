@@ -25,7 +25,7 @@ export class RouteManager {
   private readonly consumedSignatureHashes: Set<string> = new Set();
 
   constructor(
-    private graph: CapabilityGraphEngine,
+    public readonly graph: CapabilityGraphEngine,
     tokenAuthenticator: PromotionTokenAuthenticator = defaultTokenAuthenticator
   ) {
     this.tokenAuthenticator = tokenAuthenticator;

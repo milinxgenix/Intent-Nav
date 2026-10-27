@@ -1,0 +1,66 @@
+{
+  "timestamp": 1793116911122,
+  "totalTrialsMeasured": 1,
+  "e2eLatencyDistribution": {
+    "sampleSize": 1,
+    "min": 0.14,
+    "max": 0.14,
+    "mean": 0.14,
+    "median": 0.14,
+    "p95": 0.14,
+    "stdDev": 0,
+    "unit": "ms"
+  },
+  "memoryDeltaMbDistribution": {
+    "sampleSize": 1,
+    "min": 0.004,
+    "max": 0.004,
+    "mean": 0.004,
+    "median": 0.004,
+    "p95": 0.004,
+    "stdDev": 0,
+    "unit": "MB"
+  },
+  "cpuTimeMsDistribution": {
+    "sampleSize": 1,
+    "min": 0.127,
+    "max": 0.127,
+    "mean": 0.127,
+    "median": 0.127,
+    "p95": 0.127,
+    "stdDev": 0,
+    "unit": "ms"
+  },
+  "candidateEvaluationsDistribution": {
+    "sampleSize": 1,
+    "min": 0,
+    "max": 0,
+    "mean": 0,
+    "median": 0,
+    "p95": 0,
+    "stdDev": 0,
+    "unit": "candidates"
+  },
+  "fingerprintComputationsDistribution": {
+    "sampleSize": 1,
+    "min": 0,
+    "max": 0,
+    "mean": 0,
+    "median": 0,
+    "p95": 0,
+    "stdDev": 0,
+    "unit": "computations"
+  },
+  "perSystemLatency": {
+    "B4": {
+      "sampleSize": 1,
+      "min": 0.14,
+      "max": 0.14,
+      "mean": 0.14,
+      "median": 0.14,
+      "p95": 0.14,
+      "stdDev": 0,
+      "unit": "ms"
+    }
+  }
+}

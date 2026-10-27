@@ -8,6 +8,6 @@
   "status": "SUCCESS",
   "verified": true,
   "authorized": true,
-  "latencyMs": 14.13,
+  "latencyMs": 21.22,
   "auditTrail": "VALIDATED_BY_INTENTNAV_AUDIT_LOG"
 }
